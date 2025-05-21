@@ -1,0 +1,325 @@
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+/* Barra de Navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, #82e600, #4caf50);
+    padding: 10px 20px;
+    color: white;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-navbar {
+    width: 100px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.navbar-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.navbar-links {
+    display: flex;
+}
+
+.navbar-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: #ffff99;
+}
+
+/* Botón del menú hamburguesa */
+.navbar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+}
+
+/* Estilos del formulario */
+.login-form {
+    max-width: 400px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1em;
+    color: #333;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+    background-color: #45a049;
+}
+
+.forgot-password,
+.register-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #4CAF50;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.forgot-password:hover,
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* Carrusel */
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.carousel img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.carousel img.visible {
+    opacity: 1;
+}
+
+/* Contenido Principal */
+.main-content {
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2em;
+    color: #4caf50;
+}
+
+p {
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* Pie de Página */
+.footer {
+    background-color: #4caf50;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.footer-social img {
+    width: 30px;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.footer-social img:hover {
+    transform: scale(1.1);
+}
+
+/* Media Queries para Responsiveness */
+@media (max-width: 768px) {
+    /* Barra de Navegación */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-logo {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .navbar-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #4caf50;
+        padding: 10px 0;
+    }
+
+    .navbar-links a {
+        margin: 10px 0;
+        text-align: center;
+        padding: 10px 0;
+        color: white;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .navbar-links.active {
+        display: flex;
+    }
+
+    .navbar-toggle {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Carrusel */
+    .carousel {
+        height: 150px;
+    }
+
+    .carousel img {
+        height: 150px;
+    }
+
+    /* Contenido Principal */
+    h1 {
+        font-size: 1.2em;
+    }
+
+    p {
+        font-size: 0.9em;
+    }
+
+    /* Formulario */
+    .login-form {
+        max-width: 100%;
+        padding: 15px;
+    }
+}
+
+.input-error {
+    border-color: red;
+}
+
+.input-success {
+    border-color: green;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+/* ... (tus estilos existentes) ... */
+
+/* Estilos para el Banner de Cookies y Términos */
+.cookie-consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #2c3e50; /* Un color oscuro para el fondo */
+    color: #ecf0f1; /* Color de texto claro */
+    padding: 20px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    display: none; /* Oculto por defecto, se mostrará con JS */
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.cookie-consent-banner p {
+    margin: 0 0 15px 0;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+.cookie-consent-banner a {
+    color: #3498db; /* Un color de enlace que destaque */
+    text-decoration: underline;
+}
+
+.cookie-consent-banner a:hover {
+    color: #5dade2;
+}
+
+.cookie-consent-buttons button {
+    background-color: #27ae60; /* Verde para aceptar */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.cookie-consent-buttons button#reject-cookies {
+    background-color: #c0392b; /* Rojo para rechazar */
+}
+
+.cookie-consent-buttons button:hover {
+    opacity: 0.9;
+}
+
+.cookie-consent-buttons button#accept-cookies:hover {
+    background-color: #2ecc71;
+}
+
+.cookie-consent-buttons button#reject-cookies:hover {
+    background-color: #e74c3c;
+}
+
+/* Adaptación para pantallas pequeñas */
+@media (max-width: 768px) {
+    .cookie-consent-banner p {
+        font-size: 0.8em;
+    }
+    .cookie-consent-buttons button {
+        padding: 8px 15px;
+        font-size: 0.8em;
+        width: calc(50% - 10px); /* Dos botones por fila */
+        margin-bottom: 10px;
+    }
+}

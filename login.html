@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Barra de Navegación -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="img/logo.png" alt="Logo GAG" class="logo-navbar">
+            <span class="navbar-title">Gestión de Agricultura y Ganadería en el Tolima</span>
+        </div>
+        <div class="navbar-links">
+            <a href="index.html">Inicio</a>
+            <a href="login.html">Iniciar Sesión</a>
+            <a href="misionvision.html">Misión y Visión</a>
+            <a href="quienessomos.html">¿Quiénes Somos?</a>
+            <a href="contacto.html">Contáctanos</a>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="main-content centered-content">
+        <img src="img/logo.png" alt="Logo GAG" class="logo">
+        <h1>Bienvenido a GAG</h1>
+        <form action="php/login.php" method="POST" class="login-form">
+            <label for="email">Correo Electrónico:</label>
+            <input type="email" id="email" name="email" placeholder="Ingrese su correo" required>
+            
+            <label for="contrasena">Contraseña:</label>
+            <input type="password" id="contrasena" name="contrasena" placeholder="Ingrese su contraseña" required>
+            
+            <a href="recuperar_contraseña.html" class="forgot-password">¿Olvidó su contraseña?</a>
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+        <a href="registro.html" class="register-link">¿No tienes una cuenta? Regístrate</a>
+    </div>
+
+    <!-- Pie de Página -->
+    <footer class="footer">
+        <div class="footer-social">
+            <a href="https://www.facebook.com" target="_blank"><img src="icons/facebook.webp" alt="Facebook"></a>
+            <a href="https://www.instagram.com" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
+            <a href="https://www.twitter.com" target="_blank"><img src="icons/twitter.png" alt="Twitter"></a>
+        </div>
+        <p>&copy; 2024 GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
+    </footer>
+    <script src="js/validation.js"></script>
+
+</body>
+</html>

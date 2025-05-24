@@ -30,14 +30,14 @@ try {
             $_SESSION['id_usuario'] = $result['id_usuario'];
             $_SESSION['rol'] = $result['id_rol'];
 
-            if ($result['id_rol'] == 1) {
+            if ($result['id_rol'] == 2) {
                 echo "<script>
-                        alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . " (Admin)!');
+                        alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . " (usuario)!');
                         window.location.href='http://localhost/proyecto/php/index.php';
                       </script>";
-            } elseif ($result['id_rol'] == 2) {
+            } elseif ($result['id_rol'] == 1) {
                 echo "<script>
-                        alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . "!');
+                        alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . "(admin)!');
                         window.location.href='http://localhost/proyecto/php/index.php';
                       </script>";
             } else {

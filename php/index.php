@@ -96,8 +96,8 @@ $nombre_municipio_usuario = "Ibagué"; // Valor por defecto o para pruebas
             <a href="miscultivos.php">Mis cultivos</a>
             <a href="animales/mis_animales.php">Mis animales</a>
             <a href="calendario_general.php">Calendario</a> <!-- Cambiado a calendario_general.php -->
-            <!-- <a href="configuracion.php">Configuración</a> -->
-            <!-- <a href="ayuda.php">Ayuda</a> -->
+             <a href="configuracion.php">Configuración</a>
+             <a href="ayuda.php">Ayuda</a> 
             <a href="cerrar_sesion.php">Cerrar sesión</a>
         </div>
     </div>
@@ -106,8 +106,8 @@ $nombre_municipio_usuario = "Ibagué"; // Valor por defecto o para pruebas
         <a href="crearcultivos.php" class="card">Nuevos cultivos</a>
         <a href="animales/crear_animales.php" class="card">Nuevos animales</a>
         <a href="calendario_general.php" class="card">Ver calendario</a>
-        <!-- <a href="configuracion.php" class="card">Configuración</a> -->
-        <!-- <a href="ayuda.php" class="card">Ayuda</a> -->
+         <a href="configuracion.php" class="card">Configuración</a>
+        <a href="ayuda.php" class="card">Ayuda</a>
 
         <!-- Tarjeta para mostrar el Clima -->
         <div class="weather-display-card">

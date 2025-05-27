@@ -2,7 +2,8 @@
 session_start();
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php");
+    // Ajusta esta ruta si login.php está en un nivel diferente
+    header("Location: ../login.php"); // Asumiendo que login.php está un nivel arriba (ej. en /proyecto/)
     exit();
 }
 
@@ -27,6 +28,7 @@ if (!isset($pdo)) {
 
         foreach ($cultivos as $cultivo) {
             // 2. Obtener tratamientos para cada cultivo
+            // Asegúrate que la tabla tratamiento_cultivo tenga la columna 'id_cultivo'
             $sql_tratamientos = "SELECT tipo_tratamiento, producto_usado, fecha_aplicacion_estimada
                                  FROM tratamiento_cultivo
                                  WHERE id_cultivo = :id_cultivo AND fecha_aplicacion_estimada IS NOT NULL";
@@ -46,6 +48,7 @@ if (!isset($pdo)) {
             }
 
             // 3. Calcular próximo riego para cada cultivo (simplificado)
+            // Asegúrate que la tabla riego tenga la columna 'id_cultivo'
             $sql_riego = "SELECT frecuencia_riego, fecha_ultimo_riego
                           FROM riego
                           WHERE id_cultivo = :id_cultivo
@@ -97,7 +100,6 @@ if (!isset($pdo)) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -107,180 +109,233 @@ if (!isset($pdo)) {
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Calendario General de Actividades</title>
-    <link rel="stylesheet" href="../css/estilos.css"> <!-- Ajustada ruta -->
+    <!-- Enlace a tu hoja de estilos principal (si los estilos del calendario también están allí) -->
+    <link rel="stylesheet" href="../css/estilos.css"> <!-- Ajusta esta ruta según tu estructura -->
     <style>
+        /* Estilos generales del cuerpo (ya los tienes, pero para contexto) */
+        /* body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        } */ /* Comentado si ya está en estilos.css */
+
         /* Estilos específicos del calendario */
-        .calendario {
+        .calendario-container {
             max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
+            margin: 30px auto;
+            padding: 25px;
+            background-color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
+
         .calendario-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
         }
+
         .calendario-header button {
-            background: none;
-            border: 1px solid #ccc;
-            padding: 8px 15px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .calendario-header button:hover {
             background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 8px 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, box-shadow 0.2s ease;
         }
+
+        .calendario-header button:hover {
+            background-color: #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
         .calendario-header h3 {
             margin: 0;
-            font-size: 1.6em;
-            color: #333;
+            font-size: 1.7em;
+            color: #4caf50; /* Verde principal para el título del mes */
+            font-weight: bold;
         }
+
         .calendario-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
-            background-color: #e0e0e0;
-            border: 1px solid #e0e0e0;
+            background-color: #dddddd;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            overflow: hidden;
         }
+
         .dia-semana, .dia-calendario {
-            background-color: #fff;
-            padding: 8px 5px;
+            background-color: #ffffff;
+            padding: 10px 5px;
             text-align: center;
-            min-height: 90px;
+            min-height: 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            font-size: 0.85em;
+            font-size: 0.9em;
             position: relative;
+            border: none;
         }
+
         .dia-semana {
             font-weight: bold;
-            background-color: #f8f9fa;
+            background-color: #f5f5f5;
+            color: #555;
             min-height: auto;
-            padding: 10px 5px;
-            color: #495057;
+            padding: 12px 5px;
+            font-size: 0.85em;
+            text-transform: uppercase;
         }
+
         .dia-numero {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-size: 1.1em;
-            color: #6c757d;
+            color: #444;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .dia-calendario.otro-mes .dia-numero {
-            color: #ced4da;
+            color: #b0b0b0;
+            opacity: 0.7;
         }
+
         .dia-calendario.hoy .dia-numero {
-            background-color: #88c057;
+            background-color: #4caf50;
             color: white;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            line-height: 28px;
-            display: inline-block;
-            padding: 0;
-            font-size: 1em;
         }
+
         .evento-calendario {
-            font-size: 0.78em;
-            padding: 3px 5px;
+            font-size: 0.8em;
+            padding: 4px 6px;
             border-radius: 4px;
-            margin-top: 3px;
-            width: 95%;
+            margin-top: 4px;
+            width: 90%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            border-left: 3px solid;
+            border: 1px solid transparent;
             text-align: left;
             cursor: default;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
+
         .evento-tratamiento {
-            border-left-color: #3498db;
-            background-color: #eaf5fc;
-            color: #2980b9;
+            border-color: #6da944;
+            background-color: #e8f5e9;
+            color: #387002;
         }
+
         .evento-riego {
-            border-left-color: #1abc9c;
-            background-color: #e8f8f5;
-            color: #16a085;
+            border-color: #81c784;
+            background-color: #e6fff0;
+            color: #2e7d32;
         }
+
         .leyenda {
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
         }
+
         .leyenda h4 {
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #333;
+            font-size: 1.1em;
+            font-weight: bold;
         }
+
         .leyenda-item {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
-            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-size: 0.95em;
             color: #555;
         }
+
         .leyenda-color {
-            width: 15px;
-            height: 15px;
-            margin-right: 10px;
-            border-radius: 3px;
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.1);
         }
+        /* Ajustes para que el contenedor principal de la página tome estos estilos */
+        .content.calendario-page-content { /* Usar una clase más específica si es necesario */
+            display: block; /* Para que no intente ser flex como el .content del index */
+            padding: 0; /* Quitar padding si .calendario-container ya lo tiene */
+            margin: 0; /* Quitar margen si .calendario-container ya lo tiene */
+        }
+
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="header"> <!-- Asumiendo que usas la misma clase .header de tus estilos generales -->
         <div class="logo">
-            <img src="../img/logo.png" alt="logo" />
+            <img src="../img/logo.png" alt="logo" /> <!-- Ajusta ruta -->
         </div>
-        <div class="menu">
-            <a href="index.php">Inicio</a>
-            <a href="miscultivos.php">Mis Cultivos</a>
-            <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario.php" class="active">Calendario y Horarios</a>
-            <a href="configuracion.php" class="card">Configuración</a>
-              <a href="ayuda.php">Ayuda</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar sesión</a>
-        </div>
-    </div>
-
-    <div class="content calendario">
-        <h2>Calendario General de Actividades</h2>
-
-        <?php if (!empty($mensaje_error)): ?>
-            <p class="error-message"><?php echo htmlspecialchars($mensaje_error); ?></p>
-        <?php endif; ?>
-
-        <div id="calendario-container">
-            <div class="calendario-header">
-                <button id="mes-anterior">&lt; Anterior</button>
-                <h3 id="mes-anio-actual"></h3>
-                <button id="mes-siguiente">Siguiente &gt;</button>
-            </div>
-            <div class="calendario-grid">
-                <div class="dia-semana">Dom</div>
-                <div class="dia-semana">Lun</div>
-                <div class="dia-semana">Mar</div>
-                <div class="dia-semana">Mié</div>
-                <div class="dia-semana">Jue</div>
-                <div class="dia-semana">Vie</div>
-                <div class="dia-semana">Sáb</div>
-            </div>
-            <div class="calendario-grid" id="dias-calendario-grid">
-                <!-- Días generados por JS -->
-            </div>
-        </div>
-        <div class="leyenda">
-            <h4>Leyenda:</h4>
-            <div class="leyenda-item"><span class="leyenda-color" style="background-color: #eaf5fc; border-left: 3px solid #3498db;"></span> Tratamiento Programado</div>
-            <div class="leyenda-item"><span class="leyenda-color" style="background-color: #e8f8f5; border-left: 3px solid #1abc9c;"></span> Riego Estimado</div>
+        <div class="menu"> <!-- Asumiendo que usas la misma clase .menu -->
+            <a href="index.php">Inicio</a> <!-- Ajusta ruta -->
+            <a href="miscultivos.php">Mis Cultivos</a> <!-- Ajusta ruta -->
+            <a href="animales/mis_animales.php">Mis Animales</a> <!-- Ajusta ruta -->
+            <a href="calendario_general.php" class="active">Calendario y Horarios</a> <!-- Asumiendo que este archivo es calendario_general.php -->
+            <a href="configuracion.php">Configuración</a> 
+            <a href="ayuda.php">Ayuda</a> 
+            <a href="cerrar_sesion.php" class="exit">Cerrar sesión</a> <!-- Ajusta ruta -->
         </div>
     </div>
+
+    <!-- Contenedor principal específico para la página del calendario -->
+    <div class="content calendario-page-content"> 
+        <div class="calendario-container">
+            <h2 style="text-align: center; color: #4caf50; margin-bottom: 20px;">Calendario General de Actividades</h2>
+
+            <?php if (!empty($mensaje_error)): ?>
+                <p class="error-message" style="background-color: #ffdddd; border: 1px solid #ffcccc; color: #d8000c; padding: 10px; border-radius: 5px; text-align:center;"><?php echo htmlspecialchars($mensaje_error); ?></p>
+            <?php endif; ?>
+
+            <div id="calendario-container"> <!-- Este ID es para el JS, el div externo es para el estilo del contenedor principal -->
+                <div class="calendario-header">
+                    <button id="mes-anterior">< Anterior</button>
+                    <h3 id="mes-anio-actual"></h3>
+                    <button id="mes-siguiente">Siguiente ></button>
+                </div>
+                <div class="calendario-grid"> <!-- Para los nombres de los días de la semana -->
+                    <div class="dia-semana">Dom</div>
+                    <div class="dia-semana">Lun</div>
+                    <div class="dia-semana">Mar</div>
+                    <div class="dia-semana">Mié</div>
+                    <div class="dia-semana">Jue</div>
+                    <div class="dia-semana">Vie</div>
+                    <div class="dia-semana">Sáb</div>
+                </div>
+                <div class="calendario-grid" id="dias-calendario-grid">
+                    <!-- Días generados por JS -->
+                </div>
+            </div>
+            <div class="leyenda">
+                <h4>Leyenda:</h4>
+                <div class="leyenda-item"><span class="leyenda-color evento-tratamiento"></span> Tratamiento Programado</div>
+                <div class="leyenda-item"><span class="leyenda-color evento-riego"></span> Riego Estimado</div>
+            </div>
+        </div><!-- Fin de .calendario-container -->
+    </div> <!-- Fin de .content.calendario-page-content -->
 
     <script>
         const eventosDesdePHP = <?php echo json_encode($eventos_calendario); ?>;
@@ -309,7 +364,7 @@ if (!isset($pdo)) {
 
                 const primerDiaDelMes = new Date(anio, mes, 1).getDay();
                 const diasEnMes = new Date(anio, mes + 1, 0).getDate();
-                const offsetPrimerDia = primerDiaDelMes;
+                const offsetPrimerDia = primerDiaDelMes; // 0 para Domingo
 
                 for (let i = 0; i < offsetPrimerDia; i++) {
                     calendarioGrid.appendChild(document.createElement('div')).classList.add('dia-calendario', 'otro-mes');
@@ -338,7 +393,7 @@ if (!isset($pdo)) {
                             divEvento.classList.add(evento.className);
                         }
                         divEvento.textContent = evento.title;
-                        divEvento.title = evento.description || evento.title;
+                        divEvento.title = evento.description || evento.title; // Tooltip
                         celdaDia.appendChild(divEvento);
                     });
                     calendarioGrid.appendChild(celdaDia);
@@ -355,7 +410,7 @@ if (!isset($pdo)) {
                 renderizarCalendario();
             });
             
-            renderizarCalendario();
+            renderizarCalendario(); // Renderizar al cargar la página
         });
     </script>
 </body>

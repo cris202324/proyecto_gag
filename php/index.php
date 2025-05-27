@@ -89,13 +89,13 @@ $nombre_municipio_usuario = "Ibagué"; // Valor por defecto o para pruebas
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="Logo" /> <!-- Asumiendo que img está en /img/ -->
+            <img src="../img/logo.png" alt="Logo" /> 
         </div>
         <div class="menu">
-            <a href="index.php" class="active">Inicio</a> <!-- Asumiendo que este archivo es index.php -->
+            <a href="index.php" class="active">Inicio</a> 
             <a href="miscultivos.php">Mis cultivos</a>
             <a href="animales/mis_animales.php">Mis animales</a>
-            <a href="calendario_general.php">Calendario</a> <!-- Cambiado a calendario_general.php -->
+            <a href="calendario.php">Calendario y horario</a> 
              <a href="configuracion.php">Configuración</a>
              <a href="ayuda.php">Ayuda</a> 
             <a href="cerrar_sesion.php">Cerrar sesión</a>
@@ -106,7 +106,7 @@ $nombre_municipio_usuario = "Ibagué"; // Valor por defecto o para pruebas
         <a href="crearcultivos.php" class="card">Nuevos cultivos</a>
         <a href="animales/crear_animales.php" class="card">Nuevos animales</a>
         <a href="calendario.php" class="card">Ver calendario</a>
-         <a href="configuracion.php" class="card">Configuración</a>
+        <a href="configuracion.php" class="card">Configuración</a>
         <a href="ayuda.php" class="card">Ayuda</a>
 
         <!-- Tarjeta para mostrar el Clima -->
@@ -199,4 +199,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-</html>ss
+</html>

@@ -95,7 +95,7 @@ $nombre_municipio_usuario = "Ibagué"; // Valor por defecto o para pruebas
             <a href="index.php" class="active">Inicio</a> 
             <a href="miscultivos.php">Mis cultivos</a>
             <a href="animales/mis_animales.php">Mis animales</a>
-            <a href="calendario.php">Calendario y horario</a> 
+            <a href="calendario.php">Calendario y horarios</a> 
              <a href="configuracion.php">Configuración</a>
              <a href="ayuda.php">Ayuda</a> 
             <a href="cerrar_sesion.php">Cerrar sesión</a>

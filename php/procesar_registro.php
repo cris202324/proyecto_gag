@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['nombre']) || !isset($_POST['email']) || !isset($_POST['contrasena'])) {
         echo "<script>
                 alert('Por favor, complete todos los campos.');
-                window.location.href='http://localhost/proyecto/registro.html';
+                window.location.href='http://localhost/proyecto_gag/registro.html';
               </script>";
         exit();
     }
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "<script>
                 alert('Por favor, ingrese un email válido.');
-                window.location.href='http://localhost/proyecto/registro.html';
+                window.location.href='http://localhost/proyecto_gag/registro.html';
               </script>";
         exit();
     }
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($check->rowCount() > 0) {
             echo "<script>
                     alert('El email ya está registrado.');
-                    window.location.href='http://localhost/proyecto/registro.html';
+                    window.location.href='http://localhost/proyecto_gag/registro.html';
                   </script>";
         } else {
             do {
@@ -56,25 +56,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->execute()) {
                 echo "<script>
                         alert('Registro exitoso. Ahora puedes iniciar sesión.');
-                        window.location.href='http://localhost/proyecto/login.html';
+                        window.location.href='http://localhost/proyecto_gag/login.html';
                       </script>";
             } else {
                 echo "<script>
                         alert('Error al registrar el usuario. Verifica los datos o contacta al soporte. Detalle: ' + " . json_encode($stmt->errorInfo()) . ");
-                        window.location.href='http://localhost/proyecto/registro.html';
+                        window.location.href='http://localhost/proyecto_gag/registro.html';
                       </script>";
             }
         }
     } catch (PDOException $e) {
         echo "<script>
                 alert('Error de base de datos: " . addslashes($e->getMessage()) . "');
-                window.location.href='http://localhost/proyecto/registro.html';
+                window.location.href='http://localhost/proyecto_gag/registro.html';
               </script>";
     }
 } else {
     echo "<script>
             alert('Método no permitido.');
-            window.location.href='http://localhost/proyecto/registro.html';
+            window.location.href='http://localhost/proyecto_gag/registro.html';
           </script>";
 }
 ?>

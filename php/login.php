@@ -9,7 +9,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 if (!isset($_POST['email']) || !isset($_POST['contrasena'])) {
     echo "<script>
             alert('Por favor, complete todos los campos.');
-            window.location.href='http://localhost/proyecto/login.html';
+            window.location.href='http://localhost/proyecto_gag/login.html';
           </script>";
     exit();
 }
@@ -33,35 +33,35 @@ try {
             if ($result['id_rol'] == 2) {
                 echo "<script>
                         alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . " (usuario)!');
-                        window.location.href='http://localhost/proyecto/php/index.php';
+                        window.location.href='http://localhost/proyecto_gag/php/index.php';
                       </script>";
             } elseif ($result['id_rol'] == 1) {
                 echo "<script>
                         alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . "(admin)!');
-                        window.location.href='http://localhost/proyecto/php/index.php';
+                        window.location.href='http://localhost/proyecto_gag/php/index.php';
                       </script>";
             } else {
                 echo "<script>
                         alert('Rol no reconocido. Contacta al administrador.');
-                        window.location.href='http://localhost/proyecto/login.html';
+                        window.location.href='http://localhost/proyecto_gag/login.html';
                       </script>";
             }
         } else {
             echo "<script>
                     alert('Contraseña incorrecta. Inténtelo de nuevo.');
-                    window.location.href='http://localhost/proyecto/login.html';
+                    window.location.href='http://localhost/proyecto_gag/login.html';
                   </script>";
         }
     } else {
         echo "<script>
                 alert('No se encontró un usuario con ese correo.');
-                window.location.href='http://localhost/proyecto/login.html';
+                window.location.href='http://localhost/proyecto_gag/login.html';
               </script>";
     }
 } catch (PDOException $e) {
     echo "<script>
             alert('Error de base de datos: " . addslashes($e->getMessage()) . "');
-            window.location.href='http://localhost/proyecto/login.html';
+            window.location.href='http://localhost/proyecto_gag/login.html';
           </script>";
 }
 ?>

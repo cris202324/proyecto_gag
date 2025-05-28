@@ -22,6 +22,6 @@ header("Pragma: no-cache");
 header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Redirigir al login
-header("Location: http://localhost/proyecto/login.html");
+header("Location: http://localhost/proyecto_gag/login.html");
 exit();
 ?>

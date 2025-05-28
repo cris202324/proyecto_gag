@@ -8,7 +8,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado y tiene rol de usuario (id_rol = 2)
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 2) {
-    header("Location: http://localhost/proyecto/login.html");
+    header("Location: http://localhost/proyecto_gag/login.html");
     exit();
 }
 

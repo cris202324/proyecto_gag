@@ -23,9 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($token)) {
 
             if ($user['token_usado'] == 1) {
                 $mensaje = "Este enlace ya fue utilizado. Solicita uno nuevo.";
-            } elseif ($expiracion > $now) {
-                // Token válido, mostrar formulario de reset
-            } else {
+            } elseif ($expiracion < $now) {
                 $mensaje = "El enlace de recuperación ha expirado. Solicita uno nuevo.";
                 $update = $pdo->prepare("UPDATE `usuarios` SET `token_recuperacion` = NULL, `token_expiracion` = NULL, `token_usado` = 1 WHERE `token_recuperacion` = :token");
                 $update->bindParam(':token', $token, PDO::PARAM_STR);
@@ -56,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($token)) {
                 $update->bindParam(':token', $token, PDO::PARAM_STR);
 
                 if ($update->execute()) {
-                    $mensaje = "Contraseña actualizada exitosamente. Puedes iniciar sesión ahora.";
+                    $mensaje = "Contraseña actualizada exitosamente. Redirigiendo al login...";
                     header("Refresh: 3; url=../login.html");
                 } else {
                     $mensaje = "Error al actualizar la contraseña.";
@@ -102,12 +100,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($token)) {
         <h1>Cambiar Contraseña</h1>
 
         <?php if (!empty($mensaje)): ?>
-            <div class="mensaje <?php echo (stripos($mensaje, 'exitosamente') !== false || stripos($mensaje, 'error') === false) ? 'exito' : 'error'; ?>">
+            <div class="mensaje <?php echo (stripos($mensaje, 'exitosamente') !== false) ? 'exito' : 'error'; ?>">
                 <?php echo htmlspecialchars($mensaje); ?>
             </div>
-        <?php endif; ?>
-
-        <?php if (empty($mensaje) && !empty($token)): ?>
+            <?php if (stripos($mensaje, 'Solicita uno nuevo') !== false): ?>
+                <p><a href="recovery.php">Solicita un nuevo enlace</a></p>
+            <?php endif; ?>
+        <?php elseif (!empty($token)): ?>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . '?token=' . urlencode($token); ?>" method="POST">
                 <div class="form-group">
                     <label for="new_password">Nueva Contraseña:</label>
@@ -118,8 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($token)) {
                     <input type="submit" value="Actualizar Contraseña">
                 </div>
             </form>
-        <?php else: ?>
-            <p>El enlace es inválido o ha expirado. <a href="recovery.php">Solicita uno nuevo</a>.</p>
         <?php endif; ?>
 
         <a href="../login.html" class="back-link">Volver al login</a>

@@ -87,7 +87,7 @@ $nombre_municipio_usuario = "Ibagué"; // Esto debería venir de la BD eventualm
             <a href="index.php" class="active">Inicio</a>
             <a href="miscultivos.php">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario.php">Calendario y Horario</a>
+            <a href="calendario.php">Calendario y Horarios</a>
             <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php">Ayuda</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>

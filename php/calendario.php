@@ -364,7 +364,7 @@ if (!isset($pdo)) {
 
                 const primerDiaDelMes = new Date(anio, mes, 1).getDay();
                 const diasEnMes = new Date(anio, mes + 1, 0).getDate();
-                const offsetPrimerDia = primerDiaDelMes; // 0 para Domingo
+                const offsetPrimerDia = primerDiaDelMes;
 
                 for (let i = 0; i < offsetPrimerDia; i++) {
                     calendarioGrid.appendChild(document.createElement('div')).classList.add('dia-calendario', 'otro-mes');
@@ -393,7 +393,7 @@ if (!isset($pdo)) {
                             divEvento.classList.add(evento.className);
                         }
                         divEvento.textContent = evento.title;
-                        divEvento.title = evento.description || evento.title; // Tooltip
+                        divEvento.title = evento.description || evento.title;
                         celdaDia.appendChild(divEvento);
                     });
                     calendarioGrid.appendChild(celdaDia);
@@ -410,7 +410,7 @@ if (!isset($pdo)) {
                 renderizarCalendario();
             });
             
-            renderizarCalendario(); // Renderizar al cargar la página
+            renderizarCalendario();
         });
     </script>
 </body>

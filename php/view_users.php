@@ -104,6 +104,7 @@ if (!isset($pdo)) {
             <a href="view_all_animals.php">Ver Animales</a>
             <a href="manage_users.php">Gestionar Usuarios</a>
             <a href="manage_animals.php">Gestionar Animales</a>
+            <a href="manage_tickets.php">Gestionar Tickets</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </div>
     </div>

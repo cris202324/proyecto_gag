@@ -85,7 +85,7 @@ try {
     <meta http-equiv="Expires" content="0">
     <title>Gestionar Tickets de Soporte</title>
     <link rel="stylesheet" href="../css/estilos.css">
-    <style>
+        <style>
         .content {
             padding: 20px;
             display: flex;
@@ -96,58 +96,12 @@ try {
             margin: 0 auto;
         }
         .card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            width: 100%;
             max-width: 400px;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-        .card h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        .card p {
-            font-size: 0.9em;
-            color: #555;
-            margin-bottom: 8px;
-            flex-grow: 1;
-        }
-        .card form {
-            margin-top: 10px;
+            min-height: 0; /* Permite que crezca según el contenido */
         }
         .card textarea {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 5px;
-            box-sizing: border-box;
-            min-height: 80px;
-            resize: vertical;
-        }
-        .card button {
-            width: 100%;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-        .card .btn-responder {
-            background-color: #5cb85c;
-            color: white;
-        }
-        .card .btn-responder:hover {
-            background-color: #4cae4c;
-        }
-        .card .btn-cerrar {
-            background-color: #d9534f;
-            color: white;
-        }
-        .card .btn-cerrar:hover {
-            background-color: #c9302c;
+            overflow-wrap: break-word;
+            word-break: break-all;
         }
         .no-tickets {
             text-align: center;

@@ -74,7 +74,7 @@ if (!isset($pdo)) {
     <meta http-equiv="Expires" content="0">
     <title>Gestionar Usuarios</title>
     <link rel="stylesheet" href="../css/estilos.css">
-    <style>
+        <style>
         .content {
             padding: 20px;
             display: flex;
@@ -84,51 +84,10 @@ if (!isset($pdo)) {
             max-width: 1200px;
             margin: 0 auto;
         }
-        .card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            width: 100%;
-            max-width: 300px;
-            min-height: 150px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-        .card h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        .card p {
-            font-size: 0.9em;
-            color: #555;
-            margin-bottom: 8px;
-            flex-grow: 1;
-        }
-        .card form {
-            margin-top: 10px;
-        }
-        .card input, .card select {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 5px;
-            box-sizing: border-box;
-        }
-        .card button, .card input[type="submit"] {
-            width: 100%;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-        .card button:hover {
-            background-color: #c9302c;
-        }
-        .card input[type="submit"]:hover {
-            background-color: #4cae4c;
+        .card input,
+        .card select {
+            overflow-wrap: break-word;
+            word-break: break-all;
         }
         .no-animales {
             text-align: center;
@@ -153,15 +112,6 @@ if (!isset($pdo)) {
             background-color: #dff0d8;
             border: 1px solid #d6e9c6;
         }
-        .form-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-        }
-        .form-section h4 {
-            margin-top: 0;
-            color: #0056b3;
-        }
     </style>
 </head>
 <body>
@@ -176,6 +126,7 @@ if (!isset($pdo)) {
             <a href="view_all_animals.php">Ver Animales</a>
             <a href="manage_users.php">Gestionar Usuarios</a>
             <a href="manage_animals.php">Gestionar Animales</a>
+            <a href="manage_tickets.php">Gestionar Tickets</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </div>
     </div>
@@ -196,28 +147,28 @@ if (!isset($pdo)) {
             </div>
         <?php elseif (!empty($usuarios)): ?>
             <?php foreach ($usuarios as $usuario): ?>
-                <div class="card">
-                    <h3><?php echo htmlspecialchars($usuario['nombre']); ?></h3>
-                    <p>
-                        <strong>Email:</strong> <?php echo htmlspecialchars($usuario['email']); ?><br>
-                        <strong>Rol:</strong> <?php echo $usuario['id_rol'] == 2 ? 'Usuario' : 'Admin'; ?>
-                    </p>
-                    <form method="POST" style="display: inline;">
-                        <input type="hidden" name="edit_id" value="<?php echo $usuario['id_usuario']; ?>">
-                        <input type="text" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
-                        <input type="email" name="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
-                        <select name="rol">
-                            <option value="2" <?php echo $usuario['id_rol'] == 2 ? 'selected' : ''; ?>>Usuario</option>
-                            <option value="1" <?php echo $usuario['id_rol'] == 1 ? 'selected' : ''; ?>>Admin</option>
-                        </select>
-                        <input type="submit" value="Guardar">
-                    </form>
-                    <form method="POST" style="display: inline; margin-left: 10px;">
-                        <input type="hidden" name="delete_id" value="<?php echo $usuario['id_usuario']; ?>">
-                        <button type="submit" onclick="return confirm('¿Seguro que quieres eliminar a <?php echo addslashes($usuario['nombre']); ?>?');">Eliminar</button>
-                    </form>
-                </div>
-            <?php endforeach; ?>
+            <div class="card">
+                <h3><?php echo htmlspecialchars($usuario['nombre']); ?></h3>
+                <p>
+                    <strong>Email:</strong> <?php echo htmlspecialchars($usuario['email']); ?><br>
+                    <strong>Rol:</strong> <?php echo $usuario['id_rol'] == 2 ? 'Usuario' : 'Admin'; ?>
+                </p>
+                <form method="POST" style="display: inline;">
+                    <input type="hidden" name="edit_id" value="<?php echo $usuario['id_usuario']; ?>">
+                    <input type="text" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
+                    <input type="email" name="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
+                    <select name="rol">
+                        <option value="2" <?php echo $usuario['id_rol'] == 2 ? 'selected' : ''; ?>>Usuario</option>
+                        <option value="1" <?php echo $usuario['id_rol'] == 1 ? 'selected' : ''; ?>>Admin</option>
+                    </select>
+                    <input type="submit" class="btn-action btn-save" value="Guardar">
+                </form>
+                <form method="POST" style="display: inline; margin-left: 10px;">
+                    <input type="hidden" name="delete_id" value="<?php echo $usuario['id_usuario']; ?>">
+                    <button type="submit" class="btn-action btn-delete" onclick="return confirm('¿Seguro que quieres eliminar a <?php echo addslashes($usuario['nombre']); ?>?');">Eliminar</button>
+                </form>
+            </div>
+        <?php endforeach; ?>
         <?php endif; ?>
     </div>
 </body>

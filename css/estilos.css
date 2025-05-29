@@ -4,6 +4,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
+    font-size: 16px; /* Establecer un tamaño de fuente base */
 }
 
 /* Cabecera */
@@ -18,6 +19,7 @@ body {
 
 .logo img {
     height: 100px;
+    transition: height 0.3s ease; /* Para suavizar cambio en responsivo */
 }
 
 .menu {
@@ -32,7 +34,8 @@ body {
     padding: 10px 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, padding 0.3s ease; /* Suavizar cambio de padding */
+    white-space: nowrap; /* Evitar que los textos de los enlaces se partan */
 }
 
 .menu a.active,
@@ -55,12 +58,14 @@ body {
 /* Contenido principal */
 .content {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    margin: 30px auto;
+    justify-content: center; /* Centrar las tarjetas si hay espacio */
+    align-items: flex-start; /* Alinear arriba tarjetas de diferente altura */
+    margin: 30px auto; /* Margen automático para centrar horizontalmente */
+    padding: 0 15px; /* Padding lateral para que el contenido no toque los bordes en móvil */
     gap: 20px;
     flex-wrap: wrap;
-    max-width: 1200px;
+    max-width: 1200px; /* Ancho máximo para el contenedor de contenido */
+    box-sizing: border-box;
 }
 
 /* Estilos generales para tarjetas */
@@ -69,55 +74,82 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 20px;
-    width: 100%;
-    max-width: 300px;
+    width: 100%; /* Ocupar el ancho disponible dentro de su columna de grid/flex */
+    max-width: 320px; /* Ancho máximo para tarjetas individuales */
     min-height: 150px;
     display: flex;
     flex-direction: column;
-    position: relative;
-    overflow: hidden;
-    color: white; /* Texto blanco para fondo verde */
+    /* position: relative; No es necesario a menos que posiciones algo absolutamente dentro */
+    /* overflow: hidden; Podría cortar sombras si no se maneja bien, evaluar */
+    color: white;
+    box-sizing: border-box; /* Incluir padding y border en el width/height */
 }
 
 .card h3 {
     margin-top: 0;
+    margin-bottom: 10px; /* Reducir un poco el margen */
     font-size: 1.2em;
-    overflow-wrap: break-word;
-    word-break: break-all; /* Asegura que las palabras largas se rompan */
+    overflow-wrap: break-word; /* Ya lo tenías, bien */
+    /* word-break: break-all; Puede ser muy agresivo, break-word suele ser suficiente */
 }
 
 .card p, .card small {
     font-size: 0.9em;
     overflow-wrap: break-word;
-    word-break: break-all;
+    /* word-break: break-all; */
     margin-bottom: 8px;
+    line-height: 1.5; /* Mejorar legibilidad */
+}
+.card small {
+    opacity: 0.9; /* Hacer el texto 'small' un poco menos prominente */
 }
 
+
+/* Formularios dentro de tarjetas */
 .card form {
-    margin-top: 10px;
+    margin-top: 15px; /* Más espacio antes del form */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espacio entre elementos del formulario */
 }
 
 .card input,
 .card select,
 .card textarea {
     width: 100%;
-    padding: 5px;
-    margin-bottom: 5px;
+    padding: 8px; /* Aumentar padding */
+    margin-bottom: 5px; /* Ya tienes gap en el form, este podría ser 0 */
     box-sizing: border-box;
-    overflow-wrap: break-word;
-    word-break: break-all;
+    border: 1px solid #ddd; /* Borde para inputs */
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #333; /* Color de texto para inputs */
+    background-color: #fff; /* Fondo blanco para inputs */
+    /* overflow-wrap y word-break no suelen ser necesarios para inputs */
+}
+.card input::placeholder,
+.card textarea::placeholder {
+    color: #999;
+}
+
+.card textarea {
+    min-height: 80px;
+    resize: vertical;
 }
 
 .card button,
 .card input[type="submit"] {
     width: 100%;
-    padding: 5px 10px;
+    padding: 10px 15px; /* Más padding */
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 5px;
-    background-color: #5cb85c;
+    margin-top: 10px; /* Más espacio antes del botón */
+    background-color: #5cb85c; /* Verde de botón GAG (o un tono más oscuro del fondo de la tarjeta) */
     color: white;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
 .card button:hover,
@@ -125,64 +157,138 @@ body {
     background-color: #4cae4c;
 }
 
-.card .btn-delete,
+.card .btn-delete, /* Aplicar a botones con esta clase específica */
 .card .btn-cerrar {
-    background-color: #d9534f;
+    background-color: #d9534f; /* Rojo */
 }
 
 .card .btn-delete:hover,
 .card .btn-cerrar:hover {
     background-color: #c9302c;
 }
-/* Estilos para botones dentro de formularios */
+
+/* Estilos para botones de acción generales (fuera de .card si es necesario) */
 .btn-action {
-    width: 100%;
-    padding: 5px 10px;
+    width: auto; /* Que se ajuste al contenido por defecto */
+    padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px; /* Bordes redondeados consistentes */
     cursor: pointer;
-    margin-top: 5px;
+    margin-top: 10px; /* Margen superior */
     font-weight: bold;
     transition: background-color 0.3s;
+    display: inline-block; /* Para que respete márgenes y padding */
+    text-align: center;
 }
 
 .btn-save {
     background-color: #5cb85c;
     color: white;
 }
-
 .btn-save:hover {
     background-color: #4cae4c;
 }
 
-.btn-delete {
+.btn-delete { /* Este es más genérico, el de .card es específico */
     background-color: #d9534f;
     color: white;
 }
-
 .btn-delete:hover {
     background-color: #c9302c;
 }
 
-/* Estilos adicionales para formularios */
-.card form {
-    margin-top: 10px;
-    width: 100%;
+/* --- INICIO DE MEDIA QUERIES --- */
+
+/* Para tabletas y pantallas medianas (ej. < 992px) */
+@media (max-width: 991.98px) {
+    .logo img {
+        height: 80px; /* Reducir logo */
+    }
+    .menu a {
+        padding: 8px 10px; /* Reducir padding de enlaces del menú */
+        font-size: 0.9em; /* Reducir fuente del menú */
+    }
+    .content {
+        margin: 20px auto;
+        gap: 15px;
+    }
+    .card {
+        max-width: calc(50% - 10px); /* Dos tarjetas por fila, ajustando el gap */
+        /* Si el gap es 20px, (100% - 20px) / 2 */
+        /* O usar flex-basis si es más complejo */
+    }
 }
 
-.card input,
-.card select {
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 5px;
-    box-sizing: border-box;
+/* Para móviles (ej. < 768px) */
+@media (max-width: 767.98px) {
+    body {
+        font-size: 15px; /* Ligeramente más pequeño el tamaño de fuente base */
+    }
+    .header {
+        flex-direction: column; /* Apilar logo y menú */
+        padding: 10px;
+    }
+    .logo {
+        margin-bottom: 10px;
+    }
+    .logo img {
+        height: 70px;
+    }
+    .menu {
+        flex-wrap: wrap; /* Permitir que los enlaces se envuelvan si no caben */
+        justify-content: center; /* Centrar los enlaces */
+        width: 100%;
+    }
+    .menu a {
+        margin: 5px; /* Menos margen horizontal, más vertical */
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+
+    .content {
+        margin: 15px auto;
+        padding: 0 10px; /* Menos padding lateral */
+    }
+    .card {
+        max-width: 100%; /* Una tarjeta por fila */
+        min-height: auto; /* Altura automática */
+        padding: 15px;
+    }
+    .card h3 {
+        font-size: 1.1em;
+    }
+    .card p, .card small {
+        font-size: 0.85em;
+    }
+    .card input,
+    .card select,
+    .card textarea,
+    .card button,
+    .card input[type="submit"] {
+        font-size: 0.9em; /* Ajustar fuente en formularios dentro de tarjetas */
+        padding: 8px;
+    }
+    .btn-action { /* Botones generales en móvil */
+        width: 100%; /* Ancho completo para mejor toque */
+        padding: 12px;
+        font-size: 1em;
+    }
 }
 
-.card textarea {
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 5px;
-    box-sizing: border-box;
-    min-height: 80px;
-    resize: vertical;
+/* Para móviles muy pequeños (ej. < 576px) */
+@media (max-width: 575.98px) {
+    .logo img {
+        height: 60px;
+    }
+    .menu a {
+        font-size: 0.8em;
+        padding: 6px 10px;
+    }
+    .card h3 {
+        font-size: 1em;
+    }
+     .card p, .card small {
+        font-size: 0.8em;
+    }
 }
+/* --- FIN DE MEDIA QUERIES --- */

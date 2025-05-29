@@ -4,7 +4,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
-    font-size: 16px; /* Establecer un tamaño de fuente base */
+    font-size: 16px;
 }
 
 /* Cabecera */
@@ -13,282 +13,171 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
-    background-color: #e0e0e0;
+    background-color: #e0e0e0; /* Fondo actual de tu header */
     border-bottom: 2px solid #ccc;
+    position: relative; /* Necesario para el menú desplegable en móvil */
 }
 
 .logo img {
-    height: 100px;
-    transition: height 0.3s ease; /* Para suavizar cambio en responsivo */
+    height: 70px; /* Ajusta según tu logo actual, parecía un poco más pequeño */
+    transition: height 0.3s ease;
 }
 
+/* Contenedor del menú para escritorio y móvil */
 .menu {
-    display: flex;
+    display: flex; /* Por defecto para escritorio */
     align-items: center;
 }
 
 .menu a {
-    margin: 0 10px;
+    margin: 0 5px; /* Reducir un poco el margen para que quepan más opciones */
     text-decoration: none;
-    color: black;
-    padding: 10px 15px;
+    color: black; /* Color de texto base para los enlaces */
+    padding: 8px 12px; /* Ajustar padding */
     border: 1px solid #ccc;
     border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s, padding 0.3s ease; /* Suavizar cambio de padding */
-    white-space: nowrap; /* Evitar que los textos de los enlaces se partan */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    white-space: nowrap;
+    font-size: 0.9em; /* Ligeramente más pequeño para que quepan más */
 }
 
+/* ESTILOS PARA EL ESTADO ACTIVO Y HOVER DEL MENÚ (Importante) */
 .menu a.active,
 .menu a:hover {
-    background-color: #88c057;
-    color: white;
+    background-color: #88c057; /* Verde GAG */
+    color: white !important;    /* Texto blanco */
+    border-color: #70a845;   /* Borde un poco más oscuro que el fondo verde */
 }
 
-.menu a.exit {
+.menu a.exit { /* Este ya lo tenías bien */
     background-color: #ff4d4d;
-    color: white;
+    color: white !important;
     border: 1px solid #cc0000;
 }
 
 .menu a.exit:hover {
     background-color: #cc0000;
-    color: white;
+    color: white !important;
 }
 
-/* Contenido principal */
+/* Botón del menú hamburguesa */
+.menu-toggle {
+    display: none; /* OCULTO POR DEFECTO EN ESCRITORIO */
+    background: none;
+    border: none;
+    font-size: 1.8rem; /* Tamaño del icono */
+    color: #333;     /* Color del icono */
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Contenido principal y tarjetas (asumo que estos ya están bien según tu imagen) */
 .content {
     display: flex;
-    justify-content: center; /* Centrar las tarjetas si hay espacio */
-    align-items: flex-start; /* Alinear arriba tarjetas de diferente altura */
-    margin: 30px auto; /* Margen automático para centrar horizontalmente */
-    padding: 0 15px; /* Padding lateral para que el contenido no toque los bordes en móvil */
+    justify-content: center;
+    align-items: flex-start;
+    margin: 30px auto;
+    padding: 0 15px;
     gap: 20px;
     flex-wrap: wrap;
-    max-width: 1200px; /* Ancho máximo para el contenedor de contenido */
+    max-width: 1200px;
     box-sizing: border-box;
 }
 
-/* Estilos generales para tarjetas */
 .card {
     background: linear-gradient(to bottom, #88c057, #6da944);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 20px;
-    width: 100%; /* Ocupar el ancho disponible dentro de su columna de grid/flex */
-    max-width: 320px; /* Ancho máximo para tarjetas individuales */
-    min-height: 150px;
+    width: 100%; 
+    max-width: 300px; /* O el que tenías, ej. 220px para las tarjetas de acción */
+    min-height: 120px; /* Reducir si el contenido es solo un título */
     display: flex;
+    justify-content: center; /* Centrar el texto de la tarjeta */
+    align-items: center;    /* Centrar el texto de la tarjeta */
+    text-align: center;     /* Centrar el texto de la tarjeta */
     flex-direction: column;
-    /* position: relative; No es necesario a menos que posiciones algo absolutamente dentro */
-    /* overflow: hidden; Podría cortar sombras si no se maneja bien, evaluar */
     color: white;
-    box-sizing: border-box; /* Incluir padding y border en el width/height */
-}
-
-.card h3 {
-    margin-top: 0;
-    margin-bottom: 10px; /* Reducir un poco el margen */
-    font-size: 1.2em;
-    overflow-wrap: break-word; /* Ya lo tenías, bien */
-    /* word-break: break-all; Puede ser muy agresivo, break-word suele ser suficiente */
-}
-
-.card p, .card small {
-    font-size: 0.9em;
-    overflow-wrap: break-word;
-    /* word-break: break-all; */
-    margin-bottom: 8px;
-    line-height: 1.5; /* Mejorar legibilidad */
-}
-.card small {
-    opacity: 0.9; /* Hacer el texto 'small' un poco menos prominente */
-}
-
-
-/* Formularios dentro de tarjetas */
-.card form {
-    margin-top: 15px; /* Más espacio antes del form */
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px; /* Espacio entre elementos del formulario */
-}
-
-.card input,
-.card select,
-.card textarea {
-    width: 100%;
-    padding: 8px; /* Aumentar padding */
-    margin-bottom: 5px; /* Ya tienes gap en el form, este podría ser 0 */
     box-sizing: border-box;
-    border: 1px solid #ddd; /* Borde para inputs */
-    border-radius: 4px;
-    font-size: 0.9em;
-    color: #333; /* Color de texto para inputs */
-    background-color: #fff; /* Fondo blanco para inputs */
-    /* overflow-wrap y word-break no suelen ser necesarios para inputs */
-}
-.card input::placeholder,
-.card textarea::placeholder {
-    color: #999;
-}
-
-.card textarea {
-    min-height: 80px;
-    resize: vertical;
-}
-
-.card button,
-.card input[type="submit"] {
-    width: 100%;
-    padding: 10px 15px; /* Más padding */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px; /* Más espacio antes del botón */
-    background-color: #5cb85c; /* Verde de botón GAG (o un tono más oscuro del fondo de la tarjeta) */
-    color: white;
+    text-decoration: none; /* Si las tarjetas son enlaces */
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: transform 0.2s ease-out;
+}
+.card:hover {
+    transform: translateY(-3px);
 }
 
-.card button:hover,
-.card input[type="submit"]:hover {
-    background-color: #4cae4c;
-}
 
-.card .btn-delete, /* Aplicar a botones con esta clase específica */
-.card .btn-cerrar {
-    background-color: #d9534f; /* Rojo */
-}
+/* --- MEDIA QUERIES --- */
 
-.card .btn-delete:hover,
-.card .btn-cerrar:hover {
-    background-color: #c9302c;
-}
+/* Estilos para tabletas pequeñas y móviles (donde se activa el menú hamburguesa) */
+@media (max-width: 991px) { /* Ajusta este breakpoint si es necesario. 992px es común para tablets */
 
-/* Estilos para botones de acción generales (fuera de .card si es necesario) */
-.btn-action {
-    width: auto; /* Que se ajuste al contenido por defecto */
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px; /* Bordes redondeados consistentes */
-    cursor: pointer;
-    margin-top: 10px; /* Margen superior */
-    font-weight: bold;
-    transition: background-color 0.3s;
-    display: inline-block; /* Para que respete márgenes y padding */
-    text-align: center;
-}
-
-.btn-save {
-    background-color: #5cb85c;
-    color: white;
-}
-.btn-save:hover {
-    background-color: #4cae4c;
-}
-
-.btn-delete { /* Este es más genérico, el de .card es específico */
-    background-color: #d9534f;
-    color: white;
-}
-.btn-delete:hover {
-    background-color: #c9302c;
-}
-
-/* --- INICIO DE MEDIA QUERIES --- */
-
-/* Para tabletas y pantallas medianas (ej. < 992px) */
-@media (max-width: 991.98px) {
-    .logo img {
-        height: 80px; /* Reducir logo */
+    .menu-toggle {
+        display: block; /* MOSTRAR el botón hamburguesa */
     }
-    .menu a {
-        padding: 8px 10px; /* Reducir padding de enlaces del menú */
-        font-size: 0.9em; /* Reducir fuente del menú */
-    }
-    .content {
-        margin: 20px auto;
-        gap: 15px;
-    }
-    .card {
-        max-width: calc(50% - 10px); /* Dos tarjetas por fila, ajustando el gap */
-        /* Si el gap es 20px, (100% - 20px) / 2 */
-        /* O usar flex-basis si es más complejo */
-    }
-}
 
-/* Para móviles (ej. < 768px) */
-@media (max-width: 767.98px) {
-    body {
-        font-size: 15px; /* Ligeramente más pequeño el tamaño de fuente base */
-    }
-    .header {
-        flex-direction: column; /* Apilar logo y menú */
-        padding: 10px;
-    }
-    .logo {
-        margin-bottom: 10px;
-    }
-    .logo img {
-        height: 70px;
-    }
     .menu {
-        flex-wrap: wrap; /* Permitir que los enlaces se envuelvan si no caben */
-        justify-content: center; /* Centrar los enlaces */
+        display: none; /* OCULTAR el menú normal */
+        flex-direction: column;
+        align-items: stretch; /* Para que los 'a' ocupen el ancho */
+        position: absolute;
+        top: 100%; /* Justo debajo del header (asegúrate que el header tenga altura fija o padding consistente) */
+        left: 0;
         width: 100%;
-    }
-    .menu a {
-        margin: 5px; /* Menos margen horizontal, más vertical */
-        padding: 8px 12px;
-        font-size: 0.85em;
+        background-color: #e9e9e9; /* Fondo para el menú desplegable */
+        padding: 0; /* Sin padding extra en el contenedor */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+        border-top: 1px solid #ccc;
     }
 
-    .content {
-        margin: 15px auto;
-        padding: 0 10px; /* Menos padding lateral */
+    .menu.active { /* Clase que se añade con JavaScript para mostrar el menú */
+        display: flex;
     }
-    .card {
-        max-width: 100%; /* Una tarjeta por fila */
-        min-height: auto; /* Altura automática */
-        padding: 15px;
+
+    .menu a {
+        margin: 0; /* Sin margen lateral */
+        padding: 15px 20px; /* Padding generoso para toque */
+        width: 100%; 
+        text-align: left; /* Alinear texto a la izquierda o centro */
+        border: none;
+        border-bottom: 1px solid #d0d0d0; /* Separador entre enlaces */
+        border-radius: 0; /* Sin bordes redondeados para los items del menú desplegable */
+        color: #333; /* Color de texto para el menú desplegable */
     }
-    .card h3 {
-        font-size: 1.1em;
+    .menu a:last-child {
+        border-bottom: none;
     }
-    .card p, .card small {
-        font-size: 0.85em;
+
+    /* Estilo hover/active para el menú desplegable */
+    .menu a.active,
+    .menu a:hover {
+        background-color: #88c057;
+        color: white !important;
+        border-color: transparent; /* Quitar borde al hacer hover en desplegable si es necesario */
     }
-    .card input,
-    .card select,
-    .card textarea,
-    .card button,
-    .card input[type="submit"] {
-        font-size: 0.9em; /* Ajustar fuente en formularios dentro de tarjetas */
-        padding: 8px;
-    }
-    .btn-action { /* Botones generales en móvil */
-        width: 100%; /* Ancho completo para mejor toque */
-        padding: 12px;
-        font-size: 1em;
+    .menu a.exit, .menu a.exit:hover { /* Mantener estilo del botón de salida */
+        background-color: #ff4d4d;
+        color: white !important;
     }
 }
 
-/* Para móviles muy pequeños (ej. < 576px) */
-@media (max-width: 575.98px) {
+
+/* Ajustes adicionales para móviles más pequeños si es necesario */
+@media (max-width: 767px) {
     .logo img {
         height: 60px;
     }
-    .menu a {
-        font-size: 0.8em;
-        padding: 6px 10px;
+    .card {
+        max-width: 100%; /* Una tarjeta por fila */
+        min-height: 100px;
     }
-    .card h3 {
-        font-size: 1em;
+    .content {
+        margin: 20px auto;
+        padding: 0 10px;
     }
-     .card p, .card small {
-        font-size: 0.8em;
+     .menu-toggle {
+        font-size: 1.6rem;
     }
 }
-/* --- FIN DE MEDIA QUERIES --- */

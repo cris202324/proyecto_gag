@@ -35,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['enviar_pregunta'])) {
 
             if ($stmt_insert->execute()) {
                 $mensaje_formulario = "¡Tu pregunta ha sido enviada! Recibirás una respuesta pronto.";
-                // Limpiar POST para que no se reenvíe al recargar y para limpiar campos
                 $_POST = array(); 
             } else {
                 $mensaje_formulario = "Error al enviar tu pregunta. Inténtalo de nuevo.";
@@ -82,35 +81,101 @@ try {
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Ayuda y Soporte - GAG</title>
-    <link rel="stylesheet" href="../css/estilos.css"> <!-- Ruta al CSS general -->
+    <!-- <link rel="stylesheet" href="../css/estilos.css"> --> <!-- Comentado porque los estilos se incluyen abajo -->
     <style>
-        /* Estilos específicos para ayuda.php (incluyendo responsividad) */
-        /* Estos estilos asumen que tienes un .header y .menu definidos en estilos.css */
-        /* Si no, descomenta y adapta los estilos de header/menu aquí */
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            font-size: 16px; 
+        }
+
+        /* Cabecera */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border-bottom: 2px solid #ccc;
+            position: relative; 
+        }
+
+        .logo img {
+            height: 70px; 
+            transition: height 0.3s ease;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: black; 
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s, padding 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
+
+        .menu a.active,
+        .menu a:hover {
+            background-color: #88c057; 
+            color: white !important;    
+            border-color: #70a845;   
+        }
+
+        .menu a.exit { 
+            background-color: #ff4d4d;
+            color: white !important;
+            border: 1px solid #cc0000;
+        }
+        .menu a.exit:hover {
+            background-color: #cc0000;
+            color: white !important;
+        }
+
+        /* Botón del menú hamburguesa */
+        .menu-toggle {
+            display: none; 
+            background: none;
+            border: none;
+            font-size: 1.8rem; 
+            color: #333;     
+            cursor: pointer;
+            padding: 5px;
+        }
         
         /* Contenedor principal de la página */
-        .page-container { /* Usado también en miscultivos.php */
-            max-width: 850px; /* Un poco más de ancho para el contenido de ayuda */
+        .page-container { 
+            max-width: 850px; 
             margin: 20px auto;
             padding: 20px;
         }
-        .page-container > h2 { /* Estilo para el H2 principal de la página */
+        .page-container > h2.page-title { 
             text-align: center;
             color: #4caf50;
             margin-bottom: 30px;
             font-size: 2em;
         }
 
-        .ayuda-container { /* Contenedor específico para las secciones de ayuda */
+        .ayuda-container { 
             padding: 25px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .ayuda-section {
-            margin-bottom: 40px; /* Más separación entre secciones */
+            margin-bottom: 40px; 
             padding-bottom: 25px;
-            border-bottom: 1px solid #f0f0f0; /* Borde más suave */
+            border-bottom: 1px solid #f0f0f0; 
         }
         .ayuda-section:last-child {
             margin-bottom: 0;
@@ -119,19 +184,19 @@ try {
         .ayuda-section h3 {
             margin-top: 0;
             margin-bottom: 20px;
-            color: #333; /* Color de título de sección más neutro */
-            font-size: 1.4em; /* Tamaño ajustado */
-            border-bottom: 2px solid #4caf50; /* Línea de acento verde */
+            color: #333; 
+            font-size: 1.4em; 
+            border-bottom: 2px solid #4caf50; 
             padding-bottom: 8px;
-            display: inline-block; /* Para que el borde solo ocupe el texto */
+            display: inline-block; 
         }
-        .form-group { margin-bottom: 18px; } /* Más espacio */
+        .form-group { margin-bottom: 18px; } 
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
         .form-group input[type="text"],
         .form-group textarea {
             width: 100%;
-            padding: 12px; /* Más padding */
-            border: 1px solid #ddd; /* Borde más suave */
+            padding: 12px; 
+            border: 1px solid #ddd; 
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 1em;
@@ -145,7 +210,6 @@ try {
         }
         .form-group textarea { min-height: 140px; resize: vertical; }
         
-        /* Botón Submit (heredado de .btn-submit o definir aquí) */
         .btn-submit { 
             padding: 12px 25px; 
             background-color: #4CAF50; 
@@ -159,16 +223,15 @@ try {
         }
         .btn-submit:hover { background-color: #45a049; }
         
-        /* Mensajes de feedback (heredados o definir aquí) */
         .mensaje { padding: 12px; margin-bottom: 20px; border-radius: 5px; font-size: 0.9em; text-align: center; }
         .mensaje.exito { background-color: #e8f5e9; color: #387002; border: 1px solid #c8e6c9; }
         .mensaje.error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 
         .ticket-lista { list-style: none; padding: 0; }
         .ticket-item {
-            background-color: #fdfdfd; /* Ligeramente diferente de #fff */
+            background-color: #fdfdfd; 
             border: 1px solid #e9e9e9;
-            border-left: 4px solid #4caf50; /* Barra de acento verde */
+            border-left: 4px solid #4caf50; 
             border-radius: 6px;
             padding: 18px;
             margin-bottom: 18px;
@@ -193,7 +256,7 @@ try {
             font-size: 0.8em; 
             padding: 5px 10px; 
             border-radius: 15px;
-            color: white !important; /* Asegurar color de texto */
+            color: white !important; 
             font-weight: bold;
             white-space: nowrap; 
             flex-shrink: 0; 
@@ -220,50 +283,59 @@ try {
             font-size: 0.9em;
         }
         .ticket-respuesta { 
-            border-left: 4px solid #28a745; /* Verde más oscuro para la respuesta */
+            border-left: 4px solid #28a745; 
             background-color: #e8f5e9; 
             margin-top:18px; 
         }
         .no-tickets { text-align: center; color: #777; padding: 30px 0; font-size: 1.1em; }
 
         /* --- INICIO DE ESTILOS RESPONSIVOS --- */
-        @media (max-width: 768px) {
-            .page-container {
-                margin: 15px;
-                padding: 15px;
+        @media (max-width: 991px) { /* Breakpoint para tablets y móviles grandes */
+            .menu-toggle {
+                display: block; /* Mostrar el botón hamburguesa */
             }
-            .page-container > h2 {
-                font-size: 1.6em;
-                margin-bottom: 20px;
-            }
-            .ayuda-container {
-                padding: 20px;
-            }
-            .ayuda-section h3 {
-                font-size: 1.25em;
-            }
-            .btn-submit {
+            .menu {
+                display: none; /* Ocultar el menú normal */
+                flex-direction: column;
+                align-items: stretch;
+                position: absolute;
+                top: 100%; 
+                left: 0;
                 width: 100%;
-                padding: 12px;
+                background-color: #e9e9e9; 
+                padding: 0;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                z-index: 1000;
+                border-top: 1px solid #ccc;
             }
+            .menu.active { display: flex; } /* Mostrar menú cuando tiene clase .active */
+            .menu a {
+                margin: 0; padding: 15px 20px; width: 100%; text-align: left;
+                border: none; border-bottom: 1px solid #d0d0d0; border-radius: 0;
+                color: #333;
+            }
+            .menu a:last-child { border-bottom: none; }
+            .menu a.active, .menu a:hover { background-color: #88c057; color: white !important; border-color: transparent; }
+            .menu a.exit, .menu a.exit:hover { background-color: #ff4d4d; color: white !important; }
+            
+            /* Ajustes para el contenido de ayuda en tabletas */
+            .page-container { margin: 15px; padding: 15px; }
+            .page-container > h2.page-title { font-size: 1.6em; margin-bottom: 20px; }
+            .ayuda-container { padding: 20px; }
+            .ayuda-section h3 { font-size: 1.25em; }
+            .btn-submit { width: 100%; padding: 12px; }
             .ticket-asunto { font-size: 1.05em; }
             .ticket-estado { font-size: 0.75em; padding: 4px 8px; }
         }
 
-        @media (max-width: 480px) {
-            .page-container {
-                margin: 10px;
-                padding: 10px;
-            }
-             .page-container > h2 {
-                font-size: 1.4em;
-            }
-            .ayuda-container {
-                padding: 15px;
-            }
-            .ayuda-section h3 {
-                font-size: 1.15em;
-            }
+        @media (max-width: 480px) { /* Móviles pequeños */
+             .logo img { height: 60px; }
+            .menu-toggle { font-size: 1.6rem; }
+            
+            .page-container { margin: 10px; padding: 10px; }
+            .page-container > h2.page-title { font-size: 1.4em; }
+            .ayuda-container { padding: 15px; }
+            .ayuda-section h3 { font-size: 1.15em; }
             .ticket-item { padding: 12px; }
             .ticket-asunto { font-size: 1em; }
             .ticket-estado { font-size: 0.7em; padding: 3px 7px; }
@@ -276,24 +348,27 @@ try {
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="Logo GAG" /> <!-- Asumiendo img/ está un nivel arriba de php/ -->
+            <img src="../img/logo.png" alt="Logo GAG" /> <!-- Ajusta esta ruta -->
         </div>
-        <div class="menu">
+        <!-- Botón Hamburguesa -->
+        <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">
+            ☰ <!-- Icono de hamburguesa -->
+        </button>
+        <nav class="menu" id="mainMenu"> <!-- Contenedor del menú con ID -->
             <a href="index.php">Inicio</a>
             <a href="miscultivos.php">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario_general.php">Calendario</a>
+            <a href="calendario.php">Calendario</a>
             <a href="configuracion.php">Configuración</a>
-            <a href="ayuda.php" class="active">Ayuda</a>
-            <a href="cerrar_sesion.php">Cerrar Sesión</a>
-        </div>
+            <a href="ayuda.php" class="active">Ayuda</a> <!-- Asumiendo que esta es ayuda.php -->
+            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+        </nav>
     </div>
 
-    <div class="page-container"> <!-- Contenedor general de la página -->
-        <h2>Ayuda y Soporte</h2>
-        <div class="ayuda-container"> <!-- Contenedor para las secciones de ayuda -->
+    <div class="page-container">
+        <h2 class="page-title">Ayuda y Soporte</h2>
+        <div class="ayuda-container">
 
-            <!-- Sección para Enviar Nueva Pregunta -->
             <section class="ayuda-section">
                 <h3>Enviar una Nueva Pregunta</h3>
                 <?php if (!empty($mensaje_formulario)): ?>
@@ -312,7 +387,6 @@ try {
                 </form>
             </section>
 
-            <!-- Sección para Ver Preguntas Anteriores -->
             <section class="ayuda-section">
                 <h3>Mis Preguntas Anteriores</h3>
                 <?php if (!empty($mensaje_general_error)): ?>
@@ -351,5 +425,21 @@ try {
             </section>
         </div> <!-- Fin ayuda-container -->
     </div> <!-- Fin page-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- LÓGICA PARA EL MENÚ HAMBURGUESA ---
+            const menuToggleBtn = document.getElementById('menuToggleBtn');
+            const mainMenu = document.getElementById('mainMenu');
+
+            if (menuToggleBtn && mainMenu) {
+                menuToggleBtn.addEventListener('click', () => {
+                    mainMenu.classList.toggle('active');
+                    const isExpanded = mainMenu.classList.contains('active');
+                    menuToggleBtn.setAttribute('aria-expanded', isExpanded);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

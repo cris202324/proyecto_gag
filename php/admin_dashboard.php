@@ -109,7 +109,7 @@ $nombre_municipio_usuario = "Ibagué"; // Esto debería venir de la BD eventualm
 
         .stat-card:hover {
             transform: scale(1.05);
-            background-color: #4a90e2;
+            background-color: #6da944;
         }
 
         .stat-card span {

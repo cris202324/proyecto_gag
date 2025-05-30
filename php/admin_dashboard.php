@@ -138,33 +138,32 @@ $nombre_municipio_usuario = "Ibagué"; // Esto debería venir de la BD eventualm
     </div>
 
     <div class="content">
-        <a href="view_users.php" class="card">Ver Usuarios</a>
-        <a href="view_all_crops.php" class="card">Ver Cultivos</a>
-        <a href="view_all_animals.php" class="card">Ver Animales</a>
-        <a href="manage_users.php" class="card">Gestionar Usuarios</a>
-        <a href="manage_animals.php" class="card">Gestionar Animales</a>
-        <div class="stat-card">
-            Usuarios Totales
-            <span><?php echo htmlspecialchars($total_usuarios); ?></span>
-        </div>
-        <div class="stat-card">
-            Cultivos Totales
-            <span><?php echo htmlspecialchars($total_cultivos); ?></span>
-        </div>
-        <div class="stat-card">
-            Animales Totales
-            <span><?php echo htmlspecialchars($total_animales); ?></span>
-        </div>
-        <!-- Tarjeta para mostrar el Clima (igual que en index.php) -->
-        <div class="weather-display-card">
-            <h4>Clima en <span id="clima-ciudad">Cargando...</span></h4>
-            <div id="clima-icono"></div>
-            <p id="clima-descripcion"></p>
-            <p><strong>Temp:</strong> <span id="clima-temp">--</span> °C</p>
-            <p><strong>Humedad:</strong> <span id="clima-humedad">--</span> %</p>
-            <p id="clima-lluvia-pop"></p>
-        </div>
+    <a href="view_users.php" class="card">Ver Usuarios</a>
+    <a href="view_all_crops.php" class="card">Ver Cultivos</a>
+    <a href="view_all_animals.php" class="card">Ver Animales</a>
+    <a href="manage_users.php" class="card">Gestionar Usuarios</a>
+    <a href="manage_animals.php" class="card">Gestionar Animales</a>
+    <div class="card" style="background: linear-gradient(to bottom, #4a90e2, #357abd);">
+        <div class="card-text">Usuarios Totales</div>
+        <div class="card-number"><?php echo htmlspecialchars($total_usuarios); ?></div>
     </div>
+    <div class="card" style="background: linear-gradient(to bottom, #4a90e2, #357abd);">
+        <div class="card-text">Cultivos Totales</div>
+        <div class="card-number"><?php echo htmlspecialchars($total_cultivos); ?></div>
+    </div>
+    <div class="card" style="background: linear-gradient(to bottom, #4a90e2, #357abd);">
+        <div class="card-text">Animales Totales</div>
+        <div class="card-number"><?php echo htmlspecialchars($total_animales); ?></div>
+    </div>
+    <div class="weather-display-card">
+        <h4>Clima en <span id="clima-ciudad">Cargando...</span></h4>
+        <div id="clima-icono"></div>
+        <p id="clima-descripcion"></p>
+        <p><strong>Temp:</strong> <span id="clima-temp">--</span> °C</p>
+        <p><strong>Humedad:</strong> <span id="clima-humedad">--</span> %</p>
+        <p id="clima-lluvia-pop"></p>
+    </div>
+</div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {

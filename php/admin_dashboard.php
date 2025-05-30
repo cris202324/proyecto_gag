@@ -95,7 +95,7 @@ $nombre_municipio_usuario = "Ibagué"; // Esto debería venir de la BD eventualm
         align-items: center;
         width: 150px;
         height: 150px;
-        background: linear-gradient(to bottom, #4a90e2, #357abd);
+        background: linear-gradient(to bottom, #88c057, #6da944);
         border: 2px solid #ccc;
         border-radius: 10px;
         box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);

@@ -1,77 +1,112 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Validación de campos en tiempo real
     const loginForm = document.querySelector('.login-form');
-    const registerForm = document.querySelector('form[action="../php/procesar_registro.php"]');
+    const registerForm = document.querySelector('form[action*="procesar_registro.php"]');
 
     // Función para validar un correo electrónico
     function validateEmail(email) {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
+        return regex.test(String(email).toLowerCase());
     }
 
-    // Función para mostrar el mensaje de error
-    function showValidationMessage(input, isValid, message) {
-        let errorElement = input.nextElementSibling;
+    // Función para mostrar el mensaje de validación (error/éxito)
+    function showValidationMessage(inputElement, isValid, message) {
+        let feedbackElement = inputElement.nextElementSibling;
 
-        // Si no existe un mensaje de error, crearlo
-        if (!errorElement || !errorElement.classList.contains('error-message')) {
-            errorElement = document.createElement('p');
-            errorElement.className = 'error-message';
-            input.insertAdjacentElement('afterend', errorElement);
+        // Crear o actualizar el elemento de feedback
+        if (!feedbackElement || !feedbackElement.classList.contains('validation-feedback')) {
+            if (feedbackElement && (feedbackElement.classList.contains('error-message') || feedbackElement.classList.contains('success-message') || feedbackElement.classList.contains('validation-feedback'))) {
+                feedbackElement.remove();
+            }
+            feedbackElement = document.createElement('p');
+            feedbackElement.className = 'validation-feedback';
+            inputElement.parentNode.insertBefore(feedbackElement, inputElement.nextSibling);
         }
 
+        console.log(`Validating ${inputElement.name}: isValid = ${isValid}, message = ${message}`); // Depuración
+
         if (isValid) {
-            input.classList.remove('input-error');
-            input.classList.add('input-success');
-            errorElement.textContent = '';
+            inputElement.classList.remove('input-error');
+            inputElement.classList.add('input-success');
+            feedbackElement.textContent = ''; // Limpiar mensaje si es válido
+            feedbackElement.classList.remove('error-message');
         } else {
-            input.classList.add('input-error');
-            input.classList.remove('input-success');
-            errorElement.textContent = message;
+            inputElement.classList.add('input-error');
+            inputElement.classList.remove('input-success');
+            feedbackElement.textContent = message;
+            feedbackElement.classList.add('error-message');
+            feedbackElement.classList.remove('success-message');
         }
     }
 
     // Validar el formulario de inicio de sesión
     if (loginForm) {
         const emailInput = loginForm.querySelector('input[name="email"]');
-        const passwordInput = loginForm.querySelector('input[name="contraseña"]');
+        const passwordInput = loginForm.querySelector('input[name="contrasena"]');
 
-        emailInput.addEventListener('input', () => {
-            const isValid = validateEmail(emailInput.value);
-            showValidationMessage(emailInput, isValid, 'Por favor, introduce un correo electrónico válido.');
-        });
+        if (emailInput) {
+            emailInput.addEventListener('input', () => {
+                const isValid = validateEmail(emailInput.value);
+                showValidationMessage(emailInput, isValid, 'Por favor, introduce un correo electrónico válido.');
+            });
+        }
 
-        passwordInput.addEventListener('input', () => {
-            const isValid = passwordInput.value.length >= 6;
-            showValidationMessage(passwordInput, isValid, 'La contraseña debe tener al menos 6 caracteres.');
-        });
+        if (passwordInput) {
+            passwordInput.addEventListener('input', () => {
+                const isValid = passwordInput.value.length >= 8;
+                showValidationMessage(passwordInput, isValid, 'La contraseña debe tener al menos 8 caracteres.');
+            });
+        }
     }
 
     // Validar el formulario de registro
     if (registerForm) {
-        const usernameInput = registerForm.querySelector('input[name="username"]');
+        const usernameInput = registerForm.querySelector('input[name="nombre"]');
         const emailInput = registerForm.querySelector('input[name="email"]');
-        const passwordInput = registerForm.querySelector('input[name="contraseña"]');
+        const passwordInput = registerForm.querySelector('input[name="contrasena"]');
         const confirmPasswordInput = registerForm.querySelector('input[name="confirm_password"]');
 
-        usernameInput.addEventListener('input', () => {
-            const isValid = usernameInput.value.trim() !== '';
-            showValidationMessage(usernameInput, isValid, 'El nombre de usuario no puede estar vacío.');
-        });
+        let isFormValid = false;
 
-        emailInput.addEventListener('input', () => {
-            const isValid = validateEmail(emailInput.value);
-            showValidationMessage(emailInput, isValid, 'Por favor, introduce un correo electrónico válido.');
-        });
+        // Función para validar todo el formulario
+        function validateForm() {
+            const isUsernameValid = usernameInput.value.trim().length > 2;
+            const isEmailValid = validateEmail(emailInput.value);
+            const isPasswordValid = passwordInput.value.length >= 8;
+            const isConfirmPasswordValid = confirmPasswordInput.value === passwordInput.value && confirmPasswordInput.value !== '';
 
-        passwordInput.addEventListener('input', () => {
-            const isValid = passwordInput.value.length >= 6;
-            showValidationMessage(passwordInput, isValid, 'La contraseña debe tener al menos 6 caracteres.');
-        });
+            isFormValid = isUsernameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
 
-        confirmPasswordInput.addEventListener('input', () => {
-            const isValid = confirmPasswordInput.value === passwordInput.value;
-            showValidationMessage(confirmPasswordInput, isValid, 'Las contraseñas no coinciden.');
+            // Mostrar mensajes para cada campo
+            showValidationMessage(usernameInput, isUsernameValid, 'El nombre debe tener más de 2 caracteres.');
+            showValidationMessage(emailInput, isEmailValid, 'Por favor, introduce un correo electrónico válido.');
+            showValidationMessage(passwordInput, isPasswordValid, 'La contraseña debe tener al menos 8 caracteres.');
+            showValidationMessage(confirmPasswordInput, isConfirmPasswordValid, 'Las contraseñas no coinciden.');
+        }
+
+        if (usernameInput) {
+            usernameInput.addEventListener('input', validateForm);
+        }
+
+        if (emailInput) {
+            emailInput.addEventListener('input', validateForm);
+        }
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', validateForm);
+        }
+
+        if (confirmPasswordInput) {
+            confirmPasswordInput.addEventListener('input', validateForm);
+        }
+
+        // Prevenir el envío del formulario si no es válido
+        registerForm.addEventListener('submit', (e) => {
+            validateForm();
+            if (!isFormValid) {
+                e.preventDefault();
+                alert('Por favor, corrige los errores antes de enviar el formulario.');
+            }
         });
     }
 });

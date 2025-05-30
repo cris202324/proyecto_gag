@@ -14,10 +14,10 @@
             <span class="navbar-title">Gestión de Agricultura y Ganadería en el Tolima</span>
         </div>
         <!-- Botón de menú para dispositivos pequeños -->
-        <button class="navbar-toggle" aria-label="Abrir menú">
-            ☰
+        <button class="navbar-toggle" id="navbarToggle" aria-label="Abrir menú" aria-expanded="false">
+            ☰ <!-- Icono de hamburguesa -->
         </button>
-        <div class="navbar-links">
+        <div class="navbar-links" id="navbarLinks"> <!-- Añadido ID para el JS -->
             <a href="index.html">Inicio</a>
             <a href="login.html">Iniciar Sesión</a>
             <a href="misionvision.html">Misión y Visión</a>
@@ -27,10 +27,10 @@
     </nav>
 
     <!-- Carrusel de Imágenes -->
-    <div class="carousel">
-        <img src="img/imagen1.png" alt="Imagen 1" class="visible">
-        <img src="img/imagen2.png" alt="Imagen 2">
-        <img src="img/imagen3.jpg" alt="Imagen 3">
+    <div class="carousel" id="imageCarousel"> <!-- Añadido ID para el JS del carrusel -->
+        <img src="img/imagen1.png" alt="Imagen 1 del carrusel" class="visible">
+        <img src="img/imagen2.png" alt="Imagen 2 del carrusel">
+        <img src="img/imagen3.jpg" alt="Imagen 3 del carrusel">
     </div>
 
     <!-- Contenido Principal -->
@@ -46,7 +46,7 @@
             <a href="https://www.instagram.com" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
             <a href="https://www.twitter.com" target="_blank"><img src="icons/twitter.png" alt="Twitter"></a>
         </div>
-        <p>© 2024 GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
+        <p>© <?php echo date("Y"); ?> GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p> <!-- Cambiado 2024 a PHP date -->
     </footer>
 
     <!-- Banner de Consentimiento de Cookies y Términos -->

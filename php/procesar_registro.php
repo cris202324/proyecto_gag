@@ -14,9 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $nombre = trim($_POST['nombre']);
     $email = trim($_POST['email']);
-    $contrasena = password_hash(trim($_POST['contrasena']), PASSWORD_DEFAULT);
+    $contrasena = trim($_POST['contrasena']);
     $id_rol = 2;
     $id_estado = 1;
+
+    // Validar la longitud de la contraseña
+    if (strlen($contrasena) < 8) {
+        echo "<script>
+                alert('La contraseña debe tener al menos 8 caracteres.');
+                window.location.href='http://localhost/proyecto_gag/registro.html';
+              </script>";
+        exit();
+    }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "<script>
@@ -44,12 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $check_id->execute();
             } while ($check_id->rowCount() > 0);
 
+            $contrasena_hashed = password_hash($contrasena, PASSWORD_DEFAULT);
             $sql = "INSERT INTO `usuarios` (`id_usuario`, `nombre`, `email`, `contrasena`, `id_rol`, `id_estado`) VALUES (:id, :nombre, :email, :contrasena, :rol, :estado)";
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':id', $id_usuario, PDO::PARAM_STR);
             $stmt->bindParam(':nombre', $nombre, PDO::PARAM_STR);
             $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-            $stmt->bindParam(':contrasena', $contrasena, PDO::PARAM_STR);
+            $stmt->bindParam(':contrasena', $contrasena_hashed, PDO::PARAM_STR);
             $stmt->bindParam(':rol', $id_rol, PDO::PARAM_INT);
             $stmt->bindParam(':estado', $id_estado, PDO::PARAM_INT);
 

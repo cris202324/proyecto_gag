@@ -16,24 +16,35 @@ require_once 'conexion.php'; // $pdo
 
 $todos_animales = [];
 $mensaje_error = '';
+$mensaje_exito = ''; // Para mensajes de éxito de acciones como borrar
 $total_animales = 0;
-$animales_por_pagina = 7; // Puedes ajustar este número
+$animales_por_pagina = 7; 
 $pagina_actual = 1;
 $total_paginas = 1;
+
+// Verificar si hay un mensaje de la acción de borrar (o editar)
+if (isset($_SESSION['mensaje_accion_animal'])) {
+    $mensaje_exito = $_SESSION['mensaje_accion_animal'];
+    unset($_SESSION['mensaje_accion_animal']); 
+}
+if (isset($_SESSION['error_accion_animal'])) {
+    $mensaje_error = $_SESSION['error_accion_animal'];
+    unset($_SESSION['error_accion_animal']);
+}
+
 
 if (!isset($pdo)) {
     $mensaje_error = "Error crítico: La conexión a la base de datos no está disponible.";
 } else {
     try {
         // --- LÓGICA DE PAGINACIÓN ---
-        // Contar total de animales
-        $sql_count = "SELECT COUNT(*) FROM animales"; // Contar todos los animales
+        $sql_count = "SELECT COUNT(*) FROM animales";
         $stmt_count = $pdo->prepare($sql_count);
         $stmt_count->execute();
         $total_animales = (int)$stmt_count->fetchColumn();
         
         $total_paginas = ceil($total_animales / $animales_por_pagina);
-        $total_paginas = $total_paginas < 1 ? 1 : $total_paginas; // Asegurar al menos 1 página
+        $total_paginas = $total_paginas < 1 ? 1 : $total_paginas;
 
         if (isset($_GET['pagina']) && is_numeric($_GET['pagina'])) {
             $pagina_actual = (int)$_GET['pagina'];
@@ -45,18 +56,12 @@ if (!isset($pdo)) {
         }
         $offset_actual = ($pagina_actual - 1) * $animales_por_pagina;
 
-        // --- CONSULTA PRINCIPAL PARA OBTENER ANIMALES (CON PAGINACIÓN) ---
+        // --- CONSULTA PRINCIPAL PARA OBTENER ANIMALES ---
         $sql = "SELECT 
-                    a.id_animal,
-                    a.nombre_animal,
-                    a.tipo_animal,
-                    a.raza,
-                    a.fecha_nacimiento,
-                    a.sexo,
-                    a.identificador_unico,
+                    a.id_animal, a.nombre_animal, a.tipo_animal, a.raza,
+                    a.fecha_nacimiento, a.sexo, a.identificador_unico,
                     DATE_FORMAT(a.fecha_registro, '%d/%m/%Y %H:%i') AS fecha_registro_f,
-                    u.nombre AS nombre_usuario,
-                    u.id_usuario AS id_usuario_animal
+                    u.nombre AS nombre_usuario, u.id_usuario AS id_usuario_animal
                 FROM animales a
                 JOIN usuarios u ON a.id_usuario = u.id_usuario
                 ORDER BY a.fecha_registro DESC
@@ -79,12 +84,9 @@ if (!isset($pdo)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Ver Todos los Animales - Admin GAG</title>
     <style>
-        /* Estilos generales */
+        /* Estilos generales (asumiendo que vienen de un CSS global o son similares a otras páginas admin) */
         body{font-family:Arial,sans-serif;margin:0;padding:0;background-color:#f9f9f9;font-size:16px}
         .header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background-color:#e0e0e0;border-bottom:2px solid #ccc;position:relative}
         .logo img{height:70px;transition:height .3s ease}
@@ -95,23 +97,24 @@ if (!isset($pdo)) {
         .menu a.exit:hover{background-color:#c00;color:#fff!important}
         .menu-toggle{display:none;background:0 0;border:none;font-size:1.8rem;color:#333;cursor:pointer;padding:5px}
         
-        .page-container{max-width:1100px;margin:20px auto;padding:20px}
+        .page-container{max-width:1200px; /* Más ancho para tabla con más columnas */ margin:20px auto;padding:20px}
         .page-container > h2.page-title{text-align:center;color:#4caf50;margin-bottom:25px;font-size:1.8em}
         
-        .tabla-datos { /* Clase genérica para tablas de datos */
-            width:100%;border-collapse:collapse;margin-bottom:20px;
-            background-color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);
-            border-radius:8px;overflow:hidden 
-        }
-        .tabla-datos th, .tabla-datos td { 
-            border-bottom:1px solid #ddd;padding:10px 12px; /* Reducido padding para más columnas */
-            text-align:left;font-size:.85em; /* Ligeramente más pequeño para caber más info */
-            word-break: break-word; /* Para que el contenido se ajuste */
-        }
+        .tabla-datos { width:100%;border-collapse:collapse;margin-bottom:20px;background-color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);border-radius:8px;overflow:hidden }
+        .tabla-datos th, .tabla-datos td { border-bottom:1px solid #ddd;padding:10px;text-align:left;font-size:.8em; word-break:break-word; } /* Padding y font-size ajustados */
         .tabla-datos th { background-color:#f2f2f2;color:#333;font-weight:700;border-top:1px solid #ddd }
         .tabla-datos tr:last-child td { border-bottom:none }
         .tabla-datos tr:nth-child(even) { background-color:#f9f9f9 }
         .tabla-datos tr:hover { background-color:#f1f1f1 }
+        .tabla-datos .acciones a, .tabla-datos .acciones button { /* Estilos para botones de acción en la tabla */
+            display:inline-block; padding: 5px 10px; margin-right:5px; margin-bottom:5px; /* Para que se apilen bien en móvil */
+            font-size:0.8em; text-decoration:none; color:white; border-radius:4px; border:none; cursor:pointer;
+        }
+        .tabla-datos .acciones .btn-editar { background-color:#3498db; } /* Azul */
+        .tabla-datos .acciones .btn-editar:hover { background-color:#2980b9; }
+        .tabla-datos .acciones .btn-borrar { background-color:#e74c3c; } /* Rojo */
+        .tabla-datos .acciones .btn-borrar:hover { background-color:#c0392b; }
+
 
         .paginacion{text-align:center;margin-top:30px;padding-bottom:20px}
         .paginacion a,.paginacion span{display:inline-block;padding:8px 14px;margin:0 4px;border:1px solid #ccc;border-radius:4px;text-decoration:none;color:#4caf50;font-size:.9em}
@@ -120,7 +123,13 @@ if (!isset($pdo)) {
         .paginacion span.disabled{color:#aaa;border-color:#ddd;cursor:default}
         
         .no-datos { text-align:center;padding:30px;font-size:1.2em;color:#777 }
-        .error-message { color:#d8000c;text-align:left;padding:15px;background-color:#ffdddd;border:1px solid #ffcccc;border-radius:5px;margin-bottom:20px;white-space:pre-wrap;font-family:monospace;font-size:14px }
+        .error-message, .success-message { 
+            text-align:center;padding:15px;border-radius:5px;margin-bottom:20px;
+            font-family:monospace;font-size:14px 
+        }
+        .error-message { color:#d8000c; background-color:#ffdddd; border:1px solid #ffcccc; }
+        .success-message { color:#270; background-color:#DFF2BF; border:1px solid #4F8A10; }
+
 
         @media (max-width:991.98px){
             .menu-toggle{display:block}
@@ -133,33 +142,34 @@ if (!isset($pdo)) {
         }
         @media (max-width:768px){
             .logo img{height:60px}
-            .tabla-datos{display:block;overflow-x:auto;white-space:nowrap} /* Hacer scrolleable la tabla */
-            .tabla-datos th,.tabla-datos td{font-size:.8em;padding:7px 9px} /* Aún más pequeño en móvil */
+            .tabla-datos{display:block;overflow-x:auto;white-space:nowrap}
+            .tabla-datos th,.tabla-datos td{font-size:.75em;padding:6px 8px} /* Más pequeño */
             .page-container > h2.page-title{font-size:1.6em}
+            .tabla-datos .acciones a, .tabla-datos .acciones button { display: block; margin-bottom: 5px; width: 100%; box-sizing: border-box; text-align:center;}
+
         }
         @media (max-width:480px){
             .logo img{height:50px}
             .menu-toggle{font-size:1.6rem}
             .page-container > h2.page-title{font-size:1.4em}
-            .tabla-datos th,.tabla-datos td{font-size:.75em} /* Muy pequeño, ajustar si es ilegible */
+            .tabla-datos th,.tabla-datos td{font-size:.7em} /* Aún más pequeño */
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="Logo" />
+            <img src="../img/logo.png" alt="logo GAG" />
         </div>
-        <div class="menu">
-            <a href="admin_dashboard.php" class="active">Inicio</a>
+        <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
+        <nav class="menu" id="mainMenu">
+            <a href="admin_dashboard.php">Inicio</a> 
             <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
-            <a href="view_all_animals.php">Ver Animales</a>
-            <a href="manage_users.php">Gestionar Usuarios</a>
-            <a href="manage_animals.php">Gestionar Animales</a>
+            <a href="view_all_animals.php" class="active">Ver Animales</a>
             <a href="manage_tickets.php">Gestionar Tickets</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
-        </div>
+        </nav>
     </div>
 
     <div class="page-container">
@@ -168,25 +178,29 @@ if (!isset($pdo)) {
         <?php if (!empty($mensaje_error)): ?>
             <p class="error-message"><?php echo htmlspecialchars($mensaje_error); ?></p>
         <?php endif; ?>
+        <?php if (!empty($mensaje_exito)): ?>
+            <p class="success-message"><?php echo htmlspecialchars($mensaje_exito); ?></p>
+        <?php endif; ?>
+
 
         <?php if (empty($mensaje_error) && empty($todos_animales)): ?>
             <div class="no-datos">
                 <p>No hay animales registrados en el sistema.</p>
             </div>
         <?php elseif (!empty($todos_animales)): ?>
-            <table class="tabla-datos"> <!-- Clase genérica para tablas -->
+            <table class="tabla-datos">
                 <thead>
                     <tr>
-                        <th>ID Animal</th>
-                        <th>Nombre Animal</th>
+                        <th>ID</th>
+                        <th>Nombre</th>
                         <th>Tipo</th>
                         <th>Raza</th>
                         <th>Usuario</th>
-                        <th>F. Nacimiento</th>
+                        <th>F. Nac.</th>
                         <th>Sexo</th>
                         <th>ID Único</th>
-                        <th>F. Registro</th>
-                        <!-- <th>Acciones</th> -->
+                        <th>F. Reg.</th>
+                        <th>Acciones</th> <!-- Nueva columna -->
                     </tr>
                 </thead>
                 <tbody>
@@ -196,12 +210,18 @@ if (!isset($pdo)) {
                             <td><?php echo htmlspecialchars($animal['nombre_animal'] ?: 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($animal['tipo_animal']); ?></td>
                             <td><?php echo htmlspecialchars($animal['raza'] ?: 'N/A'); ?></td>
-                            <td><?php echo htmlspecialchars($animal['nombre_usuario']); ?> <small>(<?php echo htmlspecialchars($animal['id_usuario_animal']); ?>)</small></td>
+                            <td><?php echo htmlspecialchars($animal['nombre_usuario']); ?> <br><small>(<?php echo htmlspecialchars($animal['id_usuario_animal']); ?>)</small></td>
                             <td><?php echo $animal['fecha_nacimiento'] ? htmlspecialchars(date("d/m/Y", strtotime($animal['fecha_nacimiento']))) : 'N/A'; ?></td>
                             <td><?php echo htmlspecialchars($animal['sexo']); ?></td>
                             <td><?php echo htmlspecialchars($animal['identificador_unico'] ?: 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($animal['fecha_registro_f']); ?></td>
-                            <!-- <td><a href="admin_edit_animal.php?id=<?php echo $animal['id_animal']; ?>">Editar</a></td> -->
+                            <td class="acciones">
+                                <a href="admin_edit_animal.php?id_animal=<?php echo $animal['id_animal']; ?>" class="btn-editar">Editar</a>
+                                <a href="admin_delete_animal.php?id_animal=<?php echo $animal['id_animal']; ?>" class="btn-borrar" 
+                                   onclick="return confirm('¿Estás seguro de que deseas eliminar este animal? Esta acción también eliminará los registros de alimentación y medicamentos asociados.');">
+                                   Borrar
+                                </a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

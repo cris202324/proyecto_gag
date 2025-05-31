@@ -8,129 +8,183 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.html"); // Ajusta esta ruta si es necesario
+    header("Location: ../login.html"); 
     exit();
 }
 
-// Verificar el rol del usuario y redirigir si es admin A OTRO DASHBOARD
-// Si quieres que el admin también vea este index.php pero con opciones diferentes,
-// esta lógica de redirección debería quitarse o modificarse.
-// Por ahora, si es admin, lo manda a admin_dashboard.php
+// Redirigir si es admin
 if (isset($_SESSION['rol']) && $_SESSION['rol'] == 1) {
-    header("Location: admin_dashboard.php"); // Asegúrate que este archivo exista si mantienes esta lógica
+    header("Location: admin_dashboard.php"); 
     exit();
 }
 
-// Obtener el nombre del municipio del usuario para el clima
-// Esto es un placeholder, idealmente vendría de la sesión o BD después del login
-// si asocias un municipio al usuario o a su finca principal.
-include_once 'conexion.php'; // Para $pdo
+include_once 'conexion.php'; 
 $nombre_municipio_usuario = "Ibagué"; // Valor por defecto
 if(isset($pdo) && isset($_SESSION['id_usuario'])) {
-    // Ejemplo: Si guardas id_municipio en la tabla usuarios
-    // $stmt_mun = $pdo->prepare("SELECT m.nombre FROM usuarios u JOIN municipio m ON u.id_municipio_fk = m.id_municipio WHERE u.id_usuario = :id_user LIMIT 1");
-    // $stmt_mun->bindParam(':id_user', $_SESSION['id_usuario']);
-    // $stmt_mun->execute();
-    // $municipio_data = $stmt_mun->fetch(PDO::FETCH_ASSOC);
-    // if ($municipio_data && $municipio_data['nombre']) {
-    //    $nombre_municipio_usuario = $municipio_data['nombre'];
-    // }
+    // Tu lógica para obtener el municipio del usuario aquí si la tienes
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Panel de Usuario - GAG</title>
-    <link rel="stylesheet" href="../css/estilos.css"> <!-- Asegúrate que esta ruta es correcta -->
+    <link rel="stylesheet" href="../css/estilos.css"> <!-- TU ARCHIVO CSS GENERAL -->
     <style>
-        /* Estilos para la tarjeta del clima personalizada */
-        .weather-display-card {
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        /* Estilos generales para el cuerpo de ESTA PÁGINA si necesitas anular o añadir */
+        body {
+            /* font-family: Arial, sans-serif; Ya debería estar en estilos.css */
+            /* margin: 0; padding: 0; Ya debería estar en estilos.css */
+            background-color: #f9f9f9; /* Fondo general que tenías */
+            /* font-size: 16px; Ya debería estar en estilos.css */
             color: #333;
-            margin: 10px; /* Consistente con .card si .content tiene gap */
-            width: 100%;  /* Que ocupe el espacio de una tarjeta */
-            max-width: 320px; /* Mismo max-width que las .card */
-            min-height: 150px; /* Mismo min-height que las .card */
+        }
+
+        /* Contenedor Principal de la Página */
+        .page-container-user { /* Clase específica para esta página */
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 20px;
+        }
+        .page-title-user { /* Clase específica para el título */
+            text-align: center;
+            color: #4caf50; /* Verde principal GAG */
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+        
+        /* Contenedor para las tarjetas de acción */
+        .action-cards-container-user { /* Clase específica */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+        }
+        
+        /* Tarjetas de Acción (Enlaces) - Estilo GAG */
+        .card-link-user { /* Clase específica */
+            background: linear-gradient(135deg, #88c057, #6da944);
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            width: 100%;
+            max-width: 250px;
+            min-height: 130px; 
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
             text-align: center;
-            box-sizing: border-box;
-        }
-        .weather-display-card h4 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #0056b3; /* Azul oscuro para el título */
-            font-size: 1.1em;
-            width: 100%;
-        }
-        .weather-display-card p {
-            margin: 4px 0;
-            font-size: 0.85em;
-        }
-        .weather-display-card #clima-icono img {
-            width: 50px;
-            height: 50px;
-        }
-        .weather-display-card #clima-descripcion {
-            text-transform: capitalize;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-decoration: none;
             font-weight: bold;
-            margin-bottom: 8px;
+            font-size: 1.15em;
+            transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+            cursor: pointer;
         }
-        /* .content ya está definido en estilos.css, no es necesario aquí si es el mismo */
+        .card-link-user:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(109, 169, 68, 0.3);
+        }
+
+        /* Tarjeta del Clima */
+        .weather-display-card-user { /* Clase específica */
+            padding: 20px; background-color: #ffffff; border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); color: #333;
+            margin: 0; 
+            width: 100%; max-width: 250px; min-height: 160px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            box-sizing: border-box;
+            transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+        }
+         .weather-display-card-user:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .weather-display-card-user h4 { margin-top:0;margin-bottom:12px;color:#0056b3;font-size:1.1em;width:100%; }
+        .weather-display-card-user p { margin:5px 0;font-size:0.9em; }
+        .weather-display-card-user #clima-icono img { width:55px;height:55px; margin-bottom:5px; }
+        .weather-display-card-user #clima-descripcion { text-transform:capitalize;font-weight:bold;margin-bottom:10px; font-size:1em; }
+
+        /* Media Queries para el contenido de esta página */
+        @media (max-width: 991.98px) {
+            .card-link-user, .weather-display-card-user {
+                max-width: calc(50% - 12.5px); 
+            }
+            .page-title-user { font-size: 1.8em; }
+        }
+
+        @media (max-width: 767px) {
+            .page-container-user { padding: 15px; margin-top: 15px;}
+            .page-title-user { font-size: 1.6em; margin-bottom: 20px;}
+            .action-cards-container-user { gap: 15px; }
+            .card-link-user, .weather-display-card-user {
+                max-width: 100%; 
+                min-height: 110px;
+                padding: 20px;
+            }
+            .card-link-user { font-size: 1.1em; }
+        }
+         @media (max-width: 480px) {
+            .page-title-user { font-size: 1.5em; }
+            .card-link-user { min-height: 100px; font-size: 1em; }
+        }
     </style>
 </head>
 <body>
+    <!-- SECCIÓN HEADER: Usará las clases .header, .logo, .menu, .menu-toggle de tu estilos.css -->
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="Logo GAG" /> <!-- Ajusta ruta -->
+            <img src="../img/logo.png" alt="Logo GAG" />
         </div>
-        
-        <!-- Botón Hamburguesa -->
-        <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">
-            ☰ <!-- Icono de hamburguesa -->
-        </button>
-
-        <nav class="menu" id="mainMenu"> <!-- Usar <nav> es más semántico y añadir ID -->
+        <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
+        <nav class="menu" id="mainMenu">
             <a href="index.php" class="active">Inicio</a>
             <a href="miscultivos.php">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario.php">Calendario</a> <!-- Cambiado a calendario_general.php -->
+            <a href="calendario_general.php">Calendario</a> <!-- Asegúrate que este sea el nombre correcto -->
             <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php">Ayuda</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 
-    <div class="content">
-        <a href="crearcultivos.php" class="card">Nuevos Cultivos</a>
-        <a href="animales/crear_animales.php" class="card">Nuevos Animales</a>
-        <a href="calendario.php" class="card">Ver Calendario</a>
-        <a href="configuracion.php" class="card">Configuración</a>
-        <a href="ayuda.php" class="card">Ayuda</a>
+    <div class="page-container-user"> <!-- Contenedor específico para esta página -->
+        <h2 class="page-title-user">Bienvenido a tu Panel GAG, <?php echo htmlspecialchars($_SESSION['usuario']); ?>!</h2>
+        
+        <div class="action-cards-container-user"> <!-- Contenedor específico -->
+            <a href="crearcultivos.php" class="card-link-user">Nuevos Cultivos</a>
+            <a href="animales/crear_animales.php" class="card-link-user">Nuevos Animales</a>
+            <a href="calendario_general.php" class="card-link-user">Ver Calendario</a>
+            <a href="configuracion.php" class="card-link-user">Mi Configuración</a>
+            <a href="ayuda.php" class="card-link-user">Ayuda y Soporte</a>
 
-        <!-- Tarjeta para mostrar el Clima -->
-        <div class="weather-display-card"> <!-- Puede usar la clase 'card' si quieres el fondo verde o esta clase separada -->
-            <h4>Clima en <span id="clima-ciudad">Cargando...</span></h4>
-            <div id="clima-icono"></div>
-            <p id="clima-descripcion"></p>
-            <p><strong>Temp:</strong> <span id="clima-temp">--</span> °C</p>
-            <p><strong>Humedad:</strong> <span id="clima-humedad">--</span> %</p>
-            <p id="clima-lluvia-pop"></p>
-        </div>
-    </div>
+            <div class="weather-display-card-user"> <!-- Clase específica -->
+                <h4>Clima en <span id="clima-ciudad">Cargando...</span></h4>
+                <div id="clima-icono"></div>
+                <p id="clima-descripcion"></p>
+                <p><strong>Temp:</strong> <span id="clima-temp">--</span> °C</p>
+                <p><strong>Humedad:</strong> <span id="clima-humedad">--</span> %</p>
+                <p id="clima-lluvia-pop"></p>
+            </div>
+        </div> 
+    </div> 
 
 <script>
+// TU JAVASCRIPT COMPLETO (Menú hamburguesa y clima)
 document.addEventListener('DOMContentLoaded', function() {
+    // --- LÓGICA PARA EL MENÚ HAMBURGUESA ---
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const mainMenu = document.getElementById('mainMenu');
+    if (menuToggleBtn && mainMenu) {
+        menuToggleBtn.addEventListener('click', () => {
+            mainMenu.classList.toggle('active');
+            menuToggleBtn.setAttribute('aria-expanded', mainMenu.classList.contains('active'));
+        });
+    }
+
     // --- LÓGICA PARA EL CLIMA ---
     const climaCiudadEl = document.getElementById('clima-ciudad');
     const climaIconoEl = document.getElementById('clima-icono');
@@ -139,83 +193,58 @@ document.addEventListener('DOMContentLoaded', function() {
     const climaHumedadEl = document.getElementById('clima-humedad');
     const climaLluviaPopEl = document.getElementById('clima-lluvia-pop');
 
-    // Usar la variable PHP para la ciudad. Asegúrate que $nombre_municipio_usuario esté definida y escapada.
-    let ciudadParaClima = "<?php echo htmlspecialchars(addslashes($nombre_municipio_usuario . ',CO')); // Añadir ',CO' para Colombia si aplica ?>";
+    let ciudadParaClima = "<?php echo htmlspecialchars(addslashes($nombre_municipio_usuario . ',CO')); ?>";
 
     function cargarClima() {
-        // Asumiendo que api_clima.php está en el mismo directorio que este index.php (ambos en /php/)
-        const urlApiLocal = `api_clima.php?ciudad=${encodeURIComponent(ciudadParaClima)}`;
+        const urlApiLocal = `api_clima.php?ciudad=${encodeURIComponent(ciudadParaClima)}`; 
 
         fetch(urlApiLocal)
             .then(response => {
                 if (!response.ok) {
                     return response.json().then(errData => {
                         let errorMsg = `Error HTTP: ${response.status}`;
-                        if (errData && errData.error) {
-                            errorMsg = errData.error;
-                        } else if (errData && errData.message) {
-                            errorMsg = `API Clima: ${errData.message}`;
-                        }
+                        if (errData && errData.error) { errorMsg = errData.error; }
+                        else if (errData && errData.message) { errorMsg = `API Clima: ${errData.message}`; }
                         throw new Error(errorMsg);
                     }).catch(() => {
-                        throw new Error(`Error HTTP: ${response.status} al contactar el servicio de clima local.`);
+                        throw new Error(`Error HTTP: ${response.status} al contactar API clima local.`);
                     });
                 }
                 return response.json();
             })
             .then(data => {
-                if (data.cod && data.cod.toString() !== "200") { // Error devuelto por OpenWeatherMap API
-                    climaCiudadEl.textContent = ciudadParaClima.split(',')[0]; // Mostrar la ciudad intentada
-                    climaDescripcionEl.textContent = `Error: ${data.message || 'No se pudo obtener el clima.'}`;
-                    climaIconoEl.innerHTML = '';
-                    climaTempEl.textContent = '--';
-                    climaHumedadEl.textContent = '--';
-                    climaLluviaPopEl.textContent = '';
+                if (data.cod && data.cod.toString() !== "200") {
+                    if(climaCiudadEl) climaCiudadEl.textContent = ciudadParaClima.split(',')[0];
+                    if(climaDescripcionEl) climaDescripcionEl.textContent = `Error: ${data.message || 'No se pudo obtener el clima.'}`;
+                    if(climaIconoEl) climaIconoEl.innerHTML = '';
+                    if(climaTempEl) climaTempEl.textContent = '--';
+                    if(climaHumedadEl) climaHumedadEl.textContent = '--';
+                    if(climaLluviaPopEl) climaLluviaPopEl.textContent = '';
                     return;
                 }
-
-                climaCiudadEl.textContent = data.name;
-                climaIconoEl.innerHTML = `<img src="https://openweathermap.org/img/wn/${data.weather[0].icon}.png" alt="${data.weather[0].description}">`;
-                climaDescripcionEl.textContent = data.weather[0].description;
-                climaTempEl.textContent = data.main.temp.toFixed(1);
-                climaHumedadEl.textContent = data.main.humidity;
+                if(climaCiudadEl) climaCiudadEl.textContent = data.name;
+                if(climaIconoEl) climaIconoEl.innerHTML = `<img src="https://openweathermap.org/img/wn/${data.weather[0].icon}.png" alt="${data.weather[0].description}">`;
+                if(climaDescripcionEl) climaDescripcionEl.textContent = data.weather[0].description;
+                if(climaTempEl) climaTempEl.textContent = data.main.temp.toFixed(1);
+                if(climaHumedadEl) climaHumedadEl.textContent = data.main.humidity;
 
                 let lluviaInfo = "Prob. lluvia no disponible.";
-                if (data.rain && data.rain['1h']) {
-                    lluviaInfo = `Lluvia (1h): ${data.rain['1h']} mm`;
-                } else if (data.pop !== undefined) { 
-                    lluviaInfo = `Prob. lluvia: ${(data.pop * 100).toFixed(0)}%`;
-                }
-                climaLluviaPopEl.textContent = lluviaInfo;
-
+                if (data.rain && data.rain['1h']) { lluviaInfo = `Lluvia (1h): ${data.rain['1h']} mm`; }
+                else if (data.pop !== undefined) { lluviaInfo = `Prob. lluvia: ${(data.pop * 100).toFixed(0)}%`; }
+                if(climaLluviaPopEl) climaLluviaPopEl.textContent = lluviaInfo;
             })
             .catch(error => {
                 console.error('Error al cargar datos del clima:', error);
-                climaCiudadEl.textContent = ciudadParaClima.split(',')[0]; // Mostrar la ciudad intentada
-                climaDescripcionEl.textContent = error.message.includes("API Clima:") || error.message.includes("Error HTTP:") ? error.message : "No se pudo cargar el clima.";
-                climaIconoEl.innerHTML = '';
-                climaTempEl.textContent = '--';
-                climaHumedadEl.textContent = '--';
-                climaLluviaPopEl.textContent = '';
+                if(climaCiudadEl) climaCiudadEl.textContent = ciudadParaClima.split(',')[0];
+                if(climaDescripcionEl) climaDescripcionEl.textContent = error.message.includes("API Clima:") || error.message.includes("Error HTTP:") ? error.message : "No se pudo cargar el clima.";
+                if(climaIconoEl) climaIconoEl.innerHTML = '';
+                if(climaTempEl) climaTempEl.textContent = '--';
+                if(climaHumedadEl) climaHumedadEl.textContent = '--';
+                if(climaLluviaPopEl) climaLluviaPopEl.textContent = '';
             });
     }
-
-    if (climaCiudadEl) { // Solo intentar cargar el clima si los elementos existen
+    if(typeof cargarClima === 'function' && climaCiudadEl){
         cargarClima();
-        // setInterval(cargarClima, 15 * 60 * 1000); // Opcional: recargar cada 15 minutos
-    }
-
-    // --- LÓGICA PARA EL MENÚ HAMBURGUESA ---
-    const menuToggleBtn = document.getElementById('menuToggleBtn'); // Cambiado el ID del botón
-    const mainMenu = document.getElementById('mainMenu'); // ID para el contenedor del menú
-
-    if (menuToggleBtn && mainMenu) {
-        menuToggleBtn.addEventListener('click', () => {
-            mainMenu.classList.toggle('active');
-            // Para accesibilidad, actualiza aria-expanded
-            const isExpanded = mainMenu.classList.contains('active');
-            menuToggleBtn.setAttribute('aria-expanded', isExpanded);
-        });
     }
 });
 </script>

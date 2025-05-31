@@ -1,270 +1,252 @@
-/* === ESTILOS ESPECÍFICOS PARA LA PÁGINA DE AYUDA (ayuda.php) === */
-/* Estos pueden ir al final de tu estilos.css o en una etiqueta <style> en ayuda.php */
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
 
-/* Contenedor general de la página (si no usas .main-content para esto) */
-.page-container {
-    max-width: 850px;
+/* Barra de Navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, #82e600, #4caf50);
+    padding: 10px 20px;
+    color: white;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-navbar {
+    width: 100px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.navbar-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.navbar-links {
+    display: flex;
+}
+
+.navbar-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: #ffff99;
+}
+
+/* Botón del menú hamburguesa */
+.navbar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+}
+
+/* Estilos del formulario */
+.login-form {
+    max-width: 400px;
     margin: 20px auto;
+    background-color: #fff;
     padding: 20px;
-    background-color: #f9f9f9; /* Coincide con tu body general */
-}
-
-.page-container > h2.page-title { /* Título principal de la página de ayuda */
-    text-align: center;
-    color: #4caf50; /* Tu color verde principal */
-    margin-bottom: 30px;
-    font-size: 2em; /* Coincide con tu h1 general */
-}
-
-/* Contenedor para las secciones de la página de ayuda */
-.ayuda-content-wrapper {
-    padding: 25px;
-    background-color: #fff; /* Fondo blanco como en .login-form */
     border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra como en .login-form */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.ayuda-section {
-    margin-bottom: 40px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.ayuda-section:last-child {
-    margin-bottom: 0;
-    border-bottom: none;
-}
-
-.ayuda-section h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #333; /* Color de subtítulo */
-    font-size: 1.4em;
-    border-bottom: 2px solid #4caf50; /* Acento verde */
-    padding-bottom: 8px;
-    display: inline-block;
-}
-
-/* Estilos de formulario (heredan de .login-form, pero se pueden refinar) */
-.ayuda-section .form-group { /* Más especificidad si es necesario */
-    margin-bottom: 18px;
-}
-
-.ayuda-section .form-group label {
+.login-form label {
     display: block;
-    margin-bottom: 8px; /* Coincide con .login-form label */
+    margin-bottom: 8px;
     font-size: 1em;
     color: #333;
-    font-weight: 600; /* Un poco más de énfasis */
 }
 
-.ayuda-section .form-group input[type="text"],
-.ayuda-section .form-group textarea {
+.login-form input {
     width: 100%;
-    padding: 12px; /* Ligeramente más padding */
-    margin-bottom: 0; /* Quitar margen si .form-group ya lo tiene */
+    padding: 10px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
-    border-radius: 5px; /* Coincide con .login-form input */
-    box-sizing: border-box;
-    font-size: 1em;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    border-radius: 5px;
 }
 
-.ayuda-section .form-group input[type="text"]:focus,
-.ayuda-section .form-group textarea:focus {
-    border-color: #4caf50;
-    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.20);
-    outline: none;
-}
-
-.ayuda-section .form-group textarea {
-    min-height: 140px;
-    resize: vertical;
-}
-
-.ayuda-section .btn-submit { /* Estilo para el botón de enviar pregunta */
-    width: auto; /* No ancho completo por defecto, a menos que se desee */
-    padding: 10px 25px; /* Ajustar padding */
+.login-form button {
+    width: 100%;
+    padding: 10px;
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 1em;
-    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.ayuda-section .btn-submit:hover {
+.login-form button:hover {
     background-color: #45a049;
 }
 
-/* Mensajes de feedback (pueden usar tus clases .error-message o .success-message si son globales) */
-/* Si no, aquí están: */
-.ayuda-section .mensaje {
-    padding: 12px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    font-size: 0.9em;
-    text-align: center;
-}
-.ayuda-section .mensaje.exito {
-    background-color: #e8f5e9;
-    color: #387002;
-    border: 1px solid #c8e6c9;
-}
-.ayuda-section .mensaje.error {
-    background-color: #ffebee;
-    color: #c62828;
-    border: 1px solid #ffcdd2;
-}
-
-/* Lista de Tickets */
-.ticket-lista {
-    list-style: none;
-    padding: 0;
-}
-
-.ticket-item {
-    background-color: #fdfdfd;
-    border: 1px solid #e9e9e9;
-    border-left: 4px solid #4caf50; /* Acento verde principal */
-    border-radius: 6px;
-    padding: 18px;
-    margin-bottom: 18px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.ticket-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.ticket-asunto {
-    font-weight: bold;
-    color: #333;
-    font-size: 1.15em;
-    flex-grow: 1;
-    margin-right: 10px;
-}
-
-.ticket-estado {
-    font-size: 0.8em;
-    padding: 5px 10px;
-    border-radius: 15px;
-    color: white !important;
-    font-weight: bold;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-.estado-abierto { background-color: #ffc107 !important; /* Amarillo */ }
-.estado-respondido { background-color: #28a745 !important; /* Verde más brillante para respondido */ }
-.estado-cerrado { background-color: #6c757d !important; /* Gris */ }
-
-.ticket-fecha {
-    font-size: 0.8em;
-    color: #888;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.ticket-mensaje, .ticket-respuesta {
-    margin-top: 12px;
-    padding: 12px; /* Más padding interno */
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    font-size: 0.95em;
-    line-height: 1.6;
-    white-space: pre-wrap; /* Conservar saltos de línea */
-}
-
-.ticket-mensaje p, .ticket-respuesta p {
-    margin: 0; /* Quitar margen de párrafos internos si es texto simple */
-}
-
-.ticket-mensaje strong, .ticket-respuesta strong {
+.forgot-password,
+.register-link {
     display: block;
-    margin-bottom: 6px;
-    color: #555;
+    text-align: center;
+    margin-top: 10px;
+    color: #4CAF50;
+    text-decoration: none;
     font-size: 0.9em;
 }
 
-.ticket-respuesta {
-    border-left: 4px solid #28a745; /* Verde más oscuro para la respuesta */
-    background-color: #e8f5e9; /* Fondo verde muy claro */
-    margin-top: 18px;
+.forgot-password:hover,
+.register-link:hover {
+    text-decoration: underline;
 }
 
-.no-tickets {
+/* Carrusel */
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.carousel img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.carousel img.visible {
+    opacity: 1;
+}
+
+/* Contenido Principal */
+.main-content {
     text-align: center;
-    color: #777;
-    padding: 30px 0;
-    font-size: 1.1em;
+    padding: 20px;
 }
 
-/* === MEDIA QUERIES PARA LA PÁGINA DE AYUDA === */
+h1 {
+    font-size: 2em;
+    color: #4caf50;
+}
 
+p {
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* Pie de Página */
+.footer {
+    background-color: #4caf50;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+.footer-social img {
+    width: 30px;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.footer-social img:hover {
+    transform: scale(1.1);
+}
+
+/* Media Queries para Responsiveness */
 @media (max-width: 768px) {
-    .page-container {
-        margin: 15px;
-        padding: 15px;
+    /* Barra de Navegación */
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
     }
-    .page-container > h2.page-title {
-        font-size: 1.6em; /* Reducir título de página */
-        margin-bottom: 20px;
+
+    .navbar-logo {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
     }
-    .ayuda-content-wrapper {
-        padding: 20px;
+
+    .navbar-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #4caf50;
+        padding: 10px 0;
     }
-    .ayuda-section h3 {
-        font-size: 1.25em; /* Reducir títulos de sección */
+
+    .navbar-links a {
+        margin: 10px 0;
+        text-align: center;
+        padding: 10px 0;
+        color: white;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .ayuda-section .btn-submit {
-        width: 100%; /* Botón de ancho completo en móvil */
-        padding: 12px;
+
+    .navbar-links.active {
+        display: flex;
     }
-    .ticket-asunto {
-        font-size: 1.05em;
-    }
-    .ticket-estado {
-        font-size: 0.75em;
-        padding: 4px 8px;
+
+    .navbar-toggle {
+        display: block;
     }
 }
 
 @media (max-width: 480px) {
-    .page-container {
-        margin: 10px;
-        padding: 10px;
+    /* Carrusel */
+    .carousel {
+        height: 150px;
     }
-    .page-container > h2.page-title {
-        font-size: 1.4em;
+
+    .carousel img {
+        height: 150px;
     }
-    .ayuda-content-wrapper {
-        padding: 15px;
+
+    /* Contenido Principal */
+    h1 {
+        font-size: 1.2em;
     }
-    .ayuda-section h3 {
-        font-size: 1.15em;
-    }
-    .ticket-item {
-        padding: 12px;
-    }
-    .ticket-asunto {
-        font-size: 1em; /* Asunto un poco más pequeño */
-    }
-    .ticket-estado {
-        font-size: 0.7em;
-        padding: 3px 7px;
-    }
-    .ticket-mensaje, .ticket-respuesta {
+
+    p {
         font-size: 0.9em;
     }
-    .ayuda-section .form-group input[type="text"],
-    .ayuda-section .form-group textarea {
-        padding: 10px; /* Padding más pequeño en inputs en móviles */
+
+    /* Formulario */
+    .login-form {
+        max-width: 100%;
+        padding: 15px;
     }
+}
+
+.input-error {
+    border-color: red;
+}
+
+.input-success {
+    border-color: green;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
 }

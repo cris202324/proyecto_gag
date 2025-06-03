@@ -8,7 +8,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.html"); // Ajusta esta ruta
+    header("Location: ../login.html"); 
     exit();
 }
 
@@ -32,21 +32,21 @@ if ($rol_del_usuario_logueado != 1) {
 $total_usuarios_no_admin = 0;
 $total_cultivos = 0;
 $total_animales = 0;
-$total_tickets_abiertos = 0; // Nueva estadística
+$total_tickets_abiertos = 0;
+$stats_error_message = '';
 
 try {
     $total_usuarios_no_admin = $pdo->query("SELECT COUNT(*) FROM usuarios WHERE id_rol = 2")->fetchColumn();
     $total_cultivos = $pdo->query("SELECT COUNT(*) FROM cultivos")->fetchColumn();
     $total_animales = $pdo->query("SELECT COUNT(*) FROM animales")->fetchColumn();
-    // Asumiendo que tienes la tabla tickets_soporte y su columna estado_ticket
     $total_tickets_abiertos = $pdo->query("SELECT COUNT(*) FROM tickets_soporte WHERE estado_ticket = 'Abierto'")->fetchColumn();
 } catch (PDOException $e) {
-    // En caso de error, los totales permanecerán en 0. Podrías loguear el error.
-    // error_log("Error al obtener estadísticas para admin_dashboard: " . $e->getMessage());
+    $stats_error_message = "Error al cargar estadísticas: " . $e->getMessage();
+    // Los totales permanecerán en 0
 }
 
-// Obtener el nombre del municipio del usuario para el clima
-$nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurable o del perfil del admin
+$nombre_municipio_para_clima = "Ibagué"; // Placeholder
+$admin_nombre = $_SESSION['usuario'] ?? 'Administrador'; // Nombre del admin desde la sesión
 ?>
 
 <!DOCTYPE html>
@@ -55,47 +55,17 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - GAG</title>
-    <!-- <link rel="stylesheet" href="../css/estilos.css"> --> <!-- Comentado si todos los estilos están aquí -->
+    <link rel="stylesheet" href="../css/estilos.css"> <!-- Ruta al CSS general -->
     <style>
-        /* Estilos generales */
-        body {
-            font-family: Arial, sans-serif; margin: 0; padding: 0;
-            background-color: #f9f9f9; font-size: 16px;
-        }
+        /* Estilos generales (si no están en estilos.css o para anular) */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f8f1; font-size: 16px; color: #333; }
 
-        /* Cabecera */
-        .header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 20px; background-color: #e0e0e0;
-            border-bottom: 2px solid #ccc; position: relative;
-        }
-        .logo img { height: 70px; }
-        .menu { display: flex; align-items: center; }
-        .menu a {
-            margin: 0 5px; text-decoration: none; color: black;
-            padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px;
-            transition: background-color 0.3s, color 0.3s;
-            white-space: nowrap; font-size: 0.9em;
-        }
-        .menu a.active, .menu a:hover {
-            background-color: #88c057; color: white !important; border-color: #70a845;
-        }
-        .menu a.exit { background-color: #ff4d4d; color: white !important; border: 1px solid #cc0000; }
-        .menu a.exit:hover { background-color: #cc0000; }
-        .menu-toggle { display: none; background: none; border: none; font-size: 1.8rem; color: #333; cursor: pointer; padding: 5px; }
+        /* Estilos para el Header y Menú (asumiendo que estilos.css los tiene) */
+        /* Si no, copia aquí los estilos de .header, .logo, .menu, .menu-toggle de tus otros archivos */
 
-        /* Contenedor Principal de la Página */
-        .page-container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-        }
-        .page-title {
-            text-align: center;
-            color: #4caf50; /* Verde principal GAG */
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
+        /* Contenedor Principal de la Página del Dashboard */
+        .page-container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .page-title { text-align: center; color: #4caf50; margin-bottom: 30px; font-size: 2em; }
 
         /* Secciones del Dashboard */
         .dashboard-section {
@@ -107,83 +77,51 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
         }
         .dashboard-section h3.section-title {
-            color: #333;
-            font-size: 1.5em;
-            margin-top: 0;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #88c057; /* Acento verde */
+            color: #333; font-size: 1.5em; margin-top: 0; margin-bottom: 20px;
+            padding-bottom: 10px; border-bottom: 2px solid #88c057;
         }
-        .cards-container { /* Contenedor para las tarjetas dentro de una sección */
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: flex-start; /* Alinear a la izquierda por defecto */
+        .cards-container {
+            display: flex; flex-wrap: wrap; gap: 20px;
+            justify-content: flex-start;
         }
         
-        /* Tarjetas de Acción (Enlaces) - Heredan de .card de tu estilos.css si existe */
-        .card-link { /* Clase específica para tarjetas que son enlaces */
-            background: linear-gradient(to bottom, #88c057, #6da944); /* Verde GAG */
-            color: white;
-            border-radius: 8px;
-            padding: 20px;
-            width: 100%;
-            max-width: 220px; /* Ancho para las tarjetas de acción */
-            min-height: 100px; /* Menos altura para tarjetas de acción */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+        /* Tarjetas de Acción (Enlaces) - Heredan de .card de estilos.css */
+        /* Si no tienes una clase .card global o quieres un estilo específico: */
+        .card-action-link { 
+            background: linear-gradient(to bottom, #88c057, #6da944);
+            color: white; border-radius: 8px; padding: 20px;
+            width: 100%; max-width: 220px; min-height: 100px; 
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1em;
+            text-decoration: none; font-weight: bold; font-size: 1.1em;
             transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            cursor: pointer;
         }
-        .card-link:hover {
+        .card-action-link:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
-        /* Tarjetas de Estadísticas (Ahora verdes) */
+        /* Tarjetas de Estadísticas */
         .stat-card {
-            background: linear-gradient(to right, #6AB44A, #4A8C30); /* Tonos de verde */
-            color: white;
-            border-radius: 8px;
-            padding: 20px;
-            width: 100%;
-            max-width: 220px;
-            min-height: 130px; /* Altura para estadísticas */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+            background: linear-gradient(to right, #6AB44A, #4A8C30); 
+            color: white; border-radius: 8px; padding: 20px;
+            width: 100%; max-width: 220px; min-height: 130px;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
         }
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        .stat-card .card-text {
-            font-size: 0.95em; /* Un poco más pequeño */
-            font-weight: 500; /* Normal */
-            margin-bottom: 8px;
-            opacity: 0.9;
-        }
-        .stat-card .card-number {
-            font-size: 2.4em; /* Número grande */
-            font-weight: bold;
-            line-height: 1.1;
-        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card .card-text { font-size: 0.95em; font-weight: 500; margin-bottom: 8px; opacity: 0.9; }
+        .stat-card .card-number { font-size: 2.4em; font-weight: bold; line-height: 1.1; }
 
-        /* Tarjeta del Clima (Consistente) */
+        /* Tarjeta del Clima */
         .weather-display-card {
             padding: 15px; background-color: #fff; border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: #333;
-            margin: 0; /* Se alinea con el gap de cards-container */
-            width: 100%; max-width: 220px; min-height: 150px;
+            margin: 0; width: 100%; max-width: 220px; min-height: 150px;
             display: flex; flex-direction: column; align-items: center; text-align: center;
             box-sizing: border-box;
         }
@@ -191,44 +129,32 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
         .weather-display-card p { margin:4px 0;font-size:0.85em; }
         .weather-display-card #clima-icono img { width:50px;height:50px; }
         .weather-display-card #clima-descripcion { text-transform:capitalize;font-weight:bold;margin-bottom:8px; }
+        .error-message { color: #d8000c; background-color: #ffdddd; border:1px solid #ffcccc; padding:10px; border-radius:5px; text-align:center; margin-bottom:15px; }
 
-        /* Media Queries para responsividad */
         @media (max-width: 991.98px) {
             .menu-toggle { display: block; }
-            .menu {
-                display: none; flex-direction: column; align-items: stretch;
-                position: absolute; top: 100%; left: 0; width: 100%;
-                background-color: #e9e9e9; padding: 0;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1000;
-                border-top: 1px solid #ccc;
-            }
+            .menu { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 100%; left: 0; width: 100%; background-color: #e9e9e9; padding: 0; box-shadow: 0 4px 8px rgba(0,0,0,.1); z-index: 1000; border-top: 1px solid #ccc; }
             .menu.active { display: flex; }
             .menu a { margin:0; padding:15px 20px; width:100%; text-align:left; border:none; border-bottom:1px solid #d0d0d0; border-radius:0; color:#333; }
             .menu a:last-child { border-bottom: none; }
             .menu a.active, .menu a:hover { background-color: #88c057; color: white !important; }
             .menu a.exit, .menu a.exit:hover { background-color: #ff4d4d; color: white !important; }
 
-            .card-link, .stat-card, .weather-display-card {
-                max-width: calc(50% - 10px); /* Dos tarjetas por fila, ajustando gap */
-            }
+            .card-action-link, .stat-card, .weather-display-card { max-width: calc(50% - 10px); }
         }
-
         @media (max-width: 767px) {
             .logo img { height: 60px; }
-            .page-container > h2.page-title { font-size: 1.6em; }
+            .page-title { font-size: 1.6em; }
             .dashboard-section h3.section-title { font-size: 1.3em; }
-            .card-link, .stat-card, .weather-display-card {
-                max-width: 100%; /* Una tarjeta por fila en móviles */
-                min-height: 100px; /* Reducir altura mínima */
-            }
-             .stat-card .card-number { font-size: 2em; }
+            .card-action-link, .stat-card, .weather-display-card { max-width: 100%; min-height: 100px; }
+            .stat-card .card-number { font-size: 2em; }
         }
          @media (max-width: 480px) {
             .logo img { height: 50px; }
             .menu-toggle { font-size: 1.6rem; }
-            .page-container > h2.page-title { font-size: 1.4em; }
+            .page-title { font-size: 1.4em; }
             .dashboard-section h3.section-title { font-size: 1.2em; }
-            .card-link { font-size: 1em; }
+            .card-action-link { font-size: 1em; }
             .stat-card .card-text { font-size: 0.9em; }
             .stat-card .card-number { font-size: 1.8em; }
         }
@@ -245,7 +171,6 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
             <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
             <a href="view_all_animals.php">Ver Animales</a> 
-            <a href="manage_users.php">Gestionar Roles</a> 
             <a href="manage_tickets.php">Gestionar Tickets</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
@@ -254,6 +179,10 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
     <div class="page-container">
         <h2 class="page-title">Panel de Administración GAG</h2>
         
+        <?php if (!empty($stats_error_message)): ?>
+            <p class="error-message"><?php echo htmlspecialchars($stats_error_message); ?></p>
+        <?php endif; ?>
+
         <section class="dashboard-section">
             <h3 class="section-title">Estadísticas y Clima</h3>
             <div class="cards-container">
@@ -287,30 +216,35 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
         <section class="dashboard-section">
             <h3 class="section-title">Gestión de Usuarios y Soporte</h3>
             <div class="cards-container">
-                <a href="view_users.php" class="card-link">Ver Usuarios</a>
-                <a href="manage_users.php" class="card-link">Gestionar Roles/Estados</a>
-                <a href="manage_tickets.php" class="card-link">Gestionar Tickets Soporte</a>
-                <!-- <a href="admin_crear_usuario.php" class="card-link">Crear Nuevo Usuario</a> -->
+                <a href="view_users.php" class="card-action-link">Ver Usuarios</a>
+                <a href="manage_tickets.php" class="card-action-link">Gestionar Tickets</a>
             </div>
         </section>
 
         <section class="dashboard-section">
             <h3 class="section-title">Gestión Agrícola</h3>
             <div class="cards-container">
-                <a href="view_all_crops.php" class="card-link">Ver Todos los Cultivos</a>
-                <!-- <a href="admin_crear_cultivo.php" class="card-link">Registrar Cultivo (Global)</a> -->
+                <a href="view_all_crops.php" class="card-action-link">Ver Todos los Cultivos</a>
             </div>
         </section>
 
         <section class="dashboard-section">
             <h3 class="section-title">Gestión Ganadera</h3>
             <div class="cards-container">
-                <a href="view_all_animals.php" class="card-link">Ver Todos los Animales</a>
-                <!-- <a href="admin_crear_animal.php" class="card-link">Registrar Animal (Global)</a> -->
+                <a href="view_all_animals.php" class="card-action-link">Ver Todos los Animales</a>
             </div>
         </section>
 
-    </div> <!-- Fin .page-container -->
+        <section class="dashboard-section">
+            <h3 class="section-title">Reportes</h3>
+            <div class="cards-container">
+                 <a href="generar_reporte_excel.php" class="card-action-link" target="_blank">
+                    Generar Reporte General (Excel)
+                </a>
+            </div>
+        </section>
+
+    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -335,7 +269,6 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
         let ciudadParaClima = "<?php echo htmlspecialchars(addslashes($nombre_municipio_para_clima . ',CO')); ?>";
 
         function cargarClima() {
-            // Asumiendo que api_clima.php está en el mismo directorio que este admin_dashboard.php
             const urlApiLocal = `api_clima.php?ciudad=${encodeURIComponent(ciudadParaClima)}`; 
 
             fetch(urlApiLocal)
@@ -383,7 +316,7 @@ $nombre_municipio_para_clima = "Ibagué"; // Placeholder, idealmente configurabl
                     if(climaLluviaPopEl) climaLluviaPopEl.textContent = '';
                 });
         }
-        if(climaCiudadEl) { // Solo cargar clima si el elemento existe
+        if(typeof cargarClima === 'function' && document.getElementById('clima-ciudad')){ // Cargar clima solo si el placeholder existe
             cargarClima();
         }
     });

@@ -13,27 +13,37 @@
             <img src="img/logo.png" alt="Logo GAG" class="logo-navbar">
             <span class="navbar-title">Gestión de Agricultura y Ganadería en el Tolima</span>
         </div>
+        <button class="navbar-toggle" aria-label="Abrir menú">
+            ☰
+        </button>
         <div class="navbar-links">
-        <a href="index.html">Inicio</a>
-        <a href="login.html">Iniciar Sesión</a>
-        <a href="misionvision.html">Misión y Visión</a>
-        <a href="quienessomos.html">¿Quiénes Somos?</a>
-        <a href="contacto.html">Contáctanos</a>
-    </div>
+            <a href="index.html">Inicio</a>
+            <a href="login.html">Iniciar Sesión</a>
+            <a href="misionvision.html">Misión y Visión</a>
+            <a href="quienessomos.html">¿Quiénes Somos?</a>
+            <a href="contacto.html">Contáctanos</a>
+        </div>
     </nav>
 
+    <!-- Botón de Volver -->
+    <button class="back-button" onclick="history.back()">⬅️Volver</button>
+
     <!-- Contenido principal -->
-    <div class="main-content centered-content">
+    <div class="main-content">
         <img src="img/logo.png" alt="Logo GAG" class="logo">
-        <div class="description">
-            <h2 class="section-title">¿Quiénes somos?</h2>
-            <p>
-                En GAG (Gestión de Agricultura y Ganadería), nos dedicamos a ofrecer soluciones innovadoras para la gestión eficiente de actividades agrícolas y ganaderas. Desde nuestro inicio, hemos estado comprometidos con el apoyo a agricultores y ganaderos para optimizar sus procesos y mejorar sus resultados.
-            </p>
+        <div class="section-container">
+            <h2 class="section-title">¿Quiénes Somos?</h2>
+            <div class="description">
+                <p>
+                    En GAG (Gestión de Agricultura y Ganadería), nos dedicamos a ofrecer soluciones innovadoras para la gestión eficiente de actividades agrícolas y ganaderas. Desde nuestro inicio, hemos estado comprometidos con el apoyo a agricultores y ganaderos para optimizar sus procesos y mejorar sus resultados.
+                </p>
+                <p>
+                    Nuestro equipo está compuesto por expertos en tecnología y agricultura, trabajando juntos para desarrollar herramientas que impulsen la sostenibilidad y la productividad en el sector.
+                </p>
+            </div>
         </div>
     </div>
 
-    
     <!-- Pie de Página -->
     <footer class="footer">
         <div class="footer-social">
@@ -41,7 +51,9 @@
             <a href="https://www.instagram.com" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
             <a href="https://www.twitter.com" target="_blank"><img src="icons/twitter.png" alt="Twitter"></a>
         </div>
-        <p>&copy; 2024 GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
+        <p>© 2024 GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
     </footer>
+
+    <script src="js/scripts.js"></script>
 </body>
 </html>

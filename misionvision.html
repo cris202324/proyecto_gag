@@ -13,31 +13,38 @@
             <img src="img/logo.png" alt="Logo GAG" class="logo-navbar">
             <span class="navbar-title">Gestión de Agricultura y Ganadería en el Tolima</span>
         </div>
+        <button class="navbar-toggle" aria-label="Abrir menú">
+            ☰
+        </button>
         <div class="navbar-links">
-        <a href="index.html">Inicio</a>
-        <a href="login.html">Iniciar Sesión</a>
-        <a href="misionvision.html">Misión y Visión</a>
-        <a href="quienessomos.html">¿Quiénes Somos?</a>
-        <a href="contacto.html">Contáctanos</a>
-    </div>
+            <a href="index.html">Inicio</a>
+            <a href="login.html">Iniciar Sesión</a>
+            <a href="misionvision.html">Misión y Visión</a>
+            <a href="quienessomos.html">¿Quiénes Somos?</a>
+            <a href="contacto.html">Contáctanos</a>
+        </div>
     </nav>
 
+    <!-- Botón de Volver -->
+    <button class="back-button" onclick="history.back()">⬅️Volver</button>
+
     <!-- Contenido principal -->
-    <div class="main-content centered-content">
+    <div class="mision-vision">
         <img src="img/logo.png" alt="Logo GAG" class="logo">
-        <div class="description">
-            <h2 class="section-title">Misión</h2>
+        <div class="section-container">
+            <h2>Misión</h2>
             <p>
                 Nuestra misión es proporcionar herramientas y tecnologías avanzadas que faciliten la toma de decisiones informadas, promoviendo prácticas sostenibles y rentables en la agricultura y la ganadería.
             </p>
-            <h2 class="section-title">Visión</h2>
+        </div>
+        <div class="section-container">
+            <h2>Visión</h2>
             <p>
                 Nos esforzamos por ser líderes en el desarrollo de plataformas intuitivas y accesibles que transformen la manera en que se gestionan y operan las explotaciones agrícolas y ganaderas a nivel global.
             </p>
         </div>
     </div>
 
-    
     <!-- Pie de Página -->
     <footer class="footer">
         <div class="footer-social">
@@ -45,7 +52,9 @@
             <a href="https://www.instagram.com" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
             <a href="https://www.twitter.com" target="_blank"><img src="icons/twitter.png" alt="Twitter"></a>
         </div>
-        <p>&copy; 2024 GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
+        <p>© 2024 GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
     </footer>
+
+    <script src="js/scripts.js"></script>
 </body>
 </html>

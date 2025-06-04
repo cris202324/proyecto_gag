@@ -13,9 +13,8 @@
             <img src="img/logo.png" alt="Logo GAG" class="logo-navbar">
             <span class="navbar-title">Gestión de Agricultura y Ganadería en el Tolima</span>
         </div>
-        <!-- Botón de menú para dispositivos pequeños -->
-        <button class="navbar-toggle" id="navbarToggle" aria-label="Abrir menú" aria-expanded="false">
-            ☰ <!-- Icono de hamburguesa -->
+        <button class="navbar-toggle" aria-label="Abrir menú">
+            ☰
         </button>
         <div class="navbar-links" id="navbarLinks"> <!-- Añadido ID para el JS -->
             <a href="index.html">Inicio</a>
@@ -26,17 +25,52 @@
         </div>
     </nav>
 
-    <!-- Carrusel de Imágenes -->
-    <div class="carousel" id="imageCarousel"> <!-- Añadido ID para el JS del carrusel -->
-        <img src="img/imagen1.png" alt="Imagen 1 del carrusel" class="visible">
-        <img src="img/imagen2.png" alt="Imagen 2 del carrusel">
-        <img src="img/imagen3.jpg" alt="Imagen 3 del carrusel">
+    <!-- Carrusel -->
+    <div class="carousel" id="carousel">
+        <div class="carousel-controls">
+            <button onclick="prevSlide()">❮</button>
+            <button onclick="nextSlide()">❯</button>
+        </div>
+        <img src="img/imagen1.png" alt="Agricultura 1" class="visible">
+        <img src="img/imagen2.png" alt="Agricultura 2">
+        <img src="img/imagen3.jpg" alt="Agricultura 3">
     </div>
 
     <!-- Contenido Principal -->
     <div class="main-content">
+        <img src="img/logo.png" alt="Logo GAG" class="logo">
         <h1>Bienvenidos a GAG</h1>
-        <p>Gestiona de manera eficiente tus actividades agrícolas y ganaderas en el Tolima. Nuestro sistema está diseñado para cubrir las necesidades del sector agropecuario.</p>
+        <p>Tu solución integral para la gestión eficiente de agricultura y ganadería en el Tolima.</p>
+        <a href="login.html" class="action-button">Comienza Ahora</a>
+    </div>
+
+    <!-- Nueva sección sobre agricultura y ganadería -->
+    <div class="section-container">
+        <h2 class="section-title">Agricultura y Ganadería en el Tolima</h2>
+        <div class="description">
+            <p>
+                El Tolima es una región clave para la agricultura y la ganadería en Colombia, conocida por su diversidad de cultivos como el café, el arroz y el cacao, así como por su producción ganadera. En GAG, trabajamos para apoyar a los productores locales con herramientas tecnológicas que optimicen sus procesos, reduzcan costos y promuevan prácticas sostenibles.
+            </p>
+            <p>
+                Nuestro objetivo es empoderar a los agricultores y ganaderos del Tolima para que enfrenten los retos del cambio climático y las demandas del mercado global, asegurando un futuro próspero para el sector agropecuario.
+            </p>
+        </div>
+    </div>
+
+    <!-- Sección de estadísticas -->
+    <div class="stats-section" id="stats-section">
+        <div class="stat-item">
+            <span class="stat-number" data-target="500">0</span>
+            <span class="stat-label">Agricultores Apoyados</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number" data-target="1000">0</span>
+            <span class="stat-label">Hectáreas Gestionadas</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number" data-target="50">0</span>
+            <span class="stat-label">Proyectos Sostenibles</span>
+        </div>
     </div>
 
     <!-- Pie de Página -->
@@ -49,18 +83,63 @@
         <p>© <?php echo date("Y"); ?> GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p> <!-- Cambiado 2024 a PHP date -->
     </footer>
 
-    <!-- Banner de Consentimiento de Cookies y Términos -->
-    <div id="cookie-consent-banner" class="cookie-consent-banner">
-        <p>
-            Este sitio utiliza cookies para mejorar tu experiencia. Al continuar navegando, aceptas nuestro uso de cookies y nuestros
-            <a href="terminos.html" target="_blank">Términos y Condiciones</a>.
-        </p>
-        <div class="cookie-consent-buttons">
-            <button id="accept-cookies">Aceptar</button>
-            <button id="reject-cookies">Rechazar</button>
-        </div>
-    </div>
-
+    <!-- Scripts -->
     <script src="js/scripts.js"></script>
+    <script>
+        // Animación del contador con IntersectionObserver
+        const statsSection = document.querySelector('#stats-section');
+        const counters = document.querySelectorAll('.stat-number');
+
+        const animateCounters = () => {
+            counters.forEach(counter => {
+                counter.innerText = '0'; // Reiniciar el contador
+                const target = +counter.getAttribute('data-target');
+                const increment = target / 200; // Velocidad de la animación
+                const updateCounter = () => {
+                    const count = +counter.innerText;
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + increment);
+                        setTimeout(updateCounter, 10);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                updateCounter();
+            });
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                }
+            });
+        }, { threshold: 0.5 });
+
+        observer.observe(statsSection);
+
+        // Controles del carrusel
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel img');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('visible'));
+            slides[index].classList.add('visible');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        // Auto-carrusel
+        setInterval(nextSlide, 5000);
+    </script>
 </body>
 </html>

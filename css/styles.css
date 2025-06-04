@@ -4,6 +4,22 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fondo con degradado suave para todas las páginas */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e6f0e6 0%, #f9f9f9 100%);
+    z-index: -1;
 }
 
 /* Barra de Navegación */
@@ -11,9 +27,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(to right, #82e600, #4caf50);
-    padding: 10px 20px;
+    background: #4caf50; /* Color verde suave sólido, antes era un degradado */
+    padding: 5px 20px;
     color: white;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-sizing: border-box;
 }
 
 .navbar-logo {
@@ -22,13 +43,13 @@ body {
 }
 
 .logo-navbar {
-    width: 100px;
+    width: 80px;
     height: auto;
     margin-right: 10px;
 }
 
 .navbar-title {
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight: bold;
 }
 
@@ -40,12 +61,17 @@ body {
     color: white;
     text-decoration: none;
     margin-left: 15px;
-    font-size: 1em;
-    transition: color 0.3s ease;
+    font-size: 0.9em;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
 }
 
 .navbar-links a:hover {
     color: #ffff99;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
 }
 
 /* Botón del menú hamburguesa */
@@ -61,18 +87,24 @@ body {
 /* Estilos del formulario */
 .login-form {
     max-width: 400px;
-    margin: 20px auto;
-    background-color: #fff;
+    margin: 0 auto; /* Centrado horizontal */
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo con sombra difusa */
+    backdrop-filter: blur(5px); /* Efecto de desenfoque */
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;
+    text-align: left; /* Asegurar que los elementos internos no estén centrados */
 }
 
 .login-form label {
     display: block;
     margin-bottom: 8px;
     font-size: 1em;
-    color: #333;
+    color: #fff; /* Letras blancas para contraste */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para mejor legibilidad */
 }
 
 .login-form input {
@@ -81,6 +113,9 @@ body {
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    box-sizing: border-box; /* Asegurar que el ancho sea consistente */
 }
 
 .login-form button {
@@ -104,7 +139,8 @@ body {
     display: block;
     text-align: center;
     margin-top: 10px;
-    color: #4CAF50;
+    color: #fff; /* Letras blancas */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     text-decoration: none;
     font-size: 0.9em;
 }
@@ -114,12 +150,14 @@ body {
     text-decoration: underline;
 }
 
-/* Carrusel */
+/* Carrusel optimizado para index */
 .carousel {
     position: relative;
     width: 100%;
-    height: 300px;
+    height: 400px;
     overflow: hidden;
+    margin-top: 50px;
+    background-color: #e0e0e0;
 }
 
 .carousel img {
@@ -127,30 +165,128 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 300px;
+    height: 400px;
     object-fit: cover;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 0.8s ease-in-out;
 }
 
 .carousel img.visible {
     opacity: 1;
 }
 
-/* Contenido Principal */
+/* Controles del carrusel */
+.carousel-controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.carousel-controls button {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 2em;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.carousel-controls button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Carrusel de fondo para login y registro */
+.background-carousel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.background-carousel img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.background-carousel img.visible {
+    opacity: 1;
+}
+
+/* Contenido Principal mejorado */
 .main-content {
     text-align: center;
-    padding: 20px;
+    padding: 40px 20px;
+    margin: 100px auto 20px auto;
+    max-width: 1000px;
+    flex: 1 0 auto;
+    animation: fadeIn 0.8s ease-in-out;
 }
 
-h1 {
-    font-size: 2em;
-    color: #4caf50;
+/* Estilo para el botón de acción en index.html */
+.action-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
 }
 
-p {
-    font-size: 1.2em;
-    color: #333;
+.action-button:hover {
+    background-color: #45a049;
+}
+
+/* Misión y Visión con jerarquía */
+.mision-vision {
+    text-align: center;
+    padding: 40px 20px;
+    max-width: 1000px;
+    margin: 100px auto 20px auto;
+    border-radius: 8px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Logo en Misión y Visión */
+.mision-vision .logo,
+.main-content .logo {
+    width: 120px;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Contenedor para login y registro */
+.login-container, .register-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 50px;
+    padding-bottom: 60px;
+}
+
+.login-container .main-content,
+.register-container .main-content {
+    animation: fadeIn 0.8s ease-in-out;
 }
 
 /* Pie de Página */
@@ -159,6 +295,9 @@ p {
     color: white;
     text-align: center;
     padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    margin-top: auto;
 }
 
 .footer-social img {
@@ -172,18 +311,193 @@ p {
     transform: scale(1.1);
 }
 
+/* Nuevos estilos para un diseño más profesional */
+.section-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-bottom: 30px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.section-title {
+    font-size: 2.2em;
+    color: #4caf50;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 3px;
+    background-color: #4caf50;
+    bottom: -5px;
+    left: 25%;
+}
+
+.description p {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+/* Estilo para "Misión y Visión" */
+.mision-vision h2 {
+    font-size: 1.8em;
+    color: #4caf50;
+    margin: 30px 0 15px;
+    position: relative;
+}
+
+.mision-vision h2::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 2px;
+    background-color: #82e600;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mision-vision p {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+/* Estilo para "Contáctanos" */
+.contact-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.contact-map, .contact-info {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-map p, .contact-info h3 {
+    font-size: 1.5em;
+    color: #4caf50;
+    margin-bottom: 15px;
+}
+
+.contact-info p {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.contact-info p::before {
+    content: '📍';
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.contact-info p:nth-child(2)::before {
+    content: '📞';
+}
+
+.contact-info p:nth-child(3)::before {
+    content: '📧';
+}
+
+/* Contador animado para index.html */
+.stats-section {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding: 40px 20px;
+    background-color: rgba(76, 175, 80, 0.1);
+    border-radius: 12px;
+    margin: 20px auto;
+    max-width: 1000px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 20px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.stat-number {
+    font-size: 2.5em;
+    color: #4caf50;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.stat-label {
+    font-size: 1.1em;
+    color: #555;
+}
+
+/* Botón de volver */
+.back-button {
+    position: absolute; /* Cambiado a posición absoluta para controlarlo mejor */
+    top: 60px; /* Justo debajo de la navbar (que tiene altura aproximada de 50px) */
+    left: 10px; /* Alineado a la izquierda */
+    transform: translateY(5px); /* Leve inclinación hacia abajo */
+    padding: 8px 15px; /* Aumentado ligeramente para evitar recorte del texto */
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-size: 0.9em; /* Tamaño de fuente ajustado para que no se recorte */
+    cursor: pointer;
+    border: none;
+    z-index: 100;
+}
+
+.back-button:hover {
+    background-color: #45a049;
+}
+
+/* Animación de fade-in */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
 /* Media Queries para Responsiveness */
 @media (max-width: 768px) {
     /* Barra de Navegación */
     .navbar {
         flex-direction: column;
         align-items: flex-start;
+        padding: 5px 10px;
     }
 
     .navbar-logo {
         width: 100%;
         display: flex;
         justify-content: space-between;
+    }
+
+    .logo-navbar {
+        width: 60px;
+    }
+
+    .navbar-title {
+        font-size: 0.9em;
     }
 
     .navbar-links {
@@ -209,31 +523,118 @@ p {
     .navbar-toggle {
         display: block;
     }
+
+    /* Ajuste del carrusel */
+    .carousel {
+        margin-top: 80px;
+        height: 300px;
+    }
+
+    .carousel img {
+        height: 300px;
+    }
+
+    /* Contáctanos */
+    .contact-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* Stats */
+    .stats-section {
+        flex-direction: column;
+    }
+
+    /* Botón de volver */
+    .back-button {
+        top: 80px; /* Ajustado para pantallas pequeñas */
+        left: 10px;
+        padding: 6px 12px; /* Ligeramente más pequeño en pantallas pequeñas */
+        font-size: 0.8em;
+    }
 }
 
 @media (max-width: 480px) {
     /* Carrusel */
     .carousel {
-        height: 150px;
+        height: 200px;
+        margin-top: 70px;
     }
 
     .carousel img {
-        height: 150px;
+        height: 200px;
+    }
+
+    /* Carrusel de fondo */
+    .background-carousel img {
+        object-fit: cover;
+        height: 100%;
     }
 
     /* Contenido Principal */
-    h1 {
-        font-size: 1.2em;
+    .main-content {
+        padding: 20px;
+        margin-top: 80px;
     }
 
-    p {
+    .main-content h1 {
+        font-size: 1.5em;
+    }
+
+    .main-content p {
         font-size: 0.9em;
+    }
+
+    /* Misión y Visión */
+    .mision-vision {
+        margin-top: 80px;
+    }
+
+    .mision-vision h2 {
+        font-size: 1.5em;
+    }
+
+    .mision-vision p {
+        font-size: 0.9em;
+    }
+
+    .mision-vision .logo,
+    .main-content .logo {
+        width: 100px;
     }
 
     /* Formulario */
     .login-form {
-        max-width: 100%;
+        max-width: 90%;
         padding: 15px;
+        margin-top: 10px;
+    }
+
+    .login-container, .register-container {
+        padding-top: 40px;
+    }
+
+    /* Navbar links */
+    .navbar-links a {
+        padding: 8px 0;
+    }
+
+    /* Contáctanos */
+    .contact-map iframe {
+        height: 300px;
+    }
+
+    /* Stats */
+    .stat-number {
+        font-size: 2em;
+    }
+
+    /* Botón de volver */
+    .back-button {
+        top: 70px; /* Ajustado para pantallas más pequeñas */
+        left: 10px;
+        padding: 5px 10px;
+        font-size: 0.7em;
     }
 }
 
@@ -249,4 +650,87 @@ p {
     color: red;
     font-size: 0.9em;
     margin-top: 5px;
+}
+
+/* Estilos para el banner de cookies */
+.cookie-consent-banner {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #4caf50;
+    color: white;
+    padding: 15px 20px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.cookie-consent-banner.show {
+    display: flex;
+}
+
+.cookie-consent-banner p {
+    margin: 0 0 10px 0;
+    font-size: 0.9em;
+}
+
+.cookie-consent-banner a {
+    color: #ffff99;
+    text-decoration: underline;
+}
+
+.cookie-consent-banner a:hover {
+    color: #fff;
+}
+
+.cookie-consent-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.cookie-consent-buttons button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#accept-cookies {
+    background-color: #45a049;
+    color: white;
+}
+
+#accept-cookies:hover {
+    background-color: #388e3c;
+}
+
+#reject-cookies {
+    background-color: #d9534f;
+    color: white;
+}
+
+#reject-cookies:hover {
+    background-color: #c9302c;
+}
+
+/* Media Queries para el banner de cookies */
+@media (max-width: 480px) {
+    .cookie-consent-banner {
+        padding: 10px;
+    }
+
+    .cookie-consent-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .cookie-consent-buttons button {
+        width: 100%;
+    }
 }

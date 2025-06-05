@@ -13,7 +13,7 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 // Verificar si el usuario es admin (id_rol = 1)
-require_once 'conexion.php'; // $pdo debe estar disponible
+require_once 'conexion.php'; 
 if (!isset($pdo)) {
     die("Error crítico: No se pudo establecer la conexión a la base de datos.");
 }
@@ -24,7 +24,7 @@ $stmt_rol_check->execute();
 $rol_del_usuario_logueado = $stmt_rol_check->fetchColumn();
 
 if ($rol_del_usuario_logueado != 1) {
-    header("Location: index.php"); // Redirigir a los no admins al dashboard de usuario
+    header("Location: index.php"); 
     exit();
 }
 
@@ -42,11 +42,10 @@ try {
     $total_tickets_abiertos = $pdo->query("SELECT COUNT(*) FROM tickets_soporte WHERE estado_ticket = 'Abierto'")->fetchColumn();
 } catch (PDOException $e) {
     $stats_error_message = "Error al cargar estadísticas: " . $e->getMessage();
-    // Los totales permanecerán en 0
 }
 
-$nombre_municipio_para_clima = "Ibagué"; // Placeholder
-$admin_nombre = $_SESSION['usuario'] ?? 'Administrador'; // Nombre del admin desde la sesión
+$nombre_municipio_para_clima = "Ibagué"; 
+$admin_nombre = $_SESSION['usuario'] ?? 'Administrador';
 ?>
 
 <!DOCTYPE html>
@@ -55,109 +54,38 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador'; // Nombre del admin des
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - GAG</title>
-    <link rel="stylesheet" href="../css/estilos.css"> <!-- Ruta al CSS general -->
+    <!-- <link rel="stylesheet" href="../css/estilos.css"> -->
     <style>
-        /* Estilos generales (si no están en estilos.css o para anular) */
+        /* Estilos generales */
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f8f1; font-size: 16px; color: #333; }
-
-        /* Estilos para el Header y Menú (asumiendo que estilos.css los tiene) */
-        /* Si no, copia aquí los estilos de .header, .logo, .menu, .menu-toggle de tus otros archivos */
-
-        /* Contenedor Principal de la Página del Dashboard */
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background-color: #e0e0e0; border-bottom: 2px solid #ccc; position: relative; }
+        .logo img { height: 70px; }
+        .menu { display: flex; align-items: center; }
+        .menu a { margin: 0 5px; text-decoration: none; color: black; padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; transition: background-color 0.3s, color 0.3s; white-space: nowrap; font-size: 0.9em; }
+        .menu a.active, .menu a:hover { background-color: #88c057; color: white !important; border-color: #70a845; }
+        .menu a.exit { background-color: #ff4d4d; color: white !important; border: 1px solid #cc0000; }
+        .menu a.exit:hover { background-color: #cc0000; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.8rem; color: #333; cursor: pointer; padding: 5px; }
         .page-container { max-width: 1200px; margin: 20px auto; padding: 20px; }
         .page-title { text-align: center; color: #4caf50; margin-bottom: 30px; font-size: 2em; }
-
-        /* Secciones del Dashboard */
-        .dashboard-section {
-            width: 100%;
-            margin-bottom: 35px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        }
-        .dashboard-section h3.section-title {
-            color: #333; font-size: 1.5em; margin-top: 0; margin-bottom: 20px;
-            padding-bottom: 10px; border-bottom: 2px solid #88c057;
-        }
-        .cards-container {
-            display: flex; flex-wrap: wrap; gap: 20px;
-            justify-content: flex-start;
-        }
-        
-        /* Tarjetas de Acción (Enlaces) - Heredan de .card de estilos.css */
-        /* Si no tienes una clase .card global o quieres un estilo específico: */
-        .card-action-link { 
-            background: linear-gradient(to bottom, #88c057, #6da944);
-            color: white; border-radius: 8px; padding: 20px;
-            width: 100%; max-width: 220px; min-height: 100px; 
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-decoration: none; font-weight: bold; font-size: 1.1em;
-            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-            cursor: pointer;
-        }
-        .card-action-link:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-
-        /* Tarjetas de Estadísticas */
-        .stat-card {
-            background: linear-gradient(to right, #6AB44A, #4A8C30); 
-            color: white; border-radius: 8px; padding: 20px;
-            width: 100%; max-width: 220px; min-height: 130px;
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
+        .dashboard-section { width: 100%; margin-bottom: 35px; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+        .dashboard-section h3.section-title { color: #333; font-size: 1.5em; margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #88c057; }
+        .cards-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start; }
+        .card-action-link { background: linear-gradient(to bottom, #88c057, #6da944); color: white; border-radius: 8px; padding: 20px; width: 100%; max-width: 220px; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-decoration: none; font-weight: bold; font-size: 1.1em; transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; cursor: pointer; }
+        .card-action-link:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        .stat-card { background: linear-gradient(to right, #6AB44A, #4A8C30); color: white; border-radius: 8px; padding: 20px; width: 100%; max-width: 220px; min-height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s ease; }
         .stat-card:hover { transform: translateY(-5px); }
         .stat-card .card-text { font-size: 0.95em; font-weight: 500; margin-bottom: 8px; opacity: 0.9; }
         .stat-card .card-number { font-size: 2.4em; font-weight: bold; line-height: 1.1; }
-
-        /* Tarjeta del Clima */
-        .weather-display-card {
-            padding: 15px; background-color: #fff; border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: #333;
-            margin: 0; width: 100%; max-width: 220px; min-height: 150px;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            box-sizing: border-box;
-        }
+        .weather-display-card { padding: 15px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: #333; margin: 0; width: 100%; max-width: 220px; min-height: 150px; display: flex; flex-direction: column; align-items: center; text-align: center; box-sizing: border-box; }
         .weather-display-card h4 { margin-top:0;margin-bottom:10px;color:#0056b3;font-size:1.1em;width:100%; }
         .weather-display-card p { margin:4px 0;font-size:0.85em; }
         .weather-display-card #clima-icono img { width:50px;height:50px; }
         .weather-display-card #clima-descripcion { text-transform:capitalize;font-weight:bold;margin-bottom:8px; }
         .error-message { color: #d8000c; background-color: #ffdddd; border:1px solid #ffcccc; padding:10px; border-radius:5px; text-align:center; margin-bottom:15px; }
-
-        @media (max-width: 991.98px) {
-            .menu-toggle { display: block; }
-            .menu { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 100%; left: 0; width: 100%; background-color: #e9e9e9; padding: 0; box-shadow: 0 4px 8px rgba(0,0,0,.1); z-index: 1000; border-top: 1px solid #ccc; }
-            .menu.active { display: flex; }
-            .menu a { margin:0; padding:15px 20px; width:100%; text-align:left; border:none; border-bottom:1px solid #d0d0d0; border-radius:0; color:#333; }
-            .menu a:last-child { border-bottom: none; }
-            .menu a.active, .menu a:hover { background-color: #88c057; color: white !important; }
-            .menu a.exit, .menu a.exit:hover { background-color: #ff4d4d; color: white !important; }
-
-            .card-action-link, .stat-card, .weather-display-card { max-width: calc(50% - 10px); }
-        }
-        @media (max-width: 767px) {
-            .logo img { height: 60px; }
-            .page-title { font-size: 1.6em; }
-            .dashboard-section h3.section-title { font-size: 1.3em; }
-            .card-action-link, .stat-card, .weather-display-card { max-width: 100%; min-height: 100px; }
-            .stat-card .card-number { font-size: 2em; }
-        }
-         @media (max-width: 480px) {
-            .logo img { height: 50px; }
-            .menu-toggle { font-size: 1.6rem; }
-            .page-title { font-size: 1.4em; }
-            .dashboard-section h3.section-title { font-size: 1.2em; }
-            .card-action-link { font-size: 1em; }
-            .stat-card .card-text { font-size: 0.9em; }
-            .stat-card .card-number { font-size: 1.8em; }
-        }
+        @media (max-width: 991.98px) { .menu-toggle { display: block; } .menu { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 100%; left: 0; width: 100%; background-color: #e9e9e9; padding: 0; box-shadow: 0 4px 8px rgba(0,0,0,.1); z-index: 1000; border-top: 1px solid #ccc; } .menu.active { display: flex; } .menu a { margin:0; padding:15px 20px; width:100%; text-align:left; border:none; border-bottom:1px solid #d0d0d0; border-radius:0; color:#333; } .menu a:last-child { border-bottom: none; } .menu a.active, .menu a:hover { background-color: #88c057; color: white !important; } .menu a.exit, .menu a.exit:hover { background-color: #ff4d4d; color: white !important; } .card-action-link, .stat-card, .weather-display-card { max-width: calc(50% - 10px); } }
+        @media (max-width: 767px) { .logo img { height: 60px; } .page-title { font-size: 1.6em; } .dashboard-section h3.section-title { font-size: 1.3em; } .card-action-link, .stat-card, .weather-display-card { max-width: 100%; min-height: 100px; } .stat-card .card-number { font-size: 2em; } }
+        @media (max-width: 480px) { .logo img { height: 50px; } .menu-toggle { font-size: 1.6rem; } .page-title { font-size: 1.4em; } .dashboard-section h3.section-title { font-size: 1.2em; } .card-action-link { font-size: 1em; } .stat-card .card-text { font-size: 0.9em; } .stat-card .card-number { font-size: 1.8em; } }
     </style>
 </head>
 <body>
@@ -167,7 +95,7 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador'; // Nombre del admin des
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <a href="admin_dashboard.php" class="active">Inicio (Admin)</a> 
+            <a href="admin_dashboard.php" class="active">Inicio </a> 
             <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
             <a href="view_all_animals.php">Ver Animales</a> 
@@ -217,7 +145,7 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador'; // Nombre del admin des
             <h3 class="section-title">Gestión de Usuarios y Soporte</h3>
             <div class="cards-container">
                 <a href="view_users.php" class="card-action-link">Ver Usuarios</a>
-                <a href="manage_tickets.php" class="card-action-link">Gestionar Tickets</a>
+                <a href="manage_tickets.php" class="card-action-link">Gestionar Tickets Soporte</a>
             </div>
         </section>
 
@@ -236,15 +164,18 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador'; // Nombre del admin des
         </section>
 
         <section class="dashboard-section">
-            <h3 class="section-title">Reportes</h3>
+            <h3 class="section-title">Información de Mercado y Reportes</h3>
             <div class="cards-container">
+                 <a href="precios_actuales.php" class="card-action-link"> <!-- NUEVO BOTÓN -->
+                    Ver Precios de Cultivos
+                </a>
                  <a href="generar_reporte_excel.php" class="card-action-link" target="_blank">
                     Generar Reporte General (Excel)
                 </a>
             </div>
         </section>
 
-    </div>
+    </div> 
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -316,7 +247,7 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador'; // Nombre del admin des
                     if(climaLluviaPopEl) climaLluviaPopEl.textContent = '';
                 });
         }
-        if(typeof cargarClima === 'function' && document.getElementById('clima-ciudad')){ // Cargar clima solo si el placeholder existe
+        if(typeof cargarClima === 'function' && document.getElementById('clima-ciudad')){ 
             cargarClima();
         }
     });

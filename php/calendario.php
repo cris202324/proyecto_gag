@@ -13,8 +13,8 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 // Incluir el archivo de conexión y obtener el ID del usuario
-include 'conexion.php'; // Este archivo debe definir $pdo
-$id_usuario_actual = $_SESSION['id_usuario']; // ID del usuario logueado
+include 'conexion.php'; 
+$id_usuario_actual = $_SESSION['id_usuario']; 
 
 $eventos_calendario = [];
 $mensaje_error = '';
@@ -23,27 +23,22 @@ if (!isset($pdo)) {
     $mensaje_error = "Error crítico: La conexión a la base de datos no está disponible.";
 } else {
     try {
-        // 1. Obtener todos los cultivos activos DEL USUARIO LOGUEADO
-        // La consulta ahora SIEMPRE filtra por el id_usuario de la sesión.
         $sql_cultivos = "SELECT 
-                            c.id_cultivo, 
-                            tc.nombre_cultivo, 
-                            c.fecha_inicio, 
-                            c.fecha_fin AS fecha_cosecha_estimada 
+                            c.id_cultivo, tc.nombre_cultivo, c.fecha_inicio, 
+                            c.fecha_fin AS fecha_cosecha_estimada, m.nombre AS nombre_municipio
                          FROM cultivos c
                          JOIN tipos_cultivo tc ON c.id_tipo_cultivo = tc.id_tipo_cultivo
-                         WHERE c.id_usuario = :id_usuario_actual"; // Filtrar por el usuario actual
+                         JOIN municipio m ON c.id_municipio = m.id_municipio
+                         WHERE c.id_usuario = :id_usuario_actual"; 
         
         $stmt_cultivos = $pdo->prepare($sql_cultivos);
-        $stmt_cultivos->bindParam(':id_usuario_actual', $id_usuario_actual, PDO::PARAM_STR); // Vincular el ID del usuario
+        $stmt_cultivos->bindParam(':id_usuario_actual', $id_usuario_actual, PDO::PARAM_STR); 
         $stmt_cultivos->execute();
         $cultivos = $stmt_cultivos->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($cultivos as $cultivo) {
-            $nombreCultivoDisplay = htmlspecialchars($cultivo['nombre_cultivo']);
-            // No necesitamos añadir el nombre del usuario al evento, ya que son SUS cultivos.
+            $nombreCultivoDisplay = htmlspecialchars($cultivo['nombre_cultivo']) . " (" . htmlspecialchars($cultivo['nombre_municipio']) . ")";
 
-            // 2. Obtener tratamientos para cada cultivo del usuario
             $sql_tratamientos = "SELECT tipo_tratamiento, producto_usado, fecha_aplicacion_estimada
                                  FROM tratamiento_cultivo
                                  WHERE id_cultivo = :id_cultivo AND fecha_aplicacion_estimada IS NOT NULL";
@@ -57,100 +52,81 @@ if (!isset($pdo)) {
                 if (stripos($trat['tipo_tratamiento'], 'cosecha') !== false) {
                     $classNameEvent = 'evento-cosecha-estimada';
                 }
-
                 $eventos_calendario[] = [
-                    'title' => $trat['tipo_tratamiento'] . " (" . $nombreCultivoDisplay . ")",
+                    'title' => $trat['tipo_tratamiento'] . " - " . $nombreCultivoDisplay,
                     'start' => $trat['fecha_aplicacion_estimada'],
                     'description' => ($trat['producto_usado'] && $trat['producto_usado'] !== 'N/A' ? $trat['producto_usado'] . " para " : "") . $nombreCultivoDisplay,
-                    'className' => $classNameEvent,
-                    'cultivo_id' => $cultivo['id_cultivo']
+                    'className' => $classNameEvent, 'cultivo_id' => $cultivo['id_cultivo']
                 ];
             }
             
-            // Añadir la fecha de fin del cultivo (cosecha principal) si no está ya como un tratamiento
             if (!empty($cultivo['fecha_cosecha_estimada'])) {
                 $ya_existe_evento_cosecha = false;
                 foreach($eventos_calendario as $ev) {
                     if ($ev['cultivo_id'] == $cultivo['id_cultivo'] && $ev['start'] == $cultivo['fecha_cosecha_estimada'] && stripos($ev['title'], 'cosecha') !== false) {
-                        $ya_existe_evento_cosecha = true;
-                        break;
+                        $ya_existe_evento_cosecha = true; break;
                     }
                 }
                 if (!$ya_existe_evento_cosecha) {
                      $eventos_calendario[] = [
-                        'title' => "Fin Ciclo/Cosecha (" . $nombreCultivoDisplay . ")",
+                        'title' => "Fin Ciclo/Cosecha - " . $nombreCultivoDisplay,
                         'start' => $cultivo['fecha_cosecha_estimada'],
                         'description' => "Fecha de fin de ciclo o cosecha principal para " . $nombreCultivoDisplay,
-                        'className' => 'evento-cosecha-estimada',
-                        'cultivo_id' => $cultivo['id_cultivo']
+                        'className' => 'evento-cosecha-estimada', 'cultivo_id' => $cultivo['id_cultivo']
                     ];
                 }
             }
 
-            // 3. Calcular próximo riego para cada cultivo del usuario
             $sql_riego = "SELECT frecuencia_riego, fecha_ultimo_riego
-                          FROM riego
-                          WHERE id_cultivo = :id_cultivo
-                          ORDER BY fecha_ultimo_riego DESC LIMIT 1";
+                          FROM riego WHERE id_cultivo = :id_cultivo ORDER BY fecha_ultimo_riego DESC LIMIT 1";
             $stmt_riego = $pdo->prepare($sql_riego);
             $stmt_riego->bindParam(':id_cultivo', $cultivo['id_cultivo']);
             $stmt_riego->execute();
             $ultimo_riego = $stmt_riego->fetch(PDO::FETCH_ASSOC);
 
             if ($ultimo_riego && $ultimo_riego['fecha_ultimo_riego']) {
-                $proximo_riego_estimado = null;
-                try {
+                 $proximo_riego_estimado_temp = null; 
+                 try {
                     $fechaUltRiegoObj = new DateTime($ultimo_riego['fecha_ultimo_riego']);
                     $frecuencia = strtolower($ultimo_riego['frecuencia_riego']);
                     $intervalo = null;
-
                     if (strpos($frecuencia, 'diario') !== false) { $intervalo = 'P1D'; }
                     elseif (preg_match('/cada (\d+) d[ií]as/', $frecuencia, $matches)) { $intervalo = 'P' . $matches[1] . 'D'; }
                     elseif (strpos($frecuencia, 'semanal') !== false) { $intervalo = 'P7D'; }
 
                     if ($intervalo) {
                         $fechaUltRiegoObj->add(new DateInterval($intervalo));
-                        $proximo_riego_estimado = $fechaUltRiegoObj->format('Y-m-d');
+                        $proximo_riego_estimado_temp = $fechaUltRiegoObj->format('Y-m-d');
                         
                         $hoy = new DateTime(); $hoy->setTime(0,0,0); 
                         $fechaProximoRiegoComparar = clone $fechaUltRiegoObj; $fechaProximoRiegoComparar->setTime(0,0,0);
                         $diff = $hoy->diff($fechaProximoRiegoComparar);
 
                         if ($fechaProximoRiegoComparar >= $hoy || ($diff->invert && $diff->days < 14)) {
-                            $eventos_calendario[] = [
-                                'title' => "Riego Estimado (" . $nombreCultivoDisplay . ")",
-                                'start' => $proximo_riego_estimado,
+                             $eventos_calendario[] = [
+                                'title' => "Riego Estimado - " . $nombreCultivoDisplay,
+                                'start' => $proximo_riego_estimado_temp,
                                 'description' => "Según frecuencia: " . htmlspecialchars($ultimo_riego['frecuencia_riego']),
                                 'className' => 'evento-riego',
                                 'cultivo_id' => $cultivo['id_cultivo']
                             ];
                         }
                     }
-                } catch (Exception $e) { /* Ignorar error de cálculo de riego */ }
+                } catch (Exception $e) { /* Ignorar error */ }
             }
         }
     } catch (PDOException $e) {
         $mensaje_error = "Error al cargar datos para el calendario: " . $e->getMessage();
     }
 }
-
-// El resto del HTML y JavaScript (incluyendo la etiqueta <style> y el script del calendario)
-// permanece igual que en la respuesta anterior donde te proporcioné el código completo.
-// Solo asegúrate de que las rutas en el menú HTML sean correctas para un usuario normal
-// y que el título de la página refleje que es "Mi Calendario de Actividades" o similar.
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Calendario de Actividades - GAG</title> <!-- Título ajustado -->
+    <title>Mi Calendario de Actividades - GAG</title>
     <style>
-        /* Copia aquí TODOS los estilos CSS que te di en la respuesta anterior para calendario_general.php */
-        /* (incluyendo body, .header, .logo, .menu, .menu-toggle, .page-container, .page-title, */
-        /* .calendario-wrapper, .calendario-header, .calendario-grid, .dia-semana, .dia-calendario, */
-        /* .dia-numero, .evento-calendario, .evento-tratamiento, .evento-riego, .evento-cosecha-estimada, */
-        /* .leyenda, .error-message-calendar, y TODAS las Media Queries) */
         body{font-family:Arial,sans-serif;margin:0;padding:0;background-color:#f9f9f9;font-size:16px}
         .header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background-color:#e0e0e0;border-bottom:2px solid #ccc;position:relative}
         .logo img{height:70px;transition:height .3s ease}
@@ -170,15 +146,39 @@ if (!isset($pdo)) {
         .calendario-header button:hover{background-color:#e0e0e0;box-shadow:0 2px 4px rgba(0,0,0,.1)}
         .calendario-header h3{margin:0;font-size:1.5em;color:#4caf50;font-weight:700;text-align:center;flex-grow:1}
         .calendario-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background-color:#ddd;border:1px solid #ddd;border-radius:5px;overflow:hidden}
-        .dia-semana,.dia-calendario{background-color:#fff;padding:8px 4px;text-align:center;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;font-size:.85em;position:relative;border:none}
+        
+        .dia-semana, .dia-calendario {
+            background-color:#fff; padding:8px 5px; text-align:center;
+            /* min-height: 100px; Removido para que la altura sea flexible */
+            display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+            font-size:.85em; position:relative; border:none; box-sizing: border-box;
+        }
         .dia-semana{font-weight:700;background-color:#f5f5f5;color:#555;min-height:auto;padding:10px 5px;font-size:.8em;text-transform:uppercase}
-        .dia-numero{font-weight:700;margin-bottom:6px;font-size:1em;color:#444;width:26px;height:26px;line-height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+        .dia-numero{font-weight:700;margin-bottom:6px;font-size:1em;color:#444;width:26px;height:26px;line-height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%; flex-shrink:0;}
         .dia-calendario.otro-mes .dia-numero{color:#b0b0b0;opacity:.6}
         .dia-calendario.hoy .dia-numero{background-color:#4caf50;color:#fff}
-        .evento-calendario{font-size:.75em;padding:2px 4px;border-radius:3px;margin-top:3px;width:95%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;cursor:default;box-shadow:0 1px 1px rgba(0,0,0,.05)}
-        .evento-tratamiento{border-left:3px solid #3498db;background-color:#eaf5fc;color:#2980b9}
-        .evento-riego{border-left:3px solid #1abc9c;background-color:#e8f8f5;color:#16a085}
-        .evento-cosecha-estimada{border-left:3px solid #f39c12;background-color:#fef5e7;color:#d35400;font-weight:700}
+
+        .eventos-del-dia { 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            gap: 3px; 
+            margin-top: 4px;
+            overflow: visible; /* Para que se vea todo el contenido del evento */
+        }
+        .evento-calendario{
+            font-size:.78em;padding:3px 5px;border-radius:3px;width:95%;
+            white-space: normal; /* PERMITIR WRAP */
+            word-wrap: break-word; /* ROMPER PALABRAS LARGAS */
+            border-left:3px solid; 
+            text-align:left;cursor:default;box-shadow:0 1px 1px rgba(0,0,0,.05);
+            line-height: 1.3; /* Mejor espaciado si hay múltiples líneas */
+        }
+        .evento-tratamiento{border-left-color:#3498db;background-color:#eaf5fc;color:#2980b9}
+        .evento-riego{border-left-color:#1abc9c;background-color:#e8f8f5;color:#16a085}
+        .evento-cosecha-estimada{border-left-color:#f39c12;background-color:#fef5e7;color:#d35400;font-weight:700}
+        
         .leyenda{margin-top:25px;padding-top:15px;border-top:1px solid #e0e0e0}
         .leyenda h4{margin-top:0;margin-bottom:12px;color:#333;font-size:1.05em;font-weight:700}
         .leyenda-item{display:flex;align-items:center;margin-bottom:8px;font-size:.9em;color:#555}
@@ -198,7 +198,7 @@ if (!isset($pdo)) {
             .calendario-header h3{font-size:1.4em}
             .calendario-header button{padding:7px 12px;font-size:.85em}
             .dia-semana{font-size:.75em;padding:9px 3px}
-            .dia-calendario{min-height:75px;padding:7px 3px}
+            .dia-calendario{ /* min-height:75px; Ya no se necesita si es flexible */ padding:7px 3px}
             .dia-numero{font-size:.95em;width:24px;height:24px;line-height:24px;margin-bottom:5px}
             .evento-calendario{font-size:.72em}
         }
@@ -208,7 +208,7 @@ if (!isset($pdo)) {
             .page-container > h2.page-title{font-size:1.5em}
             .calendario-header h3{font-size:1.3em}
             .dia-semana{font-size:.7em}
-            .dia-calendario{min-height:70px}
+            /* .dia-calendario{min-height:70px} */
             .dia-numero{font-size:.9em}
         }
         @media (max-width:480px){
@@ -216,9 +216,10 @@ if (!isset($pdo)) {
             .page-container > h2.page-title{font-size:1.3em}
             .calendario-header{flex-direction:column;gap:10px}
             .calendario-header h3{font-size:1.2em;order:-1}
-            .dia-semana{font-size:.6em}
-            .dia-calendario{min-height:60px}
+            .dia-semana{font-size:.65em; padding: 8px 2px;} /* Ajustar para que quepan */
+            /* .dia-calendario{min-height:60px} */
             .dia-numero{font-size:.8em;width:20px;height:20px;line-height:20px}
+            .evento-calendario {font-size: .7em; line-height: 1.2;}
             .leyenda h4{font-size:1em}
             .leyenda-item{font-size:.8em}
             .leyenda-color{width:12px;height:12px;margin-right:8px}
@@ -228,12 +229,11 @@ if (!isset($pdo)) {
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="Logo GAG" /> <!-- Ajusta ruta -->
+            <img src="../img/logo.png" alt="Logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-             <!-- ENLACES PARA USUARIO NORMAL -->
-            <a href="index.php">Inicio</a> <!-- Panel de Usuario -->
+            <a href="index.php">Inicio</a>
             <a href="miscultivos.php">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
             <a href="calendario.php" class="active">Calendario</a>
@@ -244,7 +244,7 @@ if (!isset($pdo)) {
     </div>
 
     <div class="page-container">
-        <h2 class="page-title">Mi Calendario de Actividades</h2> <!-- Título ajustado -->
+        <h2 class="page-title">Mi Calendario de Actividades</h2>
 
         <?php if (!empty($mensaje_error)): ?>
             <p class="error-message-calendar"><?php echo htmlspecialchars($mensaje_error); ?></p>
@@ -257,13 +257,7 @@ if (!isset($pdo)) {
                 <button id="mes-siguiente">Siguiente ></button>
             </div>
             <div class="calendario-grid">
-                <div class="dia-semana">Dom</div>
-                <div class="dia-semana">Lun</div>
-                <div class="dia-semana">Mar</div>
-                <div class="dia-semana">Mié</div>
-                <div class="dia-semana">Jue</div>
-                <div class="dia-semana">Vie</div>
-                <div class="dia-semana">Sáb</div>
+                <div class="dia-semana">Dom</div><div class="dia-semana">Lun</div><div class="dia-semana">Mar</div><div class="dia-semana">Mié</div><div class="dia-semana">Jue</div><div class="dia-semana">Vie</div><div class="dia-semana">Sáb</div>
             </div>
             <div class="calendario-grid" id="dias-calendario-grid">
                 <!-- Días generados por JS -->
@@ -275,14 +269,13 @@ if (!isset($pdo)) {
                 <div class="leyenda-item"><span class="leyenda-color evento-riego"></span> Riego Estimado</div>
                 <div class="leyenda-item"><span class="leyenda-color evento-cosecha-estimada"></span> Cosecha/Fin Estimada</div>
             </div>
-        </div> <!-- Fin calendario-wrapper -->
-    </div> <!-- Fin page-container -->
+        </div> 
+    </div> 
 
     <script>
         const eventosDesdePHP = <?php echo json_encode($eventos_calendario); ?>;
 
         document.addEventListener('DOMContentLoaded', function() {
-            // --- LÓGICA PARA EL CALENDARIO ---
             const calendarioGrid = document.getElementById('dias-calendario-grid');
             const mesAnioActualLabel = document.getElementById('mes-anio-actual');
             const btnMesAnterior = document.getElementById('mes-anterior');
@@ -319,6 +312,7 @@ if (!isset($pdo)) {
                     const celdaDia = document.createElement('div');
                     celdaDia.classList.add('dia-calendario');
                     const fechaCeldaStr = formatearFecha(new Date(anio, mes, dia));
+                    
                     const diaNumero = document.createElement('span');
                     diaNumero.classList.add('dia-numero');
                     diaNumero.textContent = dia;
@@ -328,6 +322,10 @@ if (!isset($pdo)) {
                         celdaDia.classList.add('hoy');
                     }
 
+                    // Contenedor para eventos DENTRO de la celda del día
+                    const eventosDelDiaContainer = document.createElement('div');
+                    eventosDelDiaContainer.classList.add('eventos-del-dia');
+
                     eventosDesdePHP.filter(e => e.start === fechaCeldaStr).forEach(evento => {
                         const divEvento = document.createElement('div');
                         divEvento.classList.add('evento-calendario');
@@ -336,8 +334,10 @@ if (!isset($pdo)) {
                         }
                         divEvento.textContent = evento.title;
                         divEvento.title = evento.description || evento.title; 
-                        celdaDia.appendChild(divEvento);
+                        eventosDelDiaContainer.appendChild(divEvento);
                     });
+                    celdaDia.appendChild(eventosDelDiaContainer); 
+                    
                     calendarioGrid.appendChild(celdaDia);
                 }
             }
@@ -359,15 +359,12 @@ if (!isset($pdo)) {
                  renderizarCalendario();
             }
 
-            // --- LÓGICA PARA EL MENÚ HAMBURGUESA ---
             const menuToggleBtn = document.getElementById('menuToggleBtn');
             const mainMenu = document.getElementById('mainMenu');
-
             if (menuToggleBtn && mainMenu) {
                 menuToggleBtn.addEventListener('click', () => {
                     mainMenu.classList.toggle('active');
-                    const isExpanded = mainMenu.classList.contains('active');
-                    menuToggleBtn.setAttribute('aria-expanded', isExpanded);
+                    menuToggleBtn.setAttribute('aria-expanded', mainMenu.classList.contains('active'));
                 });
             }
         });

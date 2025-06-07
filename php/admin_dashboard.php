@@ -164,11 +164,6 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador';
         </section>
 
         <section class="dashboard-section">
-            <h3 class="section-title">Información de Mercado y Reportes</h3>
-            <div class="cards-container">
-                 <a href="precios_actuales.php" class="card-action-link"> <!-- NUEVO BOTÓN -->
-                    Ver Precios de Cultivos
-                </a>
                  <a href="generar_reporte_excel.php" class="card-action-link" target="_blank">
                     Generar Reporte General (Excel)
                 </a>

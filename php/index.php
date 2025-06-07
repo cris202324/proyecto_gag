@@ -32,86 +32,96 @@ if(isset($pdo) && isset($_SESSION['id_usuario'])) {
     <title>Panel de Usuario - GAG</title>
     <link rel="stylesheet" href="../css/estilos.css"> <!-- TU ARCHIVO CSS GENERAL -->
     <style>
-        /* Estilos generales para el cuerpo de ESTA PÁGINA si necesitas anular o añadir */
         body {
-            /* font-family: Arial, sans-serif; Ya debería estar en estilos.css */
-            /* margin: 0; padding: 0; Ya debería estar en estilos.css */
-            background-color: #f9f9f9; /* Fondo general que tenías */
-            /* font-size: 16px; Ya debería estar en estilos.css */
+            background-color: #f9f9f9; 
             color: #333;
+             /* Asumiendo que font-family, margin, padding, font-size base vienen de estilos.css */
         }
 
-        /* Contenedor Principal de la Página */
-        .page-container-user { /* Clase específica para esta página */
+        .page-container-user {
             max-width: 1200px;
             margin: 25px auto;
             padding: 20px;
         }
-        .page-title-user { /* Clase específica para el título */
+        .page-title-user {
             text-align: center;
-            color: #4caf50; /* Verde principal GAG */
+            color: #4caf50; 
             margin-bottom: 30px;
             font-size: 2.2em;
             font-weight: 600;
         }
         
-        /* Contenedor para las tarjetas de acción */
-        .action-cards-container-user { /* Clase específica */
+        .action-cards-container-user {
             display: flex;
             flex-wrap: wrap;
             gap: 25px;
-            justify-content: center;
+            justify-content: center; 
         }
         
-        /* Tarjetas de Acción (Enlaces) - Estilo GAG */
-        .card-link-user { /* Clase específica */
-            background: linear-gradient(135deg, #88c057, #6da944);
-            color: white;
+        /* ESTILO UNIFICADO PARA TODAS LAS TARJETAS EN ESTA VISTA */
+        .gag-card { /* Nueva clase base para todas las tarjetas aquí */
             border-radius: 10px;
-            padding: 25px;
+            padding: 20px; /* Reducir padding para más espacio para contenido */
             width: 100%;
-            max-width: 250px;
-            min-height: 130px; 
+            max-width: 250px; 
+            height: 180px; /* ALTURA FIJA PARA TODAS LAS TARJETAS */
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: center; /* Centrar contenido verticalmente */
             align-items: center;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-decoration: none;
             font-weight: bold;
-            font-size: 1.15em;
             transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
             cursor: pointer;
+            box-sizing: border-box; /* Importante para que el padding no sume al height/width */
+            overflow: hidden; /* Esconder contenido que desborde la altura fija */
+        }
+        .gag-card:hover {
+            transform: translateY(-6px) scale(1.03);
+        }
+
+        /* Tarjetas de Acción (Enlaces) - hereda de gag-card y añade fondo */
+        .card-link-user { 
+            background: linear-gradient(135deg, #88c057, #6da944);
+            color: white;
+            font-size: 1.1em; /* Ajustar si es necesario con altura fija */
         }
         .card-link-user:hover {
-            transform: translateY(-6px) scale(1.03);
             box-shadow: 0 8px 20px rgba(109, 169, 68, 0.3);
         }
 
-        /* Tarjeta del Clima */
-        .weather-display-card-user { /* Clase específica */
-            padding: 20px; background-color: #ffffff; border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); color: #333;
-            margin: 0; 
-            width: 100%; max-width: 250px; min-height: 160px;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            box-sizing: border-box;
-            transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+        /* Tarjeta del Clima - hereda de gag-card y añade fondo */
+        .weather-display-card-user { 
+            background-color: #ffffff; 
+            color: #333;
+            font-size: 1em; /* Fuente base para contenido del clima */
         }
          .weather-display-card-user:hover {
-            transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         }
-        .weather-display-card-user h4 { margin-top:0;margin-bottom:12px;color:#0056b3;font-size:1.1em;width:100%; }
-        .weather-display-card-user p { margin:5px 0;font-size:0.9em; }
-        .weather-display-card-user #clima-icono img { width:55px;height:55px; margin-bottom:5px; }
-        .weather-display-card-user #clima-descripcion { text-transform:capitalize;font-weight:bold;margin-bottom:10px; font-size:1em; }
+        .weather-display-card-user h4 { 
+            margin-top:0; margin-bottom:10px; color:#0056b3; 
+            font-size:1.05em; width:100%; /* Reducir un poco para que quepa */
+        }
+        .weather-display-card-user p { 
+            margin:3px 0; font-size:0.8em; /* Reducir para que quepa más info */
+            line-height: 1.3; 
+        }
+        .weather-display-card-user #clima-icono img { 
+            width:45px; height:45px; margin-bottom:3px;  /* Icono más pequeño */
+        }
+        .weather-display-card-user #clima-descripcion { 
+            text-transform:capitalize; font-weight:bold; 
+            margin-bottom:5px; font-size:0.9em; /* Descripción más pequeña */
+        }
 
         /* Media Queries para el contenido de esta página */
         @media (max-width: 991.98px) {
-            .card-link-user, .weather-display-card-user {
+            .gag-card { /* Aplicar a la clase base */
                 max-width: calc(50% - 12.5px); 
+                height: 170px; /* Ajustar altura si es necesario */
             }
             .page-title-user { font-size: 1.8em; }
         }
@@ -120,16 +130,25 @@ if(isset($pdo) && isset($_SESSION['id_usuario'])) {
             .page-container-user { padding: 15px; margin-top: 15px;}
             .page-title-user { font-size: 1.6em; margin-bottom: 20px;}
             .action-cards-container-user { gap: 15px; }
-            .card-link-user, .weather-display-card-user {
+            .gag-card { /* Aplicar a la clase base */
                 max-width: 100%; 
-                min-height: 110px;
-                padding: 20px;
+                height: 130px; /* Altura ajustada para móvil */
+                padding: 15px;
             }
-            .card-link-user { font-size: 1.1em; }
+            .card-link-user { font-size: 1em; }
+            .weather-display-card-user h4 { font-size: 1em;}
+            .weather-display-card-user p { font-size: 0.75em;}
+            .weather-display-card-user #clima-icono img { width:40px;height:40px;}
+            .weather-display-card-user #clima-descripcion { font-size:0.85em; margin-bottom:3px;}
         }
          @media (max-width: 480px) {
             .page-title-user { font-size: 1.5em; }
-            .card-link-user { min-height: 100px; font-size: 1em; }
+            .gag-card { /* Aplicar a la clase base */
+                 min-height: 0; /* Quitar min-height si height es fijo */
+                 height: 120px; /* Altura más pequeña para móviles muy pequeños */
+                 font-size: 0.95em;
+            }
+            .card-link-user { font-size: 0.95em; }
         }
     </style>
 </head>
@@ -144,24 +163,24 @@ if(isset($pdo) && isset($_SESSION['id_usuario'])) {
             <a href="index.php" class="active">Inicio</a>
             <a href="miscultivos.php">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario.php">Calendario</a> <!-- Asegúrate que este sea el nombre correcto -->
+            <a href="calendario_general.php">Calendario</a>
             <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php">Ayuda</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 
-    <div class="page-container-user"> <!-- Contenedor específico para esta página -->
+    <div class="page-container-user">
         <h2 class="page-title-user">Bienvenido a tu Panel GAG, <?php echo htmlspecialchars($_SESSION['usuario']); ?>!</h2>
         
-        <div class="action-cards-container-user"> <!-- Contenedor específico -->
-            <a href="crearcultivos.php" class="card-link-user">Nuevos Cultivos</a>
-            <a href="animales/crear_animales.php" class="card-link-user">Nuevos Animales</a>
-            <a href="calendario.php" class="card-link-user">Ver Calendario</a>
-            <a href="configuracion.php" class="card-link-user">Mi Configuración</a>
-            <a href="ayuda.php" class="card-link-user">Ayuda y Soporte</a>
+        <div class="action-cards-container-user">
+            <a href="crearcultivos.php" class="gag-card card-link-user">Nuevos Cultivos</a>
+            <a href="animales/crear_animales.php" class="gag-card card-link-user">Nuevos Animales</a>
+            <a href="calendario_general.php" class="gag-card card-link-user">Ver Calendario</a>
+            <a href="configuracion.php" class="gag-card card-link-user">Mi Configuración</a>
+            <a href="ayuda.php" class="gag-card card-link-user">Ayuda y Soporte</a>
 
-            <div class="weather-display-card-user"> <!-- Clase específica -->
+            <div class="gag-card weather-display-card-user">
                 <h4>Clima en <span id="clima-ciudad">Cargando...</span></h4>
                 <div id="clima-icono"></div>
                 <p id="clima-descripcion"></p>
@@ -187,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- LÓGICA PARA EL CLIMA ---
     const climaCiudadEl = document.getElementById('clima-ciudad');
+    // ... (resto de tu script para el clima, igual que antes) ...
     const climaIconoEl = document.getElementById('clima-icono');
     const climaDescripcionEl = document.getElementById('clima-descripcion');
     const climaTempEl = document.getElementById('clima-temp');

@@ -19,64 +19,94 @@ $id_usuario_actual = $_SESSION['id_usuario'];
 $eventos_calendario = [];
 $mensaje_error = '';
 
+// ASUME que el ID para el estado "En Progreso" en tu tabla 'estado_cultivo_definiciones' es 1
+$id_estado_en_progreso = 1; 
+
 if (!isset($pdo)) {
     $mensaje_error = "Error crítico: La conexión a la base de datos no está disponible.";
 } else {
     try {
+        // 1. Obtener todos los cultivos DEL USUARIO LOGUEADO que estén "En Progreso"
         $sql_cultivos = "SELECT 
-                            c.id_cultivo, tc.nombre_cultivo, c.fecha_inicio, 
-                            c.fecha_fin AS fecha_cosecha_estimada, m.nombre AS nombre_municipio
+                            c.id_cultivo, 
+                            tc.nombre_cultivo, 
+                            c.fecha_inicio, 
+                            c.fecha_fin AS fecha_cosecha_estimada,
+                            m.nombre AS nombre_municipio
                          FROM cultivos c
                          JOIN tipos_cultivo tc ON c.id_tipo_cultivo = tc.id_tipo_cultivo
                          JOIN municipio m ON c.id_municipio = m.id_municipio
-                         WHERE c.id_usuario = :id_usuario_actual"; 
+                         WHERE c.id_usuario = :id_usuario_actual
+                           AND c.id_estado_cultivo = :id_estado_en_progreso"; // <<< FILTRO POR ESTADO AÑADIDO
         
         $stmt_cultivos = $pdo->prepare($sql_cultivos);
         $stmt_cultivos->bindParam(':id_usuario_actual', $id_usuario_actual, PDO::PARAM_STR); 
+        $stmt_cultivos->bindParam(':id_estado_en_progreso', $id_estado_en_progreso, PDO::PARAM_INT); // Vincular estado
         $stmt_cultivos->execute();
         $cultivos = $stmt_cultivos->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($cultivos) && empty($mensaje_error)) {
+            // No es un error, simplemente no hay cultivos en progreso para este usuario
+            // $mensaje_info = "No tienes cultivos 'En Progreso' para mostrar en el calendario.";
+            // Puedes decidir si mostrar este mensaje en el HTML
+        }
 
         foreach ($cultivos as $cultivo) {
             $nombreCultivoDisplay = htmlspecialchars($cultivo['nombre_cultivo']) . " (" . htmlspecialchars($cultivo['nombre_municipio']) . ")";
 
+            // 2. Obtener tratamientos para cada cultivo del usuario
             $sql_tratamientos = "SELECT tipo_tratamiento, producto_usado, fecha_aplicacion_estimada
                                  FROM tratamiento_cultivo
-                                 WHERE id_cultivo = :id_cultivo AND fecha_aplicacion_estimada IS NOT NULL";
+                                 WHERE id_cultivo = :id_cultivo AND fecha_aplicacion_estimada IS NOT NULL 
+                                 AND fecha_aplicacion_estimada >= CURDATE()"; // Opcional: Solo tratamientos futuros o de hoy
             $stmt_tratamientos = $pdo->prepare($sql_tratamientos);
             $stmt_tratamientos->bindParam(':id_cultivo', $cultivo['id_cultivo']);
+            // $stmt_tratamientos->bindValue(':hoy', date('Y-m-d')); // Si usas el filtro de fecha_aplicacion_estimada >= CURDATE()
             $stmt_tratamientos->execute();
             $tratamientos = $stmt_tratamientos->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($tratamientos as $trat) {
                 $classNameEvent = 'evento-tratamiento';
+                // La lógica para la clase 'evento-cosecha-estimada' en tratamientos predeterminados se mantiene
                 if (stripos($trat['tipo_tratamiento'], 'cosecha') !== false) {
                     $classNameEvent = 'evento-cosecha-estimada';
                 }
+
                 $eventos_calendario[] = [
                     'title' => $trat['tipo_tratamiento'] . " - " . $nombreCultivoDisplay,
                     'start' => $trat['fecha_aplicacion_estimada'],
                     'description' => ($trat['producto_usado'] && $trat['producto_usado'] !== 'N/A' ? $trat['producto_usado'] . " para " : "") . $nombreCultivoDisplay,
-                    'className' => $classNameEvent, 'cultivo_id' => $cultivo['id_cultivo']
+                    'className' => $classNameEvent, 
+                    'cultivo_id' => $cultivo['id_cultivo']
                 ];
             }
             
+            // Añadir la fecha de fin del cultivo (cosecha principal) como un evento
+            // Solo si el cultivo está "En Progreso" y tiene una fecha de fin válida.
             if (!empty($cultivo['fecha_cosecha_estimada'])) {
-                $ya_existe_evento_cosecha = false;
+                $ya_existe_evento_cosecha_principal = false;
+                // Verificar si un evento similar ya fue añadido desde tratamientos_predeterminados
                 foreach($eventos_calendario as $ev) {
-                    if ($ev['cultivo_id'] == $cultivo['id_cultivo'] && $ev['start'] == $cultivo['fecha_cosecha_estimada'] && stripos($ev['title'], 'cosecha') !== false) {
-                        $ya_existe_evento_cosecha = true; break;
+                    if ($ev['cultivo_id'] == $cultivo['id_cultivo'] && 
+                        $ev['start'] == $cultivo['fecha_cosecha_estimada'] && 
+                        (stripos($ev['title'], 'cosecha') !== false || stripos($ev['title'], 'fin ciclo') !== false) ) {
+                        $ya_existe_evento_cosecha_principal = true; 
+                        break;
                     }
                 }
-                if (!$ya_existe_evento_cosecha) {
+                if (!$ya_existe_evento_cosecha_principal) {
                      $eventos_calendario[] = [
-                        'title' => "Fin Ciclo/Cosecha - " . $nombreCultivoDisplay,
+                        'title' => "Cosecha Principal Est. - " . $nombreCultivoDisplay,
                         'start' => $cultivo['fecha_cosecha_estimada'],
-                        'description' => "Fecha de fin de ciclo o cosecha principal para " . $nombreCultivoDisplay,
-                        'className' => 'evento-cosecha-estimada', 'cultivo_id' => $cultivo['id_cultivo']
+                        'description' => "Fecha estimada para la cosecha principal de " . $nombreCultivoDisplay,
+                        'className' => 'evento-cosecha-estimada', 
+                        'cultivo_id' => $cultivo['id_cultivo']
                     ];
                 }
             }
 
+            // 3. Calcular próximo riego para cada cultivo del usuario
+            // (Tu lógica de riego existente - asegúrate que $proximo_riego_estimado_temp se defina correctamente)
             $sql_riego = "SELECT frecuencia_riego, fecha_ultimo_riego
                           FROM riego WHERE id_cultivo = :id_cultivo ORDER BY fecha_ultimo_riego DESC LIMIT 1";
             $stmt_riego = $pdo->prepare($sql_riego);
@@ -87,6 +117,7 @@ if (!isset($pdo)) {
             if ($ultimo_riego && $ultimo_riego['fecha_ultimo_riego']) {
                  $proximo_riego_estimado_temp = null; 
                  try {
+                    // ... (lógica de cálculo de $proximo_riego_estimado_temp) ...
                     $fechaUltRiegoObj = new DateTime($ultimo_riego['fecha_ultimo_riego']);
                     $frecuencia = strtolower($ultimo_riego['frecuencia_riego']);
                     $intervalo = null;
@@ -102,6 +133,7 @@ if (!isset($pdo)) {
                         $fechaProximoRiegoComparar = clone $fechaUltRiegoObj; $fechaProximoRiegoComparar->setTime(0,0,0);
                         $diff = $hoy->diff($fechaProximoRiegoComparar);
 
+                        // Mostrar riegos futuros o los que pasaron en los últimos 14 días (ajustable)
                         if ($fechaProximoRiegoComparar >= $hoy || ($diff->invert && $diff->days < 14)) {
                              $eventos_calendario[] = [
                                 'title' => "Riego Estimado - " . $nombreCultivoDisplay,
@@ -112,21 +144,31 @@ if (!isset($pdo)) {
                             ];
                         }
                     }
-                } catch (Exception $e) { /* Ignorar error */ }
+                } catch (Exception $e) { /* Ignorar error en cálculo de riego */ }
             }
-        }
+        } // Fin del bucle foreach ($cultivos as $cultivo)
+
     } catch (PDOException $e) {
         $mensaje_error = "Error al cargar datos para el calendario: " . $e->getMessage();
     }
 }
+
+// El resto de tu HTML, CSS y JavaScript (incluyendo la etiqueta <style> y el script del calendario)
+// permanece igual que en la respuesta anterior.
 ?>
 <!DOCTYPE html>
+<!-- ... Aquí va todo tu HTML, CSS y JavaScript del calendario que ya tenías ... -->
+<!-- Asegúrate de que el título de la página y el encabezado <h2> reflejen que es "Mi Calendario" -->
+<!-- y si $eventos_calendario está vacío después del filtro, podrías mostrar un mensaje como -->
+<!-- "No tienes actividades programadas para tus cultivos en progreso." -->
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Calendario de Actividades - GAG</title>
     <style>
+        /* ... (TODOS TUS ESTILOS CSS COMPLETOS, INCLUYENDO RESPONSIVIDAD) ... */
+        /* Copia los estilos de la respuesta anterior donde te di el código completo del calendario */
         body{font-family:Arial,sans-serif;margin:0;padding:0;background-color:#f9f9f9;font-size:16px}
         .header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background-color:#e0e0e0;border-bottom:2px solid #ccc;position:relative}
         .logo img{height:70px;transition:height .3s ease}
@@ -165,15 +207,15 @@ if (!isset($pdo)) {
             align-items: center; 
             gap: 3px; 
             margin-top: 4px;
-            overflow: visible; /* Para que se vea todo el contenido del evento */
+            overflow: visible; 
         }
         .evento-calendario{
             font-size:.78em;padding:3px 5px;border-radius:3px;width:95%;
-            white-space: normal; /* PERMITIR WRAP */
-            word-wrap: break-word; /* ROMPER PALABRAS LARGAS */
+            white-space: normal; 
+            word-wrap: break-word; 
             border-left:3px solid; 
             text-align:left;cursor:default;box-shadow:0 1px 1px rgba(0,0,0,.05);
-            line-height: 1.3; /* Mejor espaciado si hay múltiples líneas */
+            line-height: 1.3; 
         }
         .evento-tratamiento{border-left-color:#3498db;background-color:#eaf5fc;color:#2980b9}
         .evento-riego{border-left-color:#1abc9c;background-color:#e8f8f5;color:#16a085}
@@ -184,7 +226,8 @@ if (!isset($pdo)) {
         .leyenda-item{display:flex;align-items:center;margin-bottom:8px;font-size:.9em;color:#555}
         .leyenda-color{width:16px;height:16px;margin-right:10px;border-radius:3px;border:1px solid rgba(0,0,0,.1)}
         .error-message-calendar{background-color:#ffdddd;border:1px solid #ffcccc;color:#d8000c;padding:10px;border-radius:5px;text-align:center;margin-bottom:20px}
-        
+        .no-eventos { text-align:center; margin-top:20px; color: #777; font-style: italic;}
+
         @media (max-width:991.98px){
             .menu-toggle{display:block}
             .menu{display:none;flex-direction:column;align-items:stretch;position:absolute;top:100%;left:0;width:100%;background-color:#e9e9e9;padding:0;box-shadow:0 4px 8px rgba(0,0,0,.1);z-index:1000;border-top:1px solid #ccc}
@@ -198,7 +241,7 @@ if (!isset($pdo)) {
             .calendario-header h3{font-size:1.4em}
             .calendario-header button{padding:7px 12px;font-size:.85em}
             .dia-semana{font-size:.75em;padding:9px 3px}
-            .dia-calendario{ /* min-height:75px; Ya no se necesita si es flexible */ padding:7px 3px}
+            .dia-calendario{padding:7px 3px}
             .dia-numero{font-size:.95em;width:24px;height:24px;line-height:24px;margin-bottom:5px}
             .evento-calendario{font-size:.72em}
         }
@@ -208,7 +251,6 @@ if (!isset($pdo)) {
             .page-container > h2.page-title{font-size:1.5em}
             .calendario-header h3{font-size:1.3em}
             .dia-semana{font-size:.7em}
-            /* .dia-calendario{min-height:70px} */
             .dia-numero{font-size:.9em}
         }
         @media (max-width:480px){
@@ -216,8 +258,7 @@ if (!isset($pdo)) {
             .page-container > h2.page-title{font-size:1.3em}
             .calendario-header{flex-direction:column;gap:10px}
             .calendario-header h3{font-size:1.2em;order:-1}
-            .dia-semana{font-size:.65em; padding: 8px 2px;} /* Ajustar para que quepan */
-            /* .dia-calendario{min-height:60px} */
+            .dia-semana{font-size:.65em; padding: 8px 2px;}
             .dia-numero{font-size:.8em;width:20px;height:20px;line-height:20px}
             .evento-calendario {font-size: .7em; line-height: 1.2;}
             .leyenda h4{font-size:1em}
@@ -269,6 +310,9 @@ if (!isset($pdo)) {
                 <div class="leyenda-item"><span class="leyenda-color evento-riego"></span> Riego Estimado</div>
                 <div class="leyenda-item"><span class="leyenda-color evento-cosecha-estimada"></span> Cosecha/Fin Estimada</div>
             </div>
+            <?php if (isset($pdo) && empty($eventos_calendario) && empty($mensaje_error)): ?>
+                <p class="no-eventos">No tienes actividades programadas para tus cultivos en progreso.</p>
+            <?php endif; ?>
         </div> 
     </div> 
 
@@ -322,7 +366,6 @@ if (!isset($pdo)) {
                         celdaDia.classList.add('hoy');
                     }
 
-                    // Contenedor para eventos DENTRO de la celda del día
                     const eventosDelDiaContainer = document.createElement('div');
                     eventosDelDiaContainer.classList.add('eventos-del-dia');
 

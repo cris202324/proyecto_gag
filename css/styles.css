@@ -27,7 +27,7 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #4caf50; /* Color verde suave sólido, antes era un degradado */
+    background: #4caf50;
     padding: 5px 20px;
     color: white;
     position: fixed;
@@ -55,6 +55,7 @@ body::before {
 
 .navbar-links {
     display: flex;
+    align-items: center;
 }
 
 .navbar-links a {
@@ -74,6 +75,11 @@ body::before {
     border-radius: 5px;
 }
 
+/* Ajuste para centrar las 4 primeras opciones y mover "Iniciar Sesión" a la derecha */
+.navbar-links a:nth-child(5) {
+    margin-left: auto;
+}
+
 /* Botón del menú hamburguesa */
 .navbar-toggle {
     display: none;
@@ -87,24 +93,47 @@ body::before {
 /* Estilos del formulario */
 .login-form {
     max-width: 400px;
-    margin: 0 auto; /* Centrado horizontal */
-    background-color: rgba(255, 255, 255, 0.1); /* Fondo con sombra difusa */
-    backdrop-filter: blur(5px); /* Efecto de desenfoque */
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
     position: relative;
     z-index: 1;
     margin-top: 20px;
-    text-align: left; /* Asegurar que los elementos internos no estén centrados */
+    text-align: left;
+    min-height: 300px; /* Reducido para menos espacio */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.login-form .form-content {
+    flex: 1 1 auto;
+    height: 200px; /* Ajustado para optimizar espacio */
+    overflow-y: auto;
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.login-form .error-container {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center; /* Centrar explícitamente */
 }
 
 .login-form label {
     display: block;
     margin-bottom: 8px;
     font-size: 1em;
-    color: #fff; /* Letras blancas para contraste */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Sombra para mejor legibilidad */
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .login-form input {
@@ -115,7 +144,7 @@ body::before {
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.8);
     color: #333;
-    box-sizing: border-box; /* Asegurar que el ancho sea consistente */
+    box-sizing: border-box;
 }
 
 .login-form button {
@@ -128,6 +157,7 @@ body::before {
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-top: auto;
 }
 
 .login-form button:hover {
@@ -138,8 +168,8 @@ body::before {
 .register-link {
     display: block;
     text-align: center;
-    margin-top: 10px;
-    color: #fff; /* Letras blancas */
+    margin-top: 10px; /* Añadido margen superior */
+    color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     text-decoration: none;
     font-size: 0.9em;
@@ -149,6 +179,34 @@ body::before {
 .register-link:hover {
     text-decoration: underline;
 }
+
+/* Estilos del mensaje de error */
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+    position: relative;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    max-width: 100%;
+}
+
+/* Mostrar el mensaje cuando el formulario es inválido */
+.login-form.invalid .error-message {
+    opacity: 1;
+}
+
+/* Asegurar que los inputs y botones no excedan la altura mínima */
+.login-form > * {
+    flex: 0 0 auto;
+}
+
+/* ... (resto del código CSS permanece igual, solo se muestra la parte modificada) ... */
 
 /* Carrusel optimizado para index */
 .carousel {
@@ -451,17 +509,17 @@ body::before {
 
 /* Botón de volver */
 .back-button {
-    position: absolute; /* Cambiado a posición absoluta para controlarlo mejor */
-    top: 60px; /* Justo debajo de la navbar (que tiene altura aproximada de 50px) */
-    left: 10px; /* Alineado a la izquierda */
-    transform: translateY(5px); /* Leve inclinación hacia abajo */
-    padding: 8px 15px; /* Aumentado ligeramente para evitar recorte del texto */
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    transform: translateY(5px);
+    padding: 8px 15px;
     background-color: #4CAF50;
     color: white;
     text-decoration: none;
     border-radius: 5px;
     transition: background-color 0.3s ease;
-    font-size: 0.9em; /* Tamaño de fuente ajustado para que no se recorte */
+    font-size: 0.9em;
     cursor: pointer;
     border: none;
     z-index: 100;
@@ -479,7 +537,6 @@ body::before {
 
 /* Media Queries para Responsiveness */
 @media (max-width: 768px) {
-    /* Barra de Navegación */
     .navbar {
         flex-direction: column;
         align-items: flex-start;
@@ -514,6 +571,11 @@ body::before {
         padding: 10px 0;
         color: white;
         border-top: 1px solid rgba(255, 255, 255, 0.2);
+        width: 100%;
+    }
+
+    .navbar-links a:nth-child(5) {
+        margin-left: 0;
     }
 
     .navbar-links.active {
@@ -524,7 +586,6 @@ body::before {
         display: block;
     }
 
-    /* Ajuste del carrusel */
     .carousel {
         margin-top: 80px;
         height: 300px;
@@ -534,28 +595,24 @@ body::before {
         height: 300px;
     }
 
-    /* Contáctanos */
     .contact-section {
         grid-template-columns: 1fr;
         gap: 20px;
     }
 
-    /* Stats */
     .stats-section {
         flex-direction: column;
     }
 
-    /* Botón de volver */
     .back-button {
-        top: 80px; /* Ajustado para pantallas pequeñas */
+        top: 80px;
         left: 10px;
-        padding: 6px 12px; /* Ligeramente más pequeño en pantallas pequeñas */
+        padding: 6px 12px;
         font-size: 0.8em;
     }
 }
 
 @media (max-width: 480px) {
-    /* Carrusel */
     .carousel {
         height: 200px;
         margin-top: 70px;
@@ -565,13 +622,11 @@ body::before {
         height: 200px;
     }
 
-    /* Carrusel de fondo */
     .background-carousel img {
         object-fit: cover;
         height: 100%;
     }
 
-    /* Contenido Principal */
     .main-content {
         padding: 20px;
         margin-top: 80px;
@@ -585,7 +640,6 @@ body::before {
         font-size: 0.9em;
     }
 
-    /* Misión y Visión */
     .mision-vision {
         margin-top: 80px;
     }
@@ -603,7 +657,6 @@ body::before {
         width: 100px;
     }
 
-    /* Formulario */
     .login-form {
         max-width: 90%;
         padding: 15px;
@@ -614,24 +667,20 @@ body::before {
         padding-top: 40px;
     }
 
-    /* Navbar links */
     .navbar-links a {
         padding: 8px 0;
     }
 
-    /* Contáctanos */
     .contact-map iframe {
         height: 300px;
     }
 
-    /* Stats */
     .stat-number {
         font-size: 2em;
     }
 
-    /* Botón de volver */
     .back-button {
-        top: 70px; /* Ajustado para pantallas más pequeñas */
+        top: 70px;
         left: 10px;
         padding: 5px 10px;
         font-size: 0.7em;
@@ -644,12 +693,6 @@ body::before {
 
 .input-success {
     border-color: green;
-}
-
-.error-message {
-    color: red;
-    font-size: 0.9em;
-    margin-top: 5px;
 }
 
 /* Estilos para el banner de cookies */
@@ -719,7 +762,6 @@ body::before {
     background-color: #c9302c;
 }
 
-/* Media Queries para el banner de cookies */
 @media (max-width: 480px) {
     .cookie-consent-banner {
         padding: 10px;

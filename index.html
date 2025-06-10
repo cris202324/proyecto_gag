@@ -16,7 +16,7 @@
         <button class="navbar-toggle" aria-label="Abrir menú">
             ☰
         </button>
-        <div class="navbar-links" id="navbarLinks"> <!-- Añadido ID para el JS -->
+        <div class="navbar-links" id="navbarLinks">
             <a href="index.html">Inicio</a>
             <a href="login.html">Iniciar Sesión</a>
             <a href="misionvision.html">Misión y Visión</a>
@@ -80,7 +80,7 @@
             <a href="https://www.instagram.com" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
             <a href="https://www.twitter.com" target="_blank"><img src="icons/twitter.png" alt="Twitter"></a>
         </div>
-        <p>© <?php echo date("Y"); ?> GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p> <!-- Cambiado 2024 a PHP date -->
+        <p>© <?php echo date("Y"); ?> GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
     </footer>
 
     <!-- Scripts -->
@@ -92,9 +92,9 @@
 
         const animateCounters = () => {
             counters.forEach(counter => {
-                counter.innerText = '0'; // Reiniciar el contador
+                counter.innerText = '0';
                 const target = +counter.getAttribute('data-target');
-                const increment = target / 200; // Velocidad de la animación
+                const increment = target / 200;
                 const updateCounter = () => {
                     const count = +counter.innerText;
                     if (count < target) {

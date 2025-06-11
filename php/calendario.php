@@ -153,14 +153,8 @@ if (!isset($pdo)) {
     }
 }
 
-// El resto de tu HTML, CSS y JavaScript (incluyendo la etiqueta <style> y el script del calendario)
-// permanece igual que en la respuesta anterior.
 ?>
 <!DOCTYPE html>
-<!-- ... Aquí va todo tu HTML, CSS y JavaScript del calendario que ya tenías ... -->
-<!-- Asegúrate de que el título de la página y el encabezado <h2> reflejen que es "Mi Calendario" -->
-<!-- y si $eventos_calendario está vacío después del filtro, podrías mostrar un mensaje como -->
-<!-- "No tienes actividades programadas para tus cultivos en progreso." -->
 <html lang="es">
 <head>
     <meta charset="UTF-8">

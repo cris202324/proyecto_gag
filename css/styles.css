@@ -168,13 +168,13 @@ body::before {
 .register-link {
     display: block;
     text-align: center;
-    margin-top: 15px; /* Aumentado de 10px a 15px */
-    margin-bottom: 10px; /* Añadido margen inferior */
+    margin-top: 15px;
+    margin-bottom: 10px;
     color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     text-decoration: none;
     font-size: 0.9em;
-    padding: 5px 0; /* Añadido padding para ampliar área clicable */
+    padding: 5px 0;
 }
 
 .forgot-password:hover,
@@ -207,8 +207,6 @@ body::before {
 .login-form > * {
     flex: 0 0 auto;
 }
-
-/* ... (resto del código CSS permanece igual, solo se muestra la parte modificada) ... */
 
 /* Carrusel optimizado para index */
 .carousel {
@@ -525,6 +523,9 @@ body::before {
     cursor: pointer;
     border: none;
     z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .back-button:hover {

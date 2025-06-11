@@ -103,7 +103,7 @@ body::before {
     z-index: 1;
     margin-top: 20px;
     text-align: left;
-    min-height: 300px; /* Reducido para menos espacio */
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -112,7 +112,7 @@ body::before {
 
 .login-form .form-content {
     flex: 1 1 auto;
-    height: 200px; /* Ajustado para optimizar espacio */
+    height: 200px;
     overflow-y: auto;
     position: relative;
     padding-bottom: 20px;
@@ -125,7 +125,7 @@ body::before {
     padding: 0 20px;
     box-sizing: border-box;
     display: flex;
-    justify-content: center; /* Centrar explícitamente */
+    justify-content: center;
 }
 
 .login-form label {
@@ -168,11 +168,13 @@ body::before {
 .register-link {
     display: block;
     text-align: center;
-    margin-top: 10px; /* Añadido margen superior */
+    margin-top: 15px; /* Aumentado de 10px a 15px */
+    margin-bottom: 10px; /* Añadido margen inferior */
     color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     text-decoration: none;
     font-size: 0.9em;
+    padding: 5px 0; /* Añadido padding para ampliar área clicable */
 }
 
 .forgot-password:hover,

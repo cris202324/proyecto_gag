@@ -51,18 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
             const isEmailValid = validateEmail(emailInput.value);
             const isPasswordValid = passwordInput.value.length >= 8;
             if (!isEmailValid || !isPasswordValid) {
                 e.preventDefault();
-                loginForm.classList.add('invalid');
-                const errorContainer = loginForm.querySelector('.error-container .error-message');
-                if (errorContainer) {
-                    errorContainer.textContent = !isEmailValid ? 'Por favor, introduce un correo electrónico válido.' : 'La contraseña debe tener al menos 8 caracteres.';
-                }
-            } else {
-                loginForm.classList.remove('invalid');
+                showValidationMessage(loginForm, false, !isEmailValid ? 'Por favor, introduce un correo electrónico válido.' : 'La contraseña debe tener al menos 8 caracteres.');
             }
         });
     }

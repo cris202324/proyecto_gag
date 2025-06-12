@@ -163,7 +163,7 @@ if(isset($pdo) && isset($_SESSION['id_usuario'])) {
             <a href="index.php" class="active">Inicio</a>
             <a href="miscultivos.php">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario_general.php">Calendario</a>
+            <a href="calendario.php">Calendario</a>
             <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php">Ayuda</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
@@ -176,7 +176,7 @@ if(isset($pdo) && isset($_SESSION['id_usuario'])) {
         <div class="action-cards-container-user">
             <a href="crearcultivos.php" class="gag-card card-link-user">Nuevos Cultivos</a>
             <a href="animales/crear_animales.php" class="gag-card card-link-user">Nuevos Animales</a>
-            <a href="calendario_general.php" class="gag-card card-link-user">Ver Calendario</a>
+            <a href="calendario.php" class="gag-card card-link-user">Ver Calendario</a>
             <a href="configuracion.php" class="gag-card card-link-user">Mi Configuración</a>
             <a href="ayuda.php" class="gag-card card-link-user">Ayuda y Soporte</a>
 

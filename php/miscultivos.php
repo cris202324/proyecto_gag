@@ -18,10 +18,12 @@ $cultivos_usuario = [];
 $mensaje_error = '';
 $mensaje_exito = '';
 
-// Determinar qué estado de cultivo mostrar
-$estado_a_mostrar = isset($_GET['estado']) && $_GET['estado'] === 'terminado' ? 2 : 1; 
-$id_estado_en_progreso = 1;
+// IDs de estado (ajústalos según tu tabla estado_cultivo_definiciones)
+$id_estado_en_progreso = 1; 
 $id_estado_terminado = 2; 
+
+// Determinar qué estado de cultivo mostrar (para la vista actual)
+$estado_a_mostrar = isset($_GET['estado']) && $_GET['estado'] === 'terminado' ? $id_estado_terminado : $id_estado_en_progreso;
 
 $titulo_pagina = ($estado_a_mostrar == $id_estado_en_progreso) ? "Mis Cultivos en Progreso" : "Mis Cultivos Terminados";
 $link_ver_otros_cultivos_href = ($estado_a_mostrar == $id_estado_en_progreso) ? "miscultivos.php?estado=terminado" : "miscultivos.php";
@@ -40,6 +42,25 @@ if (!isset($pdo)) {
     $mensaje_error = "Error crítico: La conexión a la base de datos no está disponible.";
 } else {
     try {
+        // --- INICIO: ACTUALIZAR AUTOMÁTICAMENTE CULTIVOS A "TERMINADO" ---
+        $hoy_para_sql = date('Y-m-d');
+        $sql_auto_terminar = "UPDATE cultivos 
+                              SET id_estado_cultivo = :id_estado_terminado
+                              WHERE id_usuario = :id_usuario_actual_update
+                                AND id_estado_cultivo = :id_estado_en_progreso_update
+                                AND fecha_fin < :hoy_actual";
+        
+        $stmt_auto_terminar = $pdo->prepare($sql_auto_terminar);
+        $stmt_auto_terminar->bindParam(':id_estado_terminado', $id_estado_terminado, PDO::PARAM_INT);
+        $stmt_auto_terminar->bindParam(':id_usuario_actual_update', $id_usuario_actual, PDO::PARAM_STR);
+        $stmt_auto_terminar->bindParam(':id_estado_en_progreso_update', $id_estado_en_progreso, PDO::PARAM_INT);
+        $stmt_auto_terminar->bindParam(':hoy_actual', $hoy_para_sql, PDO::PARAM_STR);
+        $stmt_auto_terminar->execute();
+        // No es necesario verificar rowCount aquí a menos que quieras loguear cuántos se actualizaron.
+        // --- FIN: ACTUALIZAR AUTOMÁTICAMENTE CULTIVOS ---
+
+
+        // Consulta principal de cultivos (filtrada por el estado seleccionado)
         $sql_cultivos_main = "SELECT
                     c.id_cultivo, c.fecha_inicio, c.fecha_fin AS fecha_fin_registrada,
                     c.area_hectarea, tc.nombre_cultivo, tc.tiempo_estimado_frutos,
@@ -60,6 +81,7 @@ if (!isset($pdo)) {
         $stmt_cultivos_main->execute();
         $cultivos_usuario = $stmt_cultivos_main->fetchAll(PDO::FETCH_ASSOC);
 
+        // Para cada cultivo EN PROGRESO, obtener sus tareas pendientes/próximas
         if ($estado_a_mostrar == $id_estado_en_progreso) {
             for ($i = 0; $i < count($cultivos_usuario); $i++) {
                 $id_cultivo_actual = $cultivos_usuario[$i]['id_cultivo'];
@@ -67,7 +89,8 @@ if (!isset($pdo)) {
                 $sql_tareas = "SELECT tipo_tratamiento, producto_usado, etapas, fecha_aplicacion_estimada
                                FROM tratamiento_cultivo
                                WHERE id_cultivo = :id_cultivo 
-                                 AND fecha_aplicacion_estimada >= :hoy
+                                 AND fecha_aplicacion_estimada >= :hoy 
+                                 AND estado_tratamiento = 'Pendiente' -- Opcional: Solo mostrar tareas pendientes
                                ORDER BY fecha_aplicacion_estimada ASC";
                 $stmt_tareas = $pdo->prepare($sql_tareas);
                 $stmt_tareas->bindParam(':id_cultivo', $id_cultivo_actual, PDO::PARAM_INT);
@@ -90,6 +113,7 @@ if (!isset($pdo)) {
                 }
             }
         }
+
     } catch (PDOException $e) {
         $mensaje_error = "Error al obtener los cultivos: " . $e->getMessage();
     }
@@ -102,7 +126,8 @@ if (!isset($pdo)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($titulo_pagina); ?> - GAG</title>
     <style>
-        /* ... (Tus estilos CSS generales para body, header, menu, page-container, etc.) ... */
+        /* ... (TUS ESTILOS CSS COMPLETOS EXISTENTES PARA MISCULTIVOS.PHP) ... */
+        /* Copia aquí TODOS los estilos de la respuesta anterior (incluyendo los del header/menu, .page-container, .cultivos-grid, .cultivo-card, .tareas-section, botones, mensajes, y Media Queries) */
         body{font-family:Arial,sans-serif;margin:0;padding:0;background-color:#f9f9f9;font-size:16px}
         .header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background-color:#e0e0e0;border-bottom:2px solid #ccc;position:relative}
         .logo img{height:70px;transition:height .3s ease}
@@ -127,29 +152,12 @@ if (!isset($pdo)) {
         .tarea-hoy { color: #d9534f; font-weight: bold; } 
         .proxima-tarea { color:rgb(0, 0, 0); } 
         .no-tareas { color: #777; font-style: italic;}
-        
-        .cultivo-actions{
-            margin-top: 15px;
-            text-align: right;
-            display: flex; /* Para alinear botones en la misma línea */
-            justify-content: flex-end; /* Alinear a la derecha */
-            gap: 10px; /* Espacio entre botones */
-        }
-        .btn-cultivo-action { /* Clase base para botones de acción de cultivo */
-            color: white !important;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 0.85em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .btn-terminar-cultivo { background-color:rgb(143, 8, 8); } /* Azul para terminar */
-        .btn-terminar-cultivo:hover { background-color:rgb(103, 0, 0); }
-        .btn-ver-detalles { background-color: #5cb85c; } /* Verde GAG para detalles */
+        .cultivo-actions{margin-top:15px;text-align:right;display:flex;justify-content:flex-end;gap:10px}
+        .btn-cultivo-action {color:white !important;border:none;padding:8px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;cursor:pointer;transition:background-color 0.3s ease;}
+        .btn-terminar-cultivo { background-color:rgb(131, 20, 20); }
+        .btn-terminar-cultivo:hover { background-color:rgb(175, 23, 23); }
+        .btn-ver-detalles { background-color: #5cb85c; }
         .btn-ver-detalles:hover { background-color: #4cae4c; }
-
         .no-cultivos{text-align:center;width:100%;padding:40px 20px;font-size:1.2em;color:#666;background-color:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
         .no-cultivos p{margin-bottom:15px}
         .no-cultivos a{color:#4caf50;font-weight:700;text-decoration:none}
@@ -159,7 +167,6 @@ if (!isset($pdo)) {
         .view-toggle-link { display: block; text-align: center; margin: 10px 0 20px 0; }
         .view-toggle-link a { color: #4caf50; font-weight: bold; text-decoration: none; padding: 8px 15px; border: 1px solid #4caf50; border-radius: 5px; transition: background-color 0.3s, color 0.3s; }
         .view-toggle-link a:hover { background-color: #e8f5e9; }
-
         @media (max-width:991.98px){.menu-toggle{display:block}.menu{display:none;flex-direction:column;align-items:stretch;position:absolute;top:100%;left:0;width:100%;background-color:#e9e9e9;padding:0;box-shadow:0 4px 8px rgba(0,0,0,.1);z-index:1000;border-top:1px solid #ccc}.menu.active{display:flex}.menu a{margin:0;padding:15px 20px;width:100%;text-align:left;border:none;border-bottom:1px solid #d0d0d0;border-radius:0;color:#333}.menu a:last-child{border-bottom:none}.menu a.active,.menu a:hover{background-color:#88c057;color:#fff!important;border-color:transparent}.menu a.exit,.menu a.exit:hover{background-color:#ff4d4d;color:#fff!important}.page-container{padding:15px}.page-container > h2.page-title{font-size:1.6em;margin-bottom:20px}.cultivos-grid{grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:20px}.cultivo-card{padding:15px}.cultivo-card h3{font-size:1.2em}}
         @media (max-width:767px){.logo img{height:60px}.menu-toggle{font-size:1.6rem}.page-container > h2.page-title{font-size:1.5em}.cultivos-grid{grid-template-columns:1fr} .cultivo-actions { flex-direction: column; align-items: stretch;} .cultivo-actions .btn-cultivo-action { width: 100%; box-sizing: border-box; margin-bottom: 5px; margin-right:0;} .cultivo-actions .btn-cultivo-action:last-child {margin-bottom:0;} }
         @media (max-width:480px){.logo img{height:50px}.page-container > h2.page-title{font-size:1.4em}.cultivo-card h3{font-size:1.1em}.cultivo-card .info-section p,.cultivo-card .status-section,.tareas-section{font-size:.9em}}
@@ -210,7 +217,6 @@ if (!isset($pdo)) {
                         <div class="cultivo-card-content">
                             <h3><?php echo htmlspecialchars($cultivo['nombre_cultivo']); ?> en <?php echo htmlspecialchars($cultivo['nombre_municipio']); ?></h3>
                             <div class="info-section">
-                                <!-- ... (info del cultivo) ... -->
                                 <p>
                                     <strong>Inicio:</strong> <?php echo htmlspecialchars(date("d/m/Y", strtotime($cultivo['fecha_inicio']))); ?><br>
                                     <strong>Área:</strong> <?php echo htmlspecialchars($cultivo['area_hectarea']); ?> ha<br>
@@ -224,7 +230,6 @@ if (!isset($pdo)) {
                             </div>
                             <div class="status-section">
                                 <?php
-                                // ... (Lógica de Cosecha y Abono) ...
                                 $hoy_obj = new DateTime(); $hoy_obj->setTime(0,0,0);
                                 $fechaInicioObj = new DateTime($cultivo['fecha_inicio']);
                                 $mensajeCosecha = "Fecha de cosecha no determinada.";
@@ -255,7 +260,6 @@ if (!isset($pdo)) {
 
                             <?php if ($cultivo['id_estado_cultivo'] == $id_estado_en_progreso): ?>
                             <div class="tareas-section">
-                                <!-- ... (Lógica de Tareas Próximas) ... -->
                                 <strong>Tareas Próximas:</strong><br>
                                 <?php if (isset($cultivo['tarea_hoy']) && $cultivo['tarea_hoy']): $tarea_h = $cultivo['tarea_hoy']; ?>
                                     <p class="tarea-hoy">

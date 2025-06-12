@@ -13,34 +13,28 @@ if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['ro
 }
 
 // --- DEFINICIÓN DE VARIABLES INICIALES ---
-// Estas variables se usan en el HTML y JS, así que deben definirse ANTES de cualquier 'die' o 'exit' potencial.
 $termino_busqueda_inicial = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
 $pagina_inicial = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$mensaje_error_pagina = ''; 
+$mensaje_exito_accion = ''; 
 
-$mensaje_error_pagina = ''; // Para errores críticos de la página (ej. fallo de conexión)
-$mensaje_exito_accion = ''; // Para mensajes de acciones (editar/borrar) que vienen de sesión
-
-// Obtener mensajes de sesión de acciones previas (editar/borrar usuario)
+// Obtener mensajes de sesión de acciones previas
 if (isset($_SESSION['mensaje_accion_usuario'])) {
     $mensaje_exito_accion = $_SESSION['mensaje_accion_usuario'];
     unset($_SESSION['mensaje_accion_usuario']); 
 }
 if (isset($_SESSION['error_accion_usuario'])) {
-    // Si hay un error de acción, lo mostramos en $mensaje_error_pagina
     $mensaje_error_pagina = $_SESSION['error_accion_usuario']; 
     unset($_SESSION['error_accion_usuario']);
 }
 
-// Incluir conexión DESPUÉS de definir variables que el HTML podría necesitar
 require_once 'conexion.php'; 
 
 if (!isset($pdo)) {
-    // Establecer mensaje de error si $pdo no está y no hay otro mensaje de error prioritario
     if (empty($mensaje_error_pagina)) { 
         $mensaje_error_pagina = "Error crítico: La conexión a la base de datos no está disponible. La funcionalidad de la tabla de usuarios estará deshabilitada.";
     }
 }
-// La lógica de obtener datos ($usuarios, $total_paginas, etc.) se ha movido a ajax_buscar_usuarios.php
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -63,11 +57,26 @@ if (!isset($pdo)) {
         .page-container{max-width:1100px;margin:20px auto;padding:20px}
         .page-container > h2.page-title{text-align:center;color:#4caf50;margin-bottom:25px;font-size:1.8em}
         
-        .controles-tabla{margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+        .controles-tabla{
+            margin-bottom:20px;
+            display:flex;
+            justify-content:space-between; /* Para separar búsqueda y botón de reporte */
+            align-items:center;
+            flex-wrap:wrap; /* Para responsividad */
+            gap:15px
+        }
         .search-form { display:flex; flex-grow:1; max-width:400px; }
-        .search-form input[type="text"]{padding:8px 10px;border:1px solid #ccc;border-radius:5px 0 0 5px;font-size:.9em;flex-grow:1; border-right:none;}
-        /* .search-form button[type="submit"]{padding:8px 15px;background-color:#5cb85c;color:white;border:none;border-radius:0 5px 5px 0;cursor:pointer;font-size:.9em} */
-        /* .search-form button[type="submit"]:hover{background-color:#4cae4c} */
+        .search-form input[type="text"]{padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:.9em;flex-grow:1;} 
+        /* Quitado el borde redondeado derecho y border-right:none si el botón de submit tradicional no se usa */
+
+        .btn-generar-reporte {
+            padding: 8px 15px; background-color: #007bff; color: white;
+            border: none; border-radius: 5px; cursor: pointer;
+            font-size: 0.9em; text-decoration: none; font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-generar-reporte:hover { background-color: #0056b3; }
+
 
         #tablaUsuariosContainer .tabla-datos {width:100%;border-collapse:collapse;margin-bottom:0;background-color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.1);border-radius:8px;overflow:hidden}
         #tablaUsuariosContainer .tabla-datos th, #tablaUsuariosContainer .tabla-datos td {border-bottom:1px solid #ddd;padding:10px;text-align:left;font-size:.85em;word-break:break-word}
@@ -105,7 +114,8 @@ if (!isset($pdo)) {
         @media (max-width:768px){
             .logo img{height:60px}
             .controles-tabla { flex-direction:column; align-items:stretch; }
-            .search-form { max-width:none; } 
+            .search-form { max-width:none; margin-bottom:10px; } 
+            .btn-generar-reporte { width:100%; text-align:center; box-sizing: border-box;}
             .tabla-datos{display:block;overflow-x:auto;white-space:nowrap}
             .tabla-datos th,.tabla-datos td{font-size:.8em;padding:7px 9px}
             .page-container > h2.page-title{font-size:1.6em}
@@ -122,7 +132,7 @@ if (!isset($pdo)) {
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="logo GAG" /> <!-- Ajusta esta ruta -->
+            <img src="../img/logo.png" alt="logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
@@ -147,11 +157,16 @@ if (!isset($pdo)) {
         }
         ?>
 
-        <?php if (isset($pdo) && empty($mensaje_error_pagina) || (isset($pdo) && !strpos($mensaje_error_pagina, "crítico")) ): // Solo mostrar controles y tabla si hay conexión y no hay error CRÍTICO de página ?>
+        <?php if (isset($pdo) && empty($mensaje_error_pagina) || (isset($pdo) && !strpos($mensaje_error_pagina, "crítico")) ): ?>
             <div class="controles-tabla">
                 <form id="searchForm" class="search-form" onsubmit="return false;"> 
                     <input type="text" id="searchInput" name="buscar" placeholder="Buscar por nombre o email..." value="<?php echo htmlspecialchars($termino_busqueda_inicial); ?>">
                 </form>
+                <div> <!-- Contenedor para el botón de reporte -->
+                    <a href="#" id="btnGenerarReporteUsuarios" class="btn-generar-reporte">
+                        Generar Reporte Excel
+                    </a>
+                </div>
             </div>
 
             <div id="tablaUsuariosContainer">
@@ -160,7 +175,7 @@ if (!isset($pdo)) {
             <div id="paginacionContainer">
                 <!-- La paginación se cargará aquí con AJAX -->
             </div>
-        <?php endif; // Fin de if (isset($pdo)) ?>
+        <?php endif; ?>
     </div>
 
     <script>
@@ -174,23 +189,23 @@ if (!isset($pdo)) {
                 });
             }
 
-            <?php if (isset($pdo) && empty($mensaje_error_pagina) || (isset($pdo) && !strpos($mensaje_error_pagina, "crítico"))): // Solo ejecutar JS de AJAX si $pdo está disponible y no hay error crítico ?>
+            <?php if (isset($pdo) && empty($mensaje_error_pagina) || (isset($pdo) && !strpos($mensaje_error_pagina, "crítico"))): ?>
                 const searchInput = document.getElementById('searchInput');
                 const tablaContainer = document.getElementById('tablaUsuariosContainer');
                 const paginacionContainer = document.getElementById('paginacionContainer');
                 const loadingMessage = document.getElementById('loadingMessage');
+                const btnGenerarReporte = document.getElementById('btnGenerarReporteUsuarios');
                 
                 let currentPage = <?php echo $pagina_inicial; ?>;
                 let currentSearchTerm = searchInput ? searchInput.value : "<?php echo htmlspecialchars(addslashes($termino_busqueda_inicial)); ?>"; 
                 let searchTimeout;
 
                 function fetchUsuarios(termino = '', pagina = 1) {
+                    // ... (código de fetchUsuarios igual que antes)
                     if(loadingMessage) loadingMessage.style.display = 'block';
                     if(tablaContainer) tablaContainer.innerHTML = ''; 
                     if(paginacionContainer) paginacionContainer.innerHTML = ''; 
-
                     const url = `ajax_buscar_usuarios.php?buscar=${encodeURIComponent(termino)}&pagina=${pagina}`;
-
                     fetch(url)
                         .then(response => {
                             if (!response.ok) { throw new Error(`Error HTTP: ${response.status}`); }
@@ -217,7 +232,7 @@ if (!isset($pdo)) {
                         });
                 }
 
-                function updateURL(termino, pagina) { 
+                function updateURL(termino, pagina) { /* ... (igual que antes) ... */ 
                     const baseUrl = window.location.pathname; 
                     const params = new URLSearchParams();
                     if (termino) { params.append('buscar', termino); }
@@ -226,7 +241,7 @@ if (!isset($pdo)) {
                     window.history.pushState({path: newURL}, '', newURL);
                 }
                 
-                function addPaginacionListeners() { 
+                function addPaginacionListeners() { /* ... (igual que antes) ... */
                     if (!paginacionContainer) return;
                     const paginacionLinks = paginacionContainer.querySelectorAll('.paginacion a');
                     paginacionLinks.forEach(link => {
@@ -238,7 +253,7 @@ if (!isset($pdo)) {
                     });
                  }
 
-                function addDeleteConfirmations() { 
+                function addDeleteConfirmations() { /* ... (igual que antes) ... */
                     if (!tablaContainer) return;
                     const deleteLinks = tablaContainer.querySelectorAll('.btn-borrar');
                     deleteLinks.forEach(link => {
@@ -247,13 +262,25 @@ if (!isset($pdo)) {
                     });
                 }
 
-                function handleDeleteConfirm(event) { 
+                function handleDeleteConfirm(event) { /* ... (igual que antes) ... */
                     const userNameElement = this.closest('tr').querySelector('td:nth-child(2)');
                     const userName = userNameElement ? userNameElement.textContent : 'este usuario';
                     if (!confirm(`¿Estás realmente seguro de que deseas eliminar a ${userName}? Esta acción no se puede deshacer.`)) {
                         event.preventDefault();
                     }
                  }
+
+                if (btnGenerarReporte) { // Añadir listener al botón de reporte
+                    btnGenerarReporte.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const terminoActualParaReporte = searchInput ? searchInput.value : '';
+                        let urlReporte = 'generar_reporte_usuarios.php';
+                        if (terminoActualParaReporte) {
+                            urlReporte += '?buscar=' + encodeURIComponent(terminoActualParaReporte);
+                        }
+                        window.open(urlReporte, '_blank');
+                    });
+                }
 
                 if (searchInput && tablaContainer && paginacionContainer && loadingMessage) {
                     searchInput.addEventListener('input', function() {
@@ -263,7 +290,6 @@ if (!isset($pdo)) {
                             fetchUsuarios(searchTerm, 1); 
                         }, 300);
                     });
-                    // Carga inicial de usuarios
                     fetchUsuarios(currentSearchTerm, currentPage);
                 } else {
                     if(loadingMessage && !(document.querySelector('.error-message') && document.querySelector('.error-message').textContent.includes("crítico")) ) { 

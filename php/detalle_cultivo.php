@@ -130,7 +130,7 @@ if (!isset($pdo)) {
             <a href="index.php">Inicio</a>
             <a href="miscultivos.php" class="active">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario_general.php">Calendario</a>
+            <a href="calendario.php">Calendario</a>
             <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php">Ayuda</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>

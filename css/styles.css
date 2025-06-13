@@ -25,7 +25,7 @@ body::before {
 /* Barra de Navegación */
 .navbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     background: #4caf50;
     padding: 5px 20px;
@@ -40,6 +40,7 @@ body::before {
 .navbar-logo {
     display: flex;
     align-items: center;
+    margin-right: 20px;
 }
 
 .logo-navbar {
@@ -56,12 +57,14 @@ body::before {
 .navbar-links {
     display: flex;
     align-items: center;
+    flex-grow: 1;
+    justify-content: center; /* Centra las cuatro primeras opciones */
 }
 
 .navbar-links a {
     color: white;
     text-decoration: none;
-    margin-left: 15px;
+    margin: 0 15px;
     font-size: 0.9em;
     transition: color 0.3s ease, background-color 0.3s ease;
     display: flex;
@@ -75,9 +78,18 @@ body::before {
     border-radius: 5px;
 }
 
-/* Ajuste para centrar las 4 primeras opciones y mover "Iniciar Sesión" a la derecha */
-.navbar-links a:nth-child(5) {
+/* Mueve "Iniciar Sesión" al final a la derecha */
+.navbar-links a:last-child {
     margin-left: auto;
+    margin-right: 0;
+}
+
+/* Asegura que las 4 primeras opciones estén centradas */
+.navbar-links a:nth-child(1),
+.navbar-links a:nth-child(2),
+.navbar-links a:nth-child(3),
+.navbar-links a:nth-child(4) {
+    margin: 0 10px; /* Ajusta el espaciado entre las 4 opciones */
 }
 
 /* Botón del menú hamburguesa */
@@ -112,20 +124,19 @@ body::before {
 
 .login-form .form-content {
     flex: 1 1 auto;
-    height: 200px;
-    overflow-y: auto;
     position: relative;
-    padding-bottom: 20px;
+    padding-bottom: 60px; /* Aumentado para más espacio */
 }
 
 .login-form .error-container {
     position: absolute;
-    bottom: 60px;
+    bottom: 80px; /* Separación del botón */
     width: 100%;
     padding: 0 20px;
     box-sizing: border-box;
     display: flex;
-    justify-content: center;
+    justify-content: center; /* Centra el contenedor */
+    align-items: center; /* Alinea verticalmente si es necesario */
 }
 
 .login-form label {
@@ -187,15 +198,15 @@ body::before {
     color: red;
     font-size: 0.9em;
     margin-top: 5px;
-    position: relative;
-    text-align: center;
+    text-align: center; /* Centra el texto */
     opacity: 0;
     transition: opacity 0.3s ease;
     padding: 5px;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 3px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    max-width: 100%;
+    width: 100%; /* Asegura que ocupe el ancho completo del contenedor */
+    box-sizing: border-box;
 }
 
 /* Mostrar el mensaje cuando el formulario es inválido */
@@ -577,7 +588,7 @@ body::before {
         width: 100%;
     }
 
-    .navbar-links a:nth-child(5) {
+    .navbar-links a:last-child {
         margin-left: 0;
     }
 

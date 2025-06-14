@@ -2,7 +2,7 @@
 session_start();
 
 // ... (tus headers de caché y verificación de sesión) ...
-if (!isset($_SESSION['id_usuario'])) { header("Location: ../login.html"); exit(); }
+if (!isset($_SESSION['id_usuario'])) { header("Location: ../pages/auth/login.html"); exit(); }
 
 include 'conexion.php'; 
 $id_usuario_actual = $_SESSION['id_usuario']; 

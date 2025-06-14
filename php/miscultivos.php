@@ -7,7 +7,7 @@ header("Pragma: no-cache");
 header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.html");
+    header("Location: ../pages/auth/login.html");
     exit();
 }
 

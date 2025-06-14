@@ -8,7 +8,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../../login.html"); // Sube dos niveles para login.html
+    header("Location: ../../pages/auth/login.html"); // Sube dos niveles para login.html
     exit();
 }
 

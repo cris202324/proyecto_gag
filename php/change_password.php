@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($token)) {
             </form>
         <?php endif; ?>
 
-        <a href="../login.html" class="back-link">Volver al login</a>
+        <a href="../pages/auth/login.html" class="back-link">Volver al login</a>
     </div>
 </body>
 </html>

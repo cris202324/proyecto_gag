@@ -4,7 +4,7 @@ require_once 'conexion.php'; // $pdo
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.html"); // Asumiendo login.html está en la raíz del proyecto
+    header("Location: ../pages/auth/login.html"); // Asumiendo login.html está en la raíz del proyecto
     exit();
 }
 

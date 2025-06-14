@@ -9,7 +9,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 if (!isset($_POST['email']) || !isset($_POST['contrasena'])) {
     echo "<script>
             alert('Por favor, complete todos los campos.');
-            window.location.href='http://localhost/proyecto_gag/login.html';
+            window.location.href='http://localhost/proyecto_gag/pages/auth/login.html';
           </script>";
     exit();
 }
@@ -43,25 +43,25 @@ try {
             } else {
                 echo "<script>
                         alert('Rol no reconocido. Contacta al administrador.');
-                        window.location.href='http://localhost/proyecto_gag/login.html';
+                        window.location.href='http://localhost/proyecto_gag/pages/auth/login.html';
                       </script>";
             }
         } else {
             echo "<script>
                     alert('Contraseña incorrecta. Inténtelo de nuevo.');
-                    window.location.href='http://localhost/proyecto_gag/login.html';
+                    window.location.href='http://localhost/proyecto_gag/pages/auth/login.html';
                   </script>";
         }
     } else {
         echo "<script>
                 alert('No se encontró un usuario con ese correo.');
-                window.location.href='http://localhost/proyecto_gag/login.html';
+                window.location.href='http://localhost/proyecto_gag/pages/auth/login.html';
               </script>";
     }
 } catch (PDOException $e) {
     echo "<script>
             alert('Error de base de datos: " . addslashes($e->getMessage()) . "');
-            window.location.href='http://localhost/proyecto_gag/login.html';
+            window.location.href='http://localhost/proyecto_gag/pages/auth/login.html';
           </script>";
 }
 ?>

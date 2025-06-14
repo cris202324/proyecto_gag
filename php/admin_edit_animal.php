@@ -4,7 +4,7 @@ require_once 'conexion.php'; // $pdo
 
 // Verificar si el usuario está autenticado y es admin
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
-    header("Location: ../login.html");
+    header("Location: ../pages/auth/login.html");
     exit();
 }
 

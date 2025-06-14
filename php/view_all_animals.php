@@ -8,7 +8,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado y es admin
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
-    header("Location: ../login.html"); // Ajusta esta ruta
+    header("Location: ../pages/auth/login.html"); // Ajusta esta ruta
     exit();
 }
 

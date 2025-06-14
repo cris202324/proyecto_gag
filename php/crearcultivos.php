@@ -8,7 +8,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado (asumimos que cualquier usuario logueado puede crear cultivos)
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.html"); // Ajusta esta ruta según tu estructura
+    header("Location: ../pages/auth/login.html"); // Ajusta esta ruta según tu estructura
     exit();
 }
 // Si solo los usuarios normales (rol 2) pueden crear, y no los admins:

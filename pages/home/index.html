@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Agricultura y Ganadería en el Tolima</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../../css/styles.css">
 </head>
 <body>
     <!-- Barra de Navegación -->
     <nav class="navbar">
         <div class="navbar-logo">
-            <img src="img/logo.png" alt="Logo GAG" class="logo-navbar">
+            <img src="../../img/logo.png" alt="Logo GAG" class="logo-navbar">
             <span class="navbar-title">Gestión de Agricultura y Ganadería en el Tolima</span>
         </div>
         <button class="navbar-toggle" aria-label="Abrir menú">
@@ -18,10 +18,10 @@
         </button>
         <div class="navbar-links" id="navbarLinks">
             <a href="index.html">Inicio</a>
-            <a href="misionvision.html">Misión y Visión</a>
-            <a href="quienessomos.html">¿Quiénes Somos?</a>
+            <a href="../info/misionvision.html">Misión y Visión</a>
+            <a href="../info/quienessomos.html">¿Quiénes Somos?</a>
             <a href="contacto.html">Contáctanos</a>
-            <a href="login.html">Iniciar Sesión</a>
+            <a href="../auth/login.html">Iniciar Sesión</a>
         </div>
     </nav>
 
@@ -31,17 +31,17 @@
             <button onclick="prevSlide()">❮</button>
             <button onclick="nextSlide()">❯</button>
         </div>
-        <img src="img/imagen1.png" alt="Agricultura 1" class="visible">
-        <img src="img/imagen2.png" alt="Agricultura 2">
-        <img src="img/imagen3.jpg" alt="Agricultura 3">
+        <img src="../../img/imagen1.png" alt="Agricultura 1" class="visible">
+        <img src="../../img/imagen2.png" alt="Agricultura 2">
+        <img src="../../img/imagen3.jpg" alt="Agricultura 3">
     </div>
 
     <!-- Contenido Principal -->
     <div class="main-content">
-        <img src="img/logo.png" alt="Logo GAG" class="logo">
+        <img src="../../img/logo.png" alt="Logo GAG" class="logo">
         <h1>Bienvenidos a GAG</h1>
         <p>Tu solución integral para la gestión eficiente de agricultura y ganadería en el Tolima.</p>
-        <a href="login.html" class="action-button">Comienza Ahora</a>
+        <a href="../auth/login.html" class="action-button">Comienza Ahora</a>
     </div>
 
     <!-- Nueva sección sobre agricultura y ganadería -->
@@ -76,15 +76,15 @@
     <!-- Pie de Página -->
     <footer class="footer">
         <div class="footer-social">
-            <a href="https://www.facebook.com" target="_blank"><img src="icons/facebook.webp" alt="Facebook"></a>
-            <a href="https://www.instagram.com" target="_blank"><img src="icons/instagram.png" alt="Instagram"></a>
-            <a href="https://www.twitter.com" target="_blank"><img src="icons/twitter.png" alt="Twitter"></a>
+            <a href="https://www.facebook.com" target="_blank"><img src="../../icons/facebook.webp" alt="Facebook"></a>
+            <a href="https://www.instagram.com" target="_blank"><img src="../../icons/instagram.png" alt="Instagram"></a>
+            <a href="https://www.twitter.com" target="_blank"><img src="../../icons/twitter.png" alt="Twitter"></a>
         </div>
         <p>© <?php echo date("Y"); ?> GAG - Gestión de Agricultura y Ganadería. Todos los derechos reservados.</p>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/scripts.js"></script>
+    <script src="../../js/scripts.js"></script>
     <script>
         // Animación del contador con IntersectionObserver
         const statsSection = document.querySelector('#stats-section');

@@ -4,7 +4,7 @@ require_once 'conexion.php'; // $pdo
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.html"); // Ajusta ruta si es necesario
+    header("Location: ../pages/auth/login.html"); // Ajusta ruta si es necesario
     exit();
 }
 // Opcional: Si quieres que esta página sea solo para admins, descomenta y ajusta:

@@ -1,9 +1,9 @@
 <?php
 // conexion.php
 $host = 'localhost'; 
-$db   = 'u774017147_GAG';
-$user = 'u774017147_GAG'; 
-$pass = 'SENa2901879';   
+$db   = 'gag';
+$user = 'root'; 
+$pass = '';   
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

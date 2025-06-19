@@ -89,25 +89,6 @@ if (!isset($pdo)) {
                 }
             }
 
-            // ... (Lógica de Riego sin cambios en la clase por ahora, se mantiene 'evento-riego') ...
-            // Si quieres que el riego también tenga un color diferente, necesitarías una clase
-            // y lógica similar a la de cosecha.
-            $sql_riego = "SELECT frecuencia_riego, fecha_ultimo_riego
-                          FROM riego WHERE id_cultivo = :id_cultivo ORDER BY fecha_ultimo_riego DESC LIMIT 1";
-            // ... (resto de tu lógica de riego como estaba, asegurando que $proximo_riego_estimado_temp se defina)
-            // y luego, si se añade el evento de riego:
-            // if ($proximo_riego_estimado_temp) {
-            //      $eventos_calendario[] = [
-            //         'title' => "Riego Estimado - " . $nombreCultivoDisplay,
-            //         'start' => $proximo_riego_estimado_temp,
-            //         'description' => "Según frecuencia: " . htmlspecialchars($ultimo_riego['frecuencia_riego']),
-            //         'className' => 'evento-riego', // Esta clase ya la tenías para riego
-            //         'cultivo_id' => $cultivo['id_cultivo']
-            //     ];
-            // }
-            // --- Re-incluyo la lógica de riego completa para claridad ---
-
-
         } 
 
     } catch (PDOException $e) {
@@ -122,8 +103,6 @@ if (!isset($pdo)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Calendario de Actividades - GAG</title>
     <style>
-        /* ... (tus estilos de body, header, menu, .page-container, .calendario-wrapper, etc.) ... */
-        /* Copia TODOS los estilos de la respuesta anterior, y solo AÑADE/MODIFICA lo siguiente: */
         body{font-family:Arial,sans-serif;margin:0;padding:0;background-color:#f9f9f9;font-size:16px}
         .header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background-color:#e0e0e0;border-bottom:2px solid #ccc;position:relative}
         .logo img{height:70px;} .menu{display:flex;align-items:center}

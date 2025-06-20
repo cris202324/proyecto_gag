@@ -11,10 +11,7 @@ $idioma = "es";
 // Endpoint para clima actual
 $apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" . urlencode($ciudad) . "&appid=" . $apiKey . "&units=" . $unidades . "&lang=" . $idioma;
 
-// Alternativa: Endpoint para pronóstico 5 días / 3 horas
-// $apiUrl = "https://api.openweathermap.org/data/2.5/forecast?q=" . urlencode($ciudad) . "&appid=" . $apiKey . "&units=" . $unidades . "&lang=" . $idioma;
 
-// --- Opción 1: Usar file_get_contents (más simple si allow_url_fopen está activado en php.ini) ---
 $responseJson = @file_get_contents($apiUrl); // Usar @ para suprimir warnings si la URL falla
 
 if ($responseJson === FALSE) {

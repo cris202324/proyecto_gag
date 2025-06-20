@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once 'conexion.php'; // $pdo
+require_once '../conexion.php'; // $pdo
 
 // Cargar el autoloader de Composer
-require_once __DIR__ . '/../vendor/autoload.php'; // Ajusta la ruta a tu carpeta vendor
+require_once __DIR__ . '/../../vendor/autoload.php'; // Ajusta la ruta a tu carpeta vendor
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;

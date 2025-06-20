@@ -182,7 +182,7 @@ if (!isset($pdo)) {
 
             <!-- Contenedor para botones de acción -->
             <div class="action-buttons-container">
-                <a href="generar_reporte_cultivo_excel.php?id_cultivo=<?php echo $id_cultivo_seleccionado; ?>" class="report-button" target="_blank">Generar Reporte Excel</a>
+                <a href="../../generar_reporte_cultivo_excel.php?id_cultivo=<?php echo $id_cultivo_seleccionado; ?>" class="report-button" target="_blank">Generar Reporte Excel</a>
                 <!-- Puedes añadir más botones aquí, como "Editar Cultivo" -->
             </div>
 

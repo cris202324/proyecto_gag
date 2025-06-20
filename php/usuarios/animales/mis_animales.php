@@ -8,11 +8,11 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../../pages/auth/login.html"); // Sube dos niveles para login.html
+    header("Location: ../../../pages/auth/login.html"); // Sube dos niveles para login.html
     exit();
 }
 
-include '../conexion.php'; // Sube un nivel para conexion.php
+include '../../conexion.php'; // Sube un nivel para conexion.php
 $id_usuario_actual = $_SESSION['id_usuario'];
 $animales_usuario = [];
 $mensaje_error = '';
@@ -301,19 +301,19 @@ if (!isset($pdo)) {
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../../img/logo.png" alt="Logo GAG" />
+            <img src="../../../img/logo.png" alt="Logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">
             ☰
         </button>
         <nav class="menu" id="mainMenu">
-            <a href="../index.php">Inicio</a>
-            <a href="../miscultivos.php">Mis Cultivos</a>
+            <a href="../../index.php">Inicio</a>
+            <a href="../cultivos/miscultivos.php">Mis Cultivos</a>
             <a href="mis_animales.php" class="active">Mis Animales</a>
             <a href="../calendario.php">Calendario</a>
             <a href="../configuracion.php">Configuración</a>
             <a href="../ayuda.php">Ayuda</a>
-            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 

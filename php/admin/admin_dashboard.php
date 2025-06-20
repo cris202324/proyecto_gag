@@ -8,12 +8,12 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../pages/auth/login.html"); 
+    header("Location: ../../pages/auth/login.html"); 
     exit();
 }
 
 // Verificar si el usuario es admin (id_rol = 1)
-require_once 'conexion.php'; 
+require_once '../conexion.php'; 
 if (!isset($pdo)) {
     die("Error crítico: No se pudo establecer la conexión a la base de datos.");
 }
@@ -24,7 +24,7 @@ $stmt_rol_check->execute();
 $rol_del_usuario_logueado = $stmt_rol_check->fetchColumn();
 
 if ($rol_del_usuario_logueado != 1) {
-    header("Location: index.php"); 
+    header("Location: ../index.php"); 
     exit();
 }
 
@@ -91,7 +91,7 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador';
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="Logo GAG" />
+            <img src="../../img/logo.png" alt="Logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
@@ -100,7 +100,7 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador';
             <a href="view_all_crops.php">Ver Cultivos</a>
             <a href="view_all_animals.php">Ver Animales</a> 
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 

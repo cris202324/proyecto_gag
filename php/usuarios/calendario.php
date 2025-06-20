@@ -2,9 +2,9 @@
 session_start();
 
 // ... (tus headers de caché y verificación de sesión) ...
-if (!isset($_SESSION['id_usuario'])) { header("Location: ../pages/auth/login.html"); exit(); }
+if (!isset($_SESSION['id_usuario'])) { header("Location: ../../pages/auth/login.html"); exit(); }
 
-include 'conexion.php'; 
+include '../conexion.php'; 
 $id_usuario_actual = $_SESSION['id_usuario']; 
 $eventos_calendario = [];
 $mensaje_error = '';
@@ -183,10 +183,10 @@ if (!isset($pdo)) {
 <body>
     <div class="header">
         <!-- ... Tu HTML del header ... -->
-        <div class="logo"><img src="../img/logo.png" alt="Logo GAG" /></div>
+        <div class="logo"><img src="../../img/logo.png" alt="Logo GAG" /></div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <a href="index.php">Inicio</a> <a href="miscultivos.php">Mis Cultivos</a> <a href="animales/mis_animales.php">Mis Animales</a>
+            <a href="../index.php">Inicio</a> <a href="miscultivos.php">Mis Cultivos</a> <a href="animales/mis_animales.php">Mis Animales</a>
             <a href="calendario_general.php" class="active">Calendario</a> <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php">Ayuda</a> <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
@@ -306,7 +306,7 @@ if (!isset($pdo)) {
 
                     if (!fechaRealizacion) { alert("Por favor, selecciona la fecha de realización."); return; }
 
-                    fetch('marcar_tratamiento_completado.php', {
+                    fetch('cultivos/marcar_tratamiento_completado.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded', },
                         body: `id_tratamiento=${idTratamiento}&fecha_realizacion=${fechaRealizacion}&observaciones=${encodeURIComponent(observaciones)}`

@@ -11,13 +11,13 @@ if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['ro
     // Asumiendo que este archivo está en una carpeta como 'admin/' o 'php/'
     // y login.html está en 'proyecto_gag/pages/auth/login.html'
     // La ruta a login.html debe ser correcta desde la ubicación de este script
-    header("Location: ../pages/auth/login.html"); // Ajusta esta ruta si es necesario
+    header("Location: ../../pages/auth/login.html"); // Ajusta esta ruta si es necesario
     exit();
 }
 
 // Asumiendo que conexion.php está en el mismo directorio que este script
 // o un nivel arriba si este script está en una subcarpeta (ej. 'admin/')
-require_once 'conexion.php'; // $pdo
+require_once '../conexion.php'; // $pdo
 
 $todos_cultivos = [];
 $mensaje_error = '';
@@ -318,7 +318,7 @@ if (!isset($pdo)) {
     <div class="header">
         <div class="logo">
             <!-- Ajusta la ruta a tu logo si es necesario -->
-            <img src="../img/logo.png" alt="Logo GAG" />
+            <img src="../../img/logo.png" alt="Logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
@@ -328,7 +328,7 @@ if (!isset($pdo)) {
             <a href="view_all_crops.php" class="active">Ver Cultivos</a>
             <a href="view_all_animals.php">Ver Animales</a>
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 

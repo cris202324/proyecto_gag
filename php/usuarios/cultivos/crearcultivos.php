@@ -8,7 +8,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado (asumimos que cualquier usuario logueado puede crear cultivos)
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../pages/auth/login.html"); // Ajusta esta ruta según tu estructura
+    header("Location: ../../../pages/auth/login.html"); // Ajusta esta ruta según tu estructura
     exit();
 }
 // Si solo los usuarios normales (rol 2) pueden crear, y no los admins:
@@ -21,7 +21,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] != 2) {
 */
 
 // Incluir el archivo de conexión
-$ruta_conexion = __DIR__ . '/conexion.php';
+$ruta_conexion = __DIR__ . '../../conexion.php';
 if (!file_exists($ruta_conexion)) {
     die("Error crítico: No se encontró el archivo de configuración de la base de datos.");
 }
@@ -194,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Nuevo Cultivo - GAG</title>
-    <link rel="stylesheet" href="../css/estilos.css"> <!-- Ajusta ruta -->
+    <link rel="stylesheet" href="../../../css/estilos.css"> <!-- Ajusta ruta -->
     <style>
         /* Estilos del formulario (como los tenías) */
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
@@ -229,23 +229,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .menu a.exit:hover{background-color:#c00;color:#fff!important}
         .menu-toggle{display:none;background:0 0;border:none;font-size:1.8rem;color:#333;cursor:pointer;padding:5px}
         @media (max-width:991.98px){.menu-toggle{display:block}.menu{display:none;flex-direction:column;align-items:stretch;position:absolute;top:100%;left:0;width:100%;background-color:#e9e9e9;padding:0;box-shadow:0 4px 8px rgba(0,0,0,.1);z-index:1000;border-top:1px solid #ccc}.menu.active{display:flex}.menu a{margin:0;padding:15px 20px;width:100%;text-align:left;border:none;border-bottom:1px solid #d0d0d0;border-radius:0;color:#333}.menu a:last-child{border-bottom:none}.menu a.active,.menu a:hover{background-color:#88c057;color:#fff!important;border-color:transparent}.menu a.exit,.menu a.exit:hover{background-color:#ff4d4d;color:#fff!important}}
-        @media (max-width:768px){.logo img{height:60px} .page-container{width:90%; margin:20px auto;} .form-wrapper{padding:20px;}}
+        @media (max-width:768pxs){.logo img{height:60px} .page-container{width:90%; margin:20px auto;} .form-wrapper{padding:20px;}}
         @media (max-width:480px){.logo img{height:50px} .menu-toggle{font-size:1.6rem} .page-container h1{font-size:1.5em;}}
     </style>
 </head>
 <body>
     <!-- Incluye tu header aquí -->
     <div class="header">
-        <div class="logo"><img src="../img/logo.png" alt="Logo GAG" /></div>
+        <div class="logo"><img src="../../../img/logo.png" alt="Logo GAG" /></div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <a href="index.php">Inicio</a>
+            <a href="../../index.php">Inicio</a>
             <a href="miscultivos.php" class="active">Mis Cultivos</a>
-            <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario_general.php">Calendario</a>
-            <a href="configuracion.php">Configuración</a>
-            <a href="ayuda.php">Ayuda</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../animales/mis_animales.php">Mis Animales</a>
+            <a href="../calendario.php">Calendario</a>
+            <a href="../configuracion.php">Configuración</a>
+            <a href="../ayuda.php">Ayuda</a>
+            <a href="../../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 
@@ -304,7 +304,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="form-group action-buttons">
                     <button type="submit" class="btn-submit">Crear Cultivo</button>
-                    <a href="index.php" class="btn-cancel" style="margin-left: 10px;">Cancelar</a>
+                    <a href="../../index.php" class="btn-cancel" style="margin-left: 10px;">Cancelar</a>
                 </div>
             </form>
             <?php endif; // Fin de if para mostrar formulario ?>

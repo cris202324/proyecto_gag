@@ -7,11 +7,11 @@ header("Pragma: no-cache");
 header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../pages/auth/login.html");
+    header("Location: ../../../pages/auth/login.html");
     exit();
 }
 
-include 'conexion.php';
+include '../../conexion.php';
 $id_usuario_actual = $_SESSION['id_usuario'];
 
 $cultivos_usuario = [];
@@ -218,16 +218,16 @@ if (!isset($pdo)) {
 </head>
 <body>
     <div class="header">
-        <div class="logo"><img src="../img/logo.png" alt="Logo GAG" /></div>
+        <div class="logo"><img src="../../../img/logo.png" alt="Logo GAG" /></div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <a href="index.php">Inicio</a>
+            <a href="../../index.php">Inicio</a>
             <a href="miscultivos.php" class="active">Mis Cultivos</a>
-            <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario.php">Calendario</a>
-            <a href="configuracion.php">Configuración</a>
-            <a href="ayuda.php">Ayuda</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../animales/mis_animales.php">Mis Animales</a>
+            <a href="../calendario.php">Calendario</a>
+            <a href="../configuracion.php">Configuración</a>
+            <a href="../ayuda.php">Ayuda</a>
+            <a href="../../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 

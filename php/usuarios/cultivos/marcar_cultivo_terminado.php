@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once 'conexion.php'; // $pdo
+require_once '../../conexion.php'; // $pdo
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../pages/auth/login.html"); 
+    header("Location: ../../../pages/auth/login.html"); 
     exit();
 }
 

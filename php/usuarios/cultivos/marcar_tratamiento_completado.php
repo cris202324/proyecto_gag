@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'conexion.php'; // $pdo
+require_once '../../conexion.php'; // $pdo
 
 header('Content-Type: application/json'); // Siempre devolver JSON
 

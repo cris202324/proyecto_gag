@@ -14,7 +14,7 @@ if (!isset($_SESSION['id_usuario'])) {
 
 // Redirigir si es admin
 if (isset($_SESSION['rol']) && $_SESSION['rol'] == 1) {
-    header("Location: admin_dashboard.php"); 
+    header("Location: admin/admin_dashboard.php"); 
     exit();
 }
 
@@ -161,11 +161,11 @@ if(isset($pdo) && isset($_SESSION['id_usuario'])) {
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
             <a href="index.php" class="active">Inicio</a>
-            <a href="miscultivos.php">Mis Cultivos</a>
-            <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario.php">Calendario</a>
-            <a href="configuracion.php">Configuración</a>
-            <a href="ayuda.php">Ayuda</a>
+            <a href="usuarios/cultivos/miscultivos.php">Mis Cultivos</a>
+            <a href="usuarios/animales/mis_animales.php">Mis Animales</a>
+            <a href="usuarios/calendario.php">Calendario</a>
+            <a href="usuarios/configuracion.php">Configuración</a>
+            <a href="usuarios/ayuda.php">Ayuda</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
@@ -174,11 +174,11 @@ if(isset($pdo) && isset($_SESSION['id_usuario'])) {
         <h2 class="page-title-user">Bienvenido a tu Panel GAG, <?php echo htmlspecialchars($_SESSION['usuario']); ?>!</h2>
         
         <div class="action-cards-container-user">
-            <a href="crearcultivos.php" class="gag-card card-link-user">Nuevos Cultivos</a>
-            <a href="animales/crear_animales.php" class="gag-card card-link-user">Nuevos Animales</a>
-            <a href="calendario.php" class="gag-card card-link-user">Ver Calendario</a>
-            <a href="configuracion.php" class="gag-card card-link-user">Mi Configuración</a>
-            <a href="ayuda.php" class="gag-card card-link-user">Ayuda y Soporte</a>
+            <a href="usuarios/cultivos/crearcultivos.php" class="gag-card card-link-user">Nuevos Cultivos</a>
+            <a href="usuarios/animales/crear_animales.php" class="gag-card card-link-user">Nuevos Animales</a>
+            <a href="usuarios/calendario.php" class="gag-card card-link-user">Ver Calendario</a>
+            <a href="usuarios/configuracion.php" class="gag-card card-link-user">Mi Configuración</a>
+            <a href="usuarios/ayuda.php" class="gag-card card-link-user">Ayuda y Soporte</a>
 
             <div class="gag-card weather-display-card-user">
                 <h4>Clima en <span id="clima-ciudad">Cargando...</span></h4>

@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once 'conexion.php'; // $pdo
+require_once '../conexion.php'; // $pdo
 
 // Verificar si el usuario está autenticado y es admin
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
-    header("Location: ../pages/auth/login.html");
+    header("Location: ../../pages/auth/login.html");
     exit();
 }
 
@@ -151,7 +151,7 @@ $pagina_retorno = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 </head>
 <body>
     <div class="header">
-        <div class="logo"><img src="../img/logo.png" alt="Logo GAG" /></div>
+        <div class="logo"><img src="../../img/logo.png" alt="Logo GAG" /></div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
             <a href="admin_dashboard.php">Inicio</a> 
@@ -160,7 +160,7 @@ $pagina_retorno = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             <a href="view_all_animals.php" class="active">Ver Animales</a>
             <a href="manage_users.php">Gestionar Roles</a> 
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 

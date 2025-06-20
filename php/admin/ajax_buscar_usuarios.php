@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'conexion.php'; // $pdo
+require_once '../conexion.php'; // $pdo
 
 // Solo para admins
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {

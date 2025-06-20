@@ -8,11 +8,11 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado y es admin
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
-    header("Location: ../pages/auth/login.html");
+    header("Location: ../../pages/auth/login.html");
     exit();
 }
 
-include 'conexion.php';
+include '../conexion.php';
 
 $animales = [];
 $mensaje_error = '';
@@ -137,7 +137,7 @@ if (!isset($pdo)) {
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Gestionar Animales</title>
-    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../../css/estilos.css">
         <style>
         .content {
             padding: 20px;
@@ -188,17 +188,16 @@ if (!isset($pdo)) {
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="logo" />
+            <img src="../../img/logo.png" alt="logo" />
         </div>
         <div class="menu">
             <a href="admin_dashboard.php">Inicio</a>
             <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
             <a href="view_all_animals.php">Ver Animales</a>
-            <a href="manage_users.php">Gestionar Usuarios</a>
             <a href="manage_animals.php" class="active">Gestionar Animales</a>
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </div>
     </div>
 

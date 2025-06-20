@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once 'conexion.php'; // $pdo
+require_once '../conexion.php'; // $pdo
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../pages/auth/login.html"); // Asumiendo login.html está en la raíz del proyecto
+    header("Location: ../../pages/auth/login.html"); // Asumiendo login.html está en la raíz del proyecto
     exit();
 }
 
@@ -348,20 +348,20 @@ try {
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="Logo GAG" /> <!-- Ajusta esta ruta -->
+            <img src="../../img/logo.png" alt="Logo GAG" /> <!-- Ajusta esta ruta -->
         </div>
         <!-- Botón Hamburguesa -->
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">
             ☰ <!-- Icono de hamburguesa -->
         </button>
         <nav class="menu" id="mainMenu"> <!-- Contenedor del menú con ID -->
-            <a href="index.php">Inicio</a>
-            <a href="miscultivos.php">Mis Cultivos</a>
+            <a href="../index.php">Inicio</a>
+            <a href="cultivos/miscultivos.php">Mis Cultivos</a>
             <a href="animales/mis_animales.php">Mis Animales</a>
             <a href="calendario.php">Calendario</a>
             <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php" class="active">Ayuda</a> <!-- Asumiendo que esta es ayuda.php -->
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 

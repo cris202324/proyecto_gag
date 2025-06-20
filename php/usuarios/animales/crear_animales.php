@@ -2,11 +2,11 @@
 session_start();
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../login.php"); // Asegúrate que esta ruta es correcta
+    header("Location: ../../login.php"); // Asegúrate que esta ruta es correcta
     exit();
 }
 
-include '../conexion.php'; // Asegúrate que $pdo esté definido aquí
+include '../../conexion.php'; // Asegúrate que $pdo esté definido aquí
 
 $mensaje = '';
 

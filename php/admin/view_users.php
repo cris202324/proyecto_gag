@@ -8,7 +8,7 @@ header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
 // Verificar si el usuario está autenticado y es admin
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
-    header("Location: ../pages/auth/login.html"); 
+    header("Location: ../../pages/auth/login.html"); 
     exit();
 }
 
@@ -28,7 +28,7 @@ if (isset($_SESSION['error_accion_usuario'])) {
     unset($_SESSION['error_accion_usuario']);
 }
 
-require_once 'conexion.php'; 
+require_once '../conexion.php'; 
 
 if (!isset($pdo)) {
     if (empty($mensaje_error_pagina)) { 
@@ -132,7 +132,7 @@ if (!isset($pdo)) {
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../img/logo.png" alt="logo GAG" />
+            <img src="../../img/logo.png" alt="logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
@@ -141,7 +141,7 @@ if (!isset($pdo)) {
             <a href="view_all_crops.php">Ver Cultivos</a>
             <a href="view_all_animals.php">Ver Animales</a>
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 

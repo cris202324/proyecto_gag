@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once 'conexion.php'; // $pdo - Asume que conexion.php está en el mismo directorio
+require_once '../../conexion.php'; // $pdo - Asume que conexion.php está en el mismo directorio
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: login.php"); // Ajusta ruta si login.php no está en el mismo directorio
+    header("Location: ../../login.php"); // Ajusta ruta si login.php no está en el mismo directorio
     exit();
 }
 

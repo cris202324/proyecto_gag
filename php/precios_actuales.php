@@ -131,12 +131,12 @@ if (!isset($pdo)) {
             <!-- Asumiendo que esta página es accesible tanto por admin como por usuario normal -->
             <!-- Si es solo admin, el enlace a Inicio sería admin_dashboard.php -->
             <a href="index.php">Inicio</a> 
-            <a href="miscultivos.php">Mis Cultivos</a>
-            <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario_general.php">Calendario</a>
+            <a href="usuarios/cultivos/miscultivos.php">Mis Cultivos</a>
+            <a href="usuarios/animales/mis_animales.php">Mis Animales</a>
+            <a href="usuarios/calendario.php">Calendario</a>
             <a href="precios_actuales.php" class="active">Precios de Cultivos</a>
-            <a href="configuracion.php">Configuración</a>
-            <a href="ayuda.php">Ayuda</a>
+            <a href="usuarios/configuracion.php">Configuración</a>
+            <a href="usuarios/ayuda.php">Ayuda</a>
             <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>

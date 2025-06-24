@@ -195,7 +195,7 @@ $admin_nombre = $_SESSION['usuario'] ?? 'Administrador';
         let ciudadParaClima = "<?php echo htmlspecialchars(addslashes($nombre_municipio_para_clima . ',CO')); ?>";
 
         function cargarClima() {
-            const urlApiLocal = `api_clima.php?ciudad=${encodeURIComponent(ciudadParaClima)}`; 
+            const urlApiLocal = `../api_clima.php?ciudad=${encodeURIComponent(ciudadParaClima)}`; 
 
             fetch(urlApiLocal)
                 .then(response => {

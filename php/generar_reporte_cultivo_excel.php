@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'conexion.php'; // Asegúrate que esta ruta es correcta desde donde guardes este archivo
-require_once __DIR__ . '../vendor/autoload.php'; // Ajusta la ruta al autoload de Composer si es necesario
+require_once 'C:/xampp/htdocs/proyecto_gag/vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;

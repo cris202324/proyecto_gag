@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../../conexion.php'; // Ajusta la ruta si es necesario
-require_once __DIR__ . '../../../vendor/autoload.php'; // Ajusta la ruta al autoload de Composer
+require_once 'C:/xampp/htdocs/proyecto_gag/vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -31,7 +31,7 @@ if (!isset($pdo)) {
 }
 
 try {
-    // 1. OBTENER DATOS DEL USUARIO (opcional, para el encabezado del reporte)
+    // 1. OBTENER DATOS DEL USUARIO (para el encabezado del reporte)
     $stmt_usuario = $pdo->prepare("SELECT nombre, email FROM usuarios WHERE id_usuario = :id_usuario");
     $stmt_usuario->bindParam(':id_usuario', $id_usuario_actual, PDO::PARAM_STR);
     $stmt_usuario->execute();

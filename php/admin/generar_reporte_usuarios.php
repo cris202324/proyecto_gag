@@ -3,7 +3,7 @@ session_start();
 require_once '../conexion.php'; // $pdo
 
 // Cargar el autoloader de Composer
-require_once __DIR__ . '/../../vendor/autoload.php'; // Ajusta la ruta a tu carpeta vendor
+require_once 'C:/xampp/htdocs/proyecto_gag/vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;

@@ -186,8 +186,11 @@ if (!isset($pdo)) {
         <div class="logo"><img src="../../img/logo.png" alt="Logo GAG" /></div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <a href="../index.php">Inicio</a> <a href="miscultivos.php">Mis Cultivos</a> <a href="animales/mis_animales.php">Mis Animales</a>
-            <a href="calendario_general.php" class="active">Calendario</a> <a href="configuracion.php">Configuración</a>
+            <a href="../index.php">Inicio</a>
+            <a href="cultivos/miscultivos.php">Mis Cultivos</a>
+            <a href="animales/mis_animales.php">Mis Animales</a>
+            <a href="calendario.php" class="active">Calendario</a>
+            <a href="configuracion.php">Configuración</a>
             <a href="ayuda.php">Ayuda</a> <a href="cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>

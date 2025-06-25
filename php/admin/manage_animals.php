@@ -190,15 +190,16 @@ if (!isset($pdo)) {
         <div class="logo">
             <img src="../../img/logo.png" alt="logo" />
         </div>
-        <div class="menu">
-            <a href="admin_dashboard.php">Inicio</a>
+        <nav class="menu" id="mainMenu">
+            <!-- Ajusta las rutas del menú según la ubicación de este archivo -->
+            <a href="admin_dashboard.php" class="active">Inicio Admin</a> 
             <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
-            <a href="view_all_animals.php">Ver Animales</a>
-            <a href="manage_animals.php" class="active">Gestionar Animales</a>
+            <a href="admin_manage_trat_pred.php">Tratamientos Pred.</a> <!-- Enlace al nuevo gestor -->
+            <a href="view_all_animals.php">Ver Animales</a> 
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
-        </div>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a> <!-- Asume que cerrar_sesion está un nivel arriba -->
+        </nav>
     </div>
 
     <div class="content">

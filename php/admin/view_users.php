@@ -136,12 +136,14 @@ if (!isset($pdo)) {
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <a href="admin_dashboard.php">Inicio</a> 
-            <a href="view_users.php" class="active">Ver Usuarios</a> 
+            <!-- Ajusta las rutas del menú según la ubicación de este archivo -->
+            <a href="admin_dashboard.php" class="active">Inicio Admin</a> 
+            <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
-            <a href="view_all_animals.php">Ver Animales</a>
+            <a href="admin_manage_trat_pred.php">Tratamientos Pred.</a> <!-- Enlace al nuevo gestor -->
+            <a href="view_all_animals.php">Ver Animales</a> 
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a> <!-- Asume que cerrar_sesion está un nivel arriba -->
         </nav>
     </div>
 

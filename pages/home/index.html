@@ -57,19 +57,18 @@
         </div>
     </div>
 
-    <!-- Sección de estadísticas -->
-    <div class="stats-section" id="stats-section">
-        <div class="stat-item">
-            <span class="stat-number" data-target="500">0</span>
-            <span class="stat-label">Agricultores Apoyados</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number" data-target="1000">0</span>
-            <span class="stat-label">Hectáreas Gestionadas</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number" data-target="50">0</span>
-            <span class="stat-label">Proyectos Sostenibles</span>
+    <!-- Sección de Beneficios -->
+    <div class="section-container" id="benefits-section">
+        <h2 class="section-title">Beneficios de GAG-Tolima</h2>
+        <div class="description">
+            <ul class="benefits-list">
+                <li>Automatiza el registro de cultivos y ganadería.</li>
+                <li>Envía alertas para vacunas y fertilizantes a tiempo.</li>
+                <li>Genera reportes para tomar decisiones inteligentes.</li>
+                <li>Acceso fácil desde cualquier dispositivo con internet.</li>
+            </ul>
+            <p class="cta-text">¡Únete y transforma tu productividad hoy!</p>
+            <a href="../auth/login.html" class="action-button">Empieza Gratis</a>
         </div>
     </div>
 
@@ -86,38 +85,6 @@
     <!-- Scripts -->
     <script src="../../js/scripts.js"></script>
     <script>
-        // Animación del contador con IntersectionObserver
-        const statsSection = document.querySelector('#stats-section');
-        const counters = document.querySelectorAll('.stat-number');
-
-        const animateCounters = () => {
-            counters.forEach(counter => {
-                counter.innerText = '0';
-                const target = +counter.getAttribute('data-target');
-                const increment = target / 200;
-                const updateCounter = () => {
-                    const count = +counter.innerText;
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count + increment);
-                        setTimeout(updateCounter, 10);
-                    } else {
-                        counter.innerText = target;
-                    }
-                };
-                updateCounter();
-            });
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                }
-            });
-        }, { threshold: 0.5 });
-
-        observer.observe(statsSection);
-
         // Controles del carrusel
         let currentSlide = 0;
         const slides = document.querySelectorAll('.carousel img');
@@ -141,5 +108,14 @@
         // Auto-carrusel
         setInterval(nextSlide, 5000);
     </script>
+
+    <!-- Banner de Consentimiento de Cookies -->
+    <div id="cookie-consent-banner" class="cookie-consent-banner">
+        <p>Este sitio utiliza cookies para mejorar tu experiencia. <a href="#" target="_blank">Más información</a>.</p>
+        <div class="cookie-consent-buttons">
+            <button id="accept-cookies">Aceptar</button>
+            <button id="reject-cookies">Rechazar</button>
+        </div>
+    </div>
 </body>
 </html>

@@ -7,7 +7,7 @@ if (!isset($_SESSION['id_usuario'])) {
     exit();
 }
 
-include '../conexion.php';
+include '../../conexion.php';
 $id_usuario_actual = $_SESSION['id_usuario'];
 $mensaje = '';
 $animal_seleccionado_info = null;

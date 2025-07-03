@@ -248,10 +248,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(climaTempEl) climaTempEl.textContent = data.main.temp.toFixed(1);
                 if(climaHumedadEl) climaHumedadEl.textContent = data.main.humidity;
 
-                let lluviaInfo = "Prob. lluvia no disponible.";
-                if (data.rain && data.rain['1h']) { lluviaInfo = `Lluvia (1h): ${data.rain['1h']} mm`; }
-                else if (data.pop !== undefined) { lluviaInfo = `Prob. lluvia: ${(data.pop * 100).toFixed(0)}%`; }
-                if(climaLluviaPopEl) climaLluviaPopEl.textContent = lluviaInfo;
             })
             .catch(error => {
                 console.error('Error al cargar datos del clima:', error);

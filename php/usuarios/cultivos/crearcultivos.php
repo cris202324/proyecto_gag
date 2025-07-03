@@ -21,7 +21,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] != 2) {
 */
 
 // Incluir el archivo de conexión
-$ruta_conexion = __DIR__ . '../../conexion.php';
+$ruta_conexion = __DIR__ . '../../../conexion.php';
 if (!file_exists($ruta_conexion)) {
     die("Error crítico: No se encontró el archivo de configuración de la base de datos.");
 }

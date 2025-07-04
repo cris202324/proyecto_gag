@@ -95,3 +95,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+document.addEventListener('DOMContentLoaded', function() {
+    const registrationForm = document.querySelector('.login-form');
+    const nombreInput = document.getElementById('nombre');
+    const emailInput = document.getElementById('email');
+    const contrasenaInput = document.getElementById('contrasena');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const feedbackDiv = document.querySelector('.validation-feedback');
+
+    // Función para mostrar mensajes de error
+    function showFeedback(message, isError = true) {
+        feedbackDiv.textContent = message;
+        feedbackDiv.style.color = isError ? '#d9534f' : '#5cb85c'; // Rojo para error, verde para éxito
+        feedbackDiv.style.display = message ? 'block' : 'none';
+    }
+
+    // --- NUEVA VALIDACIÓN: Prevenir números en el campo de nombre ---
+    if (nombreInput) {
+        nombreInput.addEventListener('input', function() {
+            const value = nombreInput.value;
+            // Usamos una expresión regular para encontrar cualquier dígito (número)
+            if (/\d/.test(value)) {
+                // Si se encuentra un número, lo eliminamos inmediatamente
+                nombreInput.value = value.replace(/\d/g, '');
+                // Y mostramos un mensaje de advertencia
+                showFeedback('El nombre no puede contener números.');
+            } else {
+                // Si el campo es válido (sin números), limpiamos el mensaje de error
+                // si el error era específicamente sobre los números.
+                if (feedbackDiv.textContent === 'El nombre no puede contener números.') {
+                    showFeedback('');
+                }
+            }
+        });
+    }
+
+    // Validación al enviar el formulario (como una última comprobación del lado del cliente)
+    if (registrationForm) {
+        registrationForm.addEventListener('submit', function(event) {
+            // Limpiar feedback anterior
+            showFeedback('');
+
+            // Validar que las contraseñas coincidan
+            if (contrasenaInput.value !== confirmPasswordInput.value) {
+                event.preventDefault(); // Detener el envío del formulario
+                showFeedback('Las contraseñas no coinciden.');
+                return;
+            }
+            
+            // Validar la longitud de la contraseña
+            if (contrasenaInput.value.length < 8) {
+                event.preventDefault();
+                showFeedback('La contraseña debe tener al menos 8 caracteres.');
+                return;
+            }
+
+            // Re-validar el nombre por si acaso
+            if (/\d/.test(nombreInput.value)) {
+                event.preventDefault();
+                showFeedback('El nombre no puede contener números. Por favor, corríjalo.');
+                return;
+            }
+        });
+    }
+});

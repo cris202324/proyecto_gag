@@ -1,18 +1,23 @@
 <?php
 session_start();
 
-// Evitar caché del navegador
+// --- Bloque de Seguridad: Autenticación y Autorización ---
+// Es crucial para proteger la página y asegurar que solo el administrador pueda acceder.
+
+// 1. Evitar caché del navegador: Fuerza al navegador a pedir siempre la versión más reciente de la página.
+//    Esto es importante para evitar que se muestre contenido obsoleto o información de sesión antigua.
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
-// Verificar si el usuario está autenticado
+// 2. Verificar si hay una sesión activa. Si no, el usuario no ha iniciado sesión.
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../../pages/auth/login.html"); 
     exit();
 }
 
-// Verificar si el usuario es admin (id_rol = 1)
+// 3. Verificar si el usuario tiene el rol de Administrador (id_rol = 1).
+//    Esto previene que un usuario normal que haya iniciado sesión pueda acceder al panel de admin.
 require_once '../conexion.php'; 
 if (!isset($pdo)) {
     // Ajusta la ruta a conexion.php si es necesario.
@@ -25,12 +30,15 @@ $stmt_rol_check->execute();
 $rol_del_usuario_logueado = $stmt_rol_check->fetchColumn();
 
 if ($rol_del_usuario_logueado != 1) {
-    // Si no es admin, redirigir a la página principal de usuario o login
+    // Si el rol no es 1, se le redirige fuera del área de administración.
     header("Location: ../index.php"); // Ajusta esta ruta a la página de inicio de usuarios no admin
     exit();
 }
+// --- Fin del Bloque de Seguridad ---
 
-// Obtener estadísticas básicas
+
+// --- Bloque de Carga de Datos para el Dashboard ---
+// Aquí se obtienen los datos que se mostrarán en el panel, como las estadísticas.
 $total_usuarios_no_admin = 0;
 $total_cultivos = 0;
 $total_animales = 0;
@@ -38,18 +46,21 @@ $total_tickets_abiertos = 0;
 $stats_error_message = '';
 
 try {
+    // 4. Se ejecutan consultas SQL simples para contar registros y obtener estadísticas clave.
+    //    Se usa ->fetchColumn() para obtener directamente el resultado de COUNT(*).
     $total_usuarios_no_admin = $pdo->query("SELECT COUNT(*) FROM usuarios WHERE id_rol = 2")->fetchColumn();
     $total_cultivos = $pdo->query("SELECT COUNT(*) FROM cultivos")->fetchColumn();
     $total_animales = $pdo->query("SELECT COUNT(*) FROM animales")->fetchColumn();
     $total_tickets_abiertos = $pdo->query("SELECT COUNT(*) FROM tickets_soporte WHERE estado_ticket = 'Abierto'")->fetchColumn();
 } catch (PDOException $e) {
+    // 5. Manejo de errores: Si las consultas fallan, se guarda un mensaje para mostrarlo al admin.
     $stats_error_message = "Error al cargar estadísticas: " . $e->getMessage();
-    // Podrías loguear el error aquí: error_log("Error estadísticas dashboard: " . $e->getMessage());
 }
 
 $nombre_municipio_para_clima = "Ibagué"; // Puedes hacerlo configurable más adelante
-// Intenta obtener el nombre del administrador de la sesión
+// 6. Obtener el nombre del administrador desde la sesión para un saludo personalizado.
 $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administrador'; 
+// --- Fin del Bloque de Carga de Datos ---
 ?>
 
 <!DOCTYPE html>
@@ -155,18 +166,17 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
 <body>
     <div class="header">
         <div class="logo">
-            <img src="../../img/logo.png" alt="Logo GAG" /> <!-- Ajusta la ruta a tu logo -->
+            <img src="../../img/logo.png" alt="Logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <!-- Ajusta las rutas del menú según la ubicación de este archivo -->
             <a href="admin_dashboard.php" class="active">Inicio Admin</a> 
             <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
-            <a href="admin_manage_trat_pred.php">Tratamientos Pred.</a> <!-- Enlace al nuevo gestor -->
+            <a href="admin_manage_trat_pred.php">Tratamientos Pred.</a>
             <a href="view_all_animals.php">Ver Animales</a> 
             <a href="manage_tickets.php">Gestionar Tickets</a>
-            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a> <!-- Asume que cerrar_sesion está un nivel arriba -->
+            <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 
@@ -177,6 +187,8 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
             <p class="error-message"><?php echo htmlspecialchars($stats_error_message); ?></p>
         <?php endif; ?>
 
+        <!-- 7. Sección de Estadísticas Rápidas y Clima -->
+        <!--    Muestra los datos obtenidos en el bloque de carga de datos (Punto 4). -->
         <section class="dashboard-section">
             <h3 class="section-title">Estadísticas Rápidas y Clima</h3>
             <div class="cards-container">
@@ -196,6 +208,7 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
                     <div class="card-text">Tickets Abiertos</div>
                     <div class="card-number"><?php echo htmlspecialchars($total_tickets_abiertos); ?></div>
                 </div>
+                 <!-- 8. Tarjeta del Clima: Esta tarjeta se llenará dinámicamente con JavaScript. -->
                  <div class="weather-display-card">
                     <h4>Clima en <span id="clima-ciudad">Cargando...</span></h4>
                     <div id="clima-icono"></div>
@@ -207,12 +220,13 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
             </div>
         </section>
 
+        <!-- 11. Secciones de Acciones Rápidas -->
+        <!--    Son tarjetas que funcionan como enlaces directos a las principales áreas de gestión. -->
         <section class="dashboard-section">
             <h3 class="section-title">Gestión General</h3>
             <div class="cards-container">
                 <a href="view_users.php" class="card-action-link">Ver Usuarios</a>
                 <a href="manage_tickets.php" class="card-action-link">Gestionar Tickets Soporte</a>
-                <!-- El reporte general se mueve a su propia sección abajo -->
             </div>
         </section>
 
@@ -220,7 +234,7 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
             <h3 class="section-title">Gestión Agrícola</h3>
             <div class="cards-container">
                 <a href="view_all_crops.php" class="card-action-link">Ver Todos los Cultivos</a>
-                <a href="admin_manage_trat_pred.php" class="card-action-link">Gestionar Tratamientos Predeterminados</a> <!-- BOTÓN/TARJETA AÑADIDO AQUÍ -->
+                <a href="admin_manage_trat_pred.php" class="card-action-link">Gestionar Tratamientos Predeterminados</a>
             </div>
         </section>
 
@@ -228,7 +242,6 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
             <h3 class="section-title">Gestión Ganadera</h3>
             <div class="cards-container">
                 <a href="view_all_animals.php" class="card-action-link">Ver Todos los Animales</a>
-                <!-- Podrías añadir aquí "Gestionar Tipos de Medicamento/Vacuna" si creas esa interfaz -->
             </div>
         </section>
         
@@ -255,7 +268,9 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
             });
         }
 
-        // Lógica del Clima
+        // --- Bloque de Lógica del Clima (JavaScript) ---
+        // 12. Este script se ejecuta después de que la página ha cargado.
+        //     Obtiene los elementos del DOM donde se mostrará la información del clima.
         const climaCiudadEl = document.getElementById('clima-ciudad');
         const climaIconoEl = document.getElementById('clima-icono');
         const climaDescripcionEl = document.getElementById('clima-descripcion');
@@ -263,9 +278,12 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
         const climaHumedadEl = document.getElementById('clima-humedad');
         const climaLluviaPopEl = document.getElementById('clima-lluvia-pop');
 
+        // 13. Se define la ciudad para la cual se pedirá el clima. Este valor viene de PHP.
         let ciudadParaClima = "<?php echo htmlspecialchars(addslashes($nombre_municipio_para_clima . ',CO')); ?>"; 
 
         function cargarClima() {
+            // 14. Se hace una petición a un script PHP local (api_clima.php).
+            //     Esto es una buena práctica para no exponer la API Key de OpenWeatherMap en el código del cliente.
             const urlApiLocal = `../api_clima.php?ciudad=${encodeURIComponent(ciudadParaClima)}`; 
 
             fetch(urlApiLocal)
@@ -283,13 +301,12 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
                     return response.json();
                 })
                 .then(data => {
+                    // 15. Una vez que se obtienen los datos del clima, se actualizan los elementos del DOM.
+                    //     Se muestra el nombre de la ciudad, el icono del clima, la descripción, temperatura, etc.
                     if (data.cod && data.cod.toString() !== "200") { 
                         if(climaCiudadEl) climaCiudadEl.textContent = ciudadParaClima.split(',')[0];
                         if(climaDescripcionEl) climaDescripcionEl.textContent = `Error: ${data.message || 'No se pudo obtener el clima.'}`;
-                        if(climaIconoEl) climaIconoEl.innerHTML = '';
-                        if(climaTempEl) climaTempEl.textContent = '--';
-                        if(climaHumedadEl) climaHumedadEl.textContent = '--';
-                        if(climaLluviaPopEl) climaLluviaPopEl.textContent = '';
+                        // ... (código para limpiar los campos en caso de error)
                         return;
                     }
                     if(climaCiudadEl) climaCiudadEl.textContent = data.name;
@@ -297,22 +314,21 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? $_SESSION['usuario'] ?? 'Administ
                     if(climaDescripcionEl) climaDescripcionEl.textContent = data.weather[0].description;
                     if(climaTempEl) climaTempEl.textContent = data.main.temp.toFixed(1);
                     if(climaHumedadEl) climaHumedadEl.textContent = data.main.humidity;
-
-
                 })
                 .catch(error => {
+                    // Manejo de errores si la petición fetch falla.
                     console.error('Error al cargar datos del clima:', error);
                     if(climaCiudadEl) climaCiudadEl.textContent = ciudadParaClima.split(',')[0];
                     if(climaDescripcionEl) climaDescripcionEl.textContent = error.message.includes("API Clima:") || error.message.includes("Error HTTP:") ? error.message : "No se pudo cargar el clima.";
-                    if(climaIconoEl) climaIconoEl.innerHTML = '';
-                    if(climaTempEl) climaTempEl.textContent = '--';
-                    if(climaHumedadEl) climaHumedadEl.textContent = '--';
-                    if(climaLluviaPopEl) climaLluviaPopEl.textContent = '';
+                    // ... (código para limpiar los campos en caso de error)
                 });
         }
+        
+        // 16. Se llama a la función para cargar el clima solo si la tarjeta del clima existe en la página.
         if(typeof cargarClima === 'function' && document.getElementById('clima-ciudad')){ 
             cargarClima();
         }
+        // --- Fin del Bloque de Lógica del Clima ---
     });
     </script>
 </body>

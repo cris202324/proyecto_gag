@@ -266,25 +266,6 @@ if (($id_usuario_para_editar && $_SERVER["REQUEST_METHOD"] != "POST") || ($id_us
                         <label for="email">Correo Electrónico:</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($usuario_a_editar['email']); ?>" required>
                     </div>
-                    <div class="form-group">
-                        <label for="id_rol">Rol:</label>
-                        <select id="id_rol" name="id_rol" required <?php echo (!$puede_cambiar_rol_estado) ? 'disabled' : ''; ?> >
-                            <?php if (!empty($roles_disponibles)): ?>
-                                <?php foreach($roles_disponibles as $rol_opt): ?>
-                                    <option value="<?php echo $rol_opt['id_rol']; ?>" <?php echo ($rol_opt['id_rol'] == $usuario_a_editar['id_rol']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($rol_opt['rol']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php elseif ($usuario_a_editar['id_rol'] == 1): // Si es admin y no hay otras opciones (porque solo se cargó él mismo) ?>
-                                <option value="1" selected>Administrador</option>
-                            <?php else: ?>
-                                <option value="">Error al cargar roles</option>
-                            <?php endif; ?>
-                        </select>
-                        <?php if (!$puede_cambiar_rol_estado): ?>
-                            <small class="warning-note">No puedes cambiar el rol de tu propia cuenta de administrador aquí.</small>
-                        <?php endif; ?>
-                    </div>
                      <div class="form-group">
                         <label for="id_estado">Estado:</label>
                         <select id="id_estado" name="id_estado" required <?php echo (!$puede_cambiar_rol_estado && $usuario_a_editar['id_rol'] == 1) ? 'disabled' : ''; // Deshabilitar estado solo si es el admin logueado ?> >

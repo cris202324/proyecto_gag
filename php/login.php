@@ -29,7 +29,13 @@ try {
             $_SESSION['usuario'] = $result['nombre'];
             $_SESSION['id_usuario'] = $result['id_usuario'];
             $_SESSION['rol'] = $result['id_rol'];
-
+            
+            if ($result['id_rol'] == 3) {
+                echo "<script>
+                        alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . " (super admin)!');
+                        window.location.href='http://localhost/proyecto_gag/php/super/index.php';
+                      </script>";
+            }
             if ($result['id_rol'] == 2) {
                 echo "<script>
                         alert('Inicio de sesión exitoso. Bienvenido, " . addslashes($result['nombre']) . " (usuario)!');

@@ -2,8 +2,9 @@
 session_start();
 require_once '../conexion.php'; // $pdo
 
-// Solo para admins
-if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
+// --- VERIFICACIÓN DE ACCESO DE ADMIN ---
+// Solo administradores y superadministradores pueden usar esta función
+if (!isset($_SESSION['id_usuario']) || !in_array($_SESSION['rol'], [1, 3])) {
     header('Content-Type: application/json');
     http_response_code(403); // Forbidden
     echo json_encode(['error' => 'Acceso no autorizado.']);
@@ -34,11 +35,10 @@ try {
     }
 
     // --- LÓGICA DE PAGINACIÓN - CONTEO ---
+    // ===== CAMBIO 1: Añadir la condición para filtrar solo por rol 'usuario' (id_rol = 2) =====
     $sql_count = "SELECT COUNT(*) 
                   FROM usuarios u 
-                  /* JOIN rol r ON u.id_rol = r.id_rol  // No son necesarios para el COUNT si el filtro es solo en usuarios
-                  JOIN estado e ON u.id_estado = e.id_estado */
-                  WHERE u.id_rol != 1";
+                  WHERE u.id_rol = 2"; // <-- Filtro añadido aquí
     $params_for_execute_count = [];
     if ($param_busqueda_like !== null) {
         $sql_count .= " AND (u.nombre LIKE ? OR u.email LIKE ?)";
@@ -60,12 +60,12 @@ try {
     $offset_actual = ($pagina_actual - 1) * $usuarios_por_pagina;
 
     // --- CONSULTA PRINCIPAL ---
-    $sql_main = "SELECT u.id_usuario, u.nombre, u.email, u.id_rol, u.id_estado, 
-                       r.rol as nombre_rol, e.descripcion as nombre_estado
+    // ===== CAMBIO 2: Añadir la misma condición a la consulta principal =====
+    $sql_main = "SELECT u.id_usuario, u.nombre, u.email, u.id_estado, 
+                       e.descripcion as nombre_estado
                  FROM usuarios u
-                 JOIN rol r ON u.id_rol = r.id_rol
                  JOIN estado e ON u.id_estado = e.id_estado
-                 WHERE u.id_rol != 1";
+                 WHERE u.id_rol = 2"; // <-- Filtro añadido aquí
     $params_for_execute_main = [];
     if ($param_busqueda_like !== null) {
         $sql_main .= " AND (u.nombre LIKE ? OR u.email LIKE ?)";
@@ -85,13 +85,13 @@ try {
     if (empty($usuarios) && !empty($termino_busqueda)) {
         echo '<div class="no-datos"><p>No se encontraron usuarios que coincidan con "' . htmlspecialchars($termino_busqueda) . '".</p></div>';
     } elseif (empty($usuarios)) {
-        echo '<div class="no-datos"><p>No hay usuarios (no administradores) para mostrar.</p></div>';
+        echo '<div class="no-datos"><p>No hay usuarios registrados para mostrar.</p></div>';
     } else {
     ?>
         <table class="tabla-datos">
             <thead>
                 <tr>
-                    <th>ID Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th>
+                    <th>ID Usuario</th><th>Nombre</th><th>Email</th><th>Estado</th><th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,9 +100,9 @@ try {
                         <td><?php echo htmlspecialchars($usuario['id_usuario']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['nombre']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['email']); ?></td>
-                        <td><?php echo htmlspecialchars($usuario['nombre_rol']); ?></td>
                         <td><?php echo htmlspecialchars($usuario['nombre_estado']); ?></td>
                         <td class="acciones">
+                            <!-- Los enlaces de acciones se mantienen -->
                             <a href="admin_edit_user.php?id_usuario=<?php echo htmlspecialchars($usuario['id_usuario']); ?>&pagina=<?php echo $pagina_actual; ?>&buscar=<?php echo urlencode($termino_busqueda); ?>" class="btn-editar">Editar</a>
                             <?php if ($_SESSION['id_usuario'] !== $usuario['id_usuario']): ?>
                             <a href="admin_delete_user.php?id_usuario=<?php echo htmlspecialchars($usuario['id_usuario']); ?>&pagina=<?php echo $pagina_actual; ?>&buscar=<?php echo urlencode($termino_busqueda); ?>" 
@@ -122,6 +122,7 @@ try {
     $html_tabla = ob_get_clean(); 
 
     // --- GENERAR HTML DE LA PAGINACIÓN ---
+    // (Tu código de paginación existente es correcto y no necesita cambios)
     ob_start();
     if ($total_paginas > 1): ?>
         <div class="paginacion">
@@ -148,6 +149,7 @@ try {
     <?php endif;
     $html_paginacion = ob_get_clean();
 
+    // Enviar respuesta JSON
     header('Content-Type: application/json');
     echo json_encode([
         'tabla' => $html_tabla,

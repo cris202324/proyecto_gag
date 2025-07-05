@@ -63,7 +63,22 @@ try {
         body { font-family: Arial, sans-serif; margin: 0; background-color: #f1f1f1; }
         .page-container { max-width: 1200px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h1 { text-align: center; color:rgb(49, 145, 68); }
-        .tabla-usuarios { width: 100%; border-collapse: collapse; }
+        
+        /* Estilos del botón de cerrar sesión */
+        .logout-container { text-align: center; margin-bottom: 25px; }
+        .btn-logout { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background-color: #d9534f; /* Color rojo */
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            transition: background-color 0.3s ease;
+        }
+        .btn-logout:hover { background-color: #c9302c; }
+
+        .tabla-usuarios { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .tabla-usuarios th, .tabla-usuarios td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 0.9em; }
         .tabla-usuarios th { background-color: #333; color: white; }
         .tabla-usuarios tr:nth-child(even) { background-color: #f9f9f9; }
@@ -95,7 +110,11 @@ try {
     <div class="page-container">
         <h1>Gestión de Usuarios (Super Admin)</h1>
         <p style="text-align: center; color: #777;">Desde este panel puedes modificar nombre, email, rol, estado y contraseña de cualquier usuario.</p>
-        <a href="../../pages/auth/login.html" style="display: block; text-align: center; margin-bottom: 20px;">Volver al inicio</a>
+        
+        <!-- Contenedor y botón para cerrar la sesión del Super Admin -->
+        <div class="logout-container">
+            <a href="../cerrar_sesion.php" class="btn-logout">Cerrar Sesión</a>
+        </div>
 
         <!-- Muestra un mensaje de error si ocurrió alguno durante la carga de datos. -->
         <?php if ($mensaje_error): ?>
@@ -225,7 +244,7 @@ try {
                 document.getElementById('modalUserEmail').value = userData.email;
                 document.getElementById('modalUserRole').value = userData.rolId;
                 document.getElementById('modalUserStatus').value = userData.estadoId;
-                // Se limpian los campos de contraseña y feedback.
+                // Se limpian los campos de contraseña y feedback cada vez que se abre.
                 document.getElementById('modalNewPassword').value = '';
                 document.getElementById('feedback').textContent = '';
                 

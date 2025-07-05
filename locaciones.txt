@@ -1,0 +1,15 @@
+47849012232314
+cofres del tesoro
+
+x: -375 z: 297
+x:-471 z:313
+trial chamber:
+x:233 Y:-19 Z:281
+mansión
+x:-936 Z:2,744
+aldea:
+x:1,312 Z: -432 
+bosque cerezos:
+x:1,089 z:-189,2
+jungla:
+x:-1,675 z:1,284

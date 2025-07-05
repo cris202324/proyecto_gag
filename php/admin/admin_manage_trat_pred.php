@@ -5,16 +5,15 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
-
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
     header("Location: ../pages/auth/login.html"); // Ajusta esta ruta si es necesario
     exit();
 }
 include '../conexion.php'; 
-$tratamientos_pred = [];
 $mensaje_error = '';
 $mensaje_exito = '';
 
+// Manejo de mensajes de sesión
 if(isset($_SESSION['mensaje_exito_trat_pred'])){
     $mensaje_exito = $_SESSION['mensaje_exito_trat_pred'];
     unset($_SESSION['mensaje_exito_trat_pred']);
@@ -24,21 +23,38 @@ if(isset($_SESSION['mensaje_error_trat_pred'])){
     unset($_SESSION['mensaje_error_trat_pred']);
 }
 
+// Configuración de paginación
+$registros_por_pagina = 10;
+$pagina_actual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$offset = ($pagina_actual - 1) * $registros_por_pagina;
+
+$tratamientos_pred = [];
+$total_registros = 0;
 
 if (!isset($pdo)) {
     $mensaje_error = "Error: Conexión a la base de datos no disponible.";
 } else {
     try {
+        // Contar total de registros
+        $sql_total = "SELECT COUNT(*) FROM tratamientos_predeterminados";
+        $total_registros = $pdo->query($sql_total)->fetchColumn();
+        
+        // Obtener registros paginados
         $sql = "SELECT tp.*, tc.nombre_cultivo 
                 FROM tratamientos_predeterminados tp
                 JOIN tipos_cultivo tc ON tp.id_tipo_cultivo = tc.id_tipo_cultivo
-                ORDER BY tc.nombre_cultivo, tp.dias_despues_inicio_aplicacion, tp.tipo_tratamiento";
-        $stmt = $pdo->query($sql);
+                ORDER BY tc.nombre_cultivo, tp.dias_despues_inicio_aplicacion, tp.tipo_tratamiento
+                LIMIT :limit OFFSET :offset";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limit', $registros_por_pagina, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         $tratamientos_pred = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         $mensaje_error = "Error al obtener tratamientos predeterminados: " . $e->getMessage();
     }
 }
+$total_paginas = ceil($total_registros / $registros_por_pagina);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -80,6 +96,12 @@ if (!isset($pdo)) {
         .mensaje.exito { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
         .mensaje.error { background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
         .no-records { text-align: center; padding: 20px; font-style: italic; color: #777; }
+        
+        /* Estilos para paginación */
+        .pagination { text-align: center; margin-top: 20px; }
+        .pagination a, .pagination span { display: inline-block; padding: 8px 12px; margin: 0 4px; text-decoration: none; color: #007bff; border: 1px solid #ddd; border-radius: 4px; }
+        .pagination a:hover { background-color: #f0f0f0; }
+        .pagination .current { background-color: #88c057; color: white !important; border-color: #70a845; }
         
         /* Media Queries para responsividad del menú */
         @media (max-width: 991.98px) { 
@@ -173,6 +195,20 @@ if (!isset($pdo)) {
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                </div>
+                <!-- Paginación -->
+                <div class="pagination">
+                    <?php if ($total_paginas > 1): ?>
+                        <?php if ($pagina_actual > 1): ?>
+                            <a href="?pagina=<?php echo ($pagina_actual - 1); ?>">Anterior</a>
+                        <?php endif; ?>
+                        <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                            <a href="?pagina=<?php echo $i; ?>" <?php echo $i === $pagina_actual ? 'class="current"' : ''; ?>><?php echo $i; ?></a>
+                        <?php endfor; ?>
+                        <?php if ($pagina_actual < $total_paginas): ?>
+                            <a href="?pagina=<?php echo ($pagina_actual + 1); ?>">Siguiente</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

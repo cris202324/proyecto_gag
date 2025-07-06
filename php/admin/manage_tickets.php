@@ -1,89 +1,125 @@
 <?php
+/**
+ * @file manage_tickets.php
+ * @description Página de administración para gestionar tickets de soporte.
+ * Permite a los administradores ver, responder y cerrar tickets enviados por los usuarios.
+ * Incluye funcionalidades de seguridad, manejo de base deatos y una interfaz de usuario completa.
+ */
+
+// Iniciar la sesión para acceder a las variables de sesión del usuario.
 session_start();
 
-// Evitar caché del navegador
+// --- Cabeceras de Seguridad ---
+// Se envían cabeceras para evitar que el navegador guarde en caché esta página.
+// Es una buena práctica para páginas con contenido dinámico y sensible para asegurar que siempre se muestra la información más actualizada.
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 header("Expires: Sat, 01 Jan 2000 00:00:00 GMT");
 
-// Verificar si el usuario está autenticado y es admin
+// --- Verificación de Autenticación y Rol ---
+// Se comprueba si el usuario ha iniciado sesión (existe 'id_usuario' en la sesión).
+// Además, se verifica que el rol del usuario sea 1 (administrador).
+// Si alguna de estas condiciones no se cumple, se redirige al usuario a la página de login.
 if (!isset($_SESSION['id_usuario']) || (isset($_SESSION['rol']) && $_SESSION['rol'] != 1)) {
-    // Ajusta esta ruta a tu página de login
+    // Redirige a la página de inicio de sesión. Ajusta la ruta si es necesario.
     header("Location: ../../pages/auth/login.html");
-    exit();
+    exit(); // Detiene la ejecución del script después de la redirección.
 }
 
-// Ajusta esta ruta a tu archivo de conexión
-require_once '../conexion.php'; // $pdo
+// --- Conexión a la Base de Datos ---
+// Se incluye el archivo que contiene la lógica para conectarse a la base de datos (objeto PDO $pdo).
+require_once '../conexion.php'; 
 
-$tickets = [];
-$mensaje_error = '';
-$mensaje_success = '';
+// --- Inicialización de Variables ---
+$tickets = []; // Array para almacenar los tickets obtenidos de la base de datos.
+$mensaje_error = ''; // Variable para almacenar mensajes de error que se mostrarán al usuario.
+$mensaje_success = ''; // Variable para almacenar mensajes de éxito que se mostrarán al usuario.
 
-// Procesar respuesta o cierre de ticket
+// --- Procesamiento de Formularios (Peticiones POST) ---
+// Se verifica si la solicitud al servidor es de tipo POST, lo que indica que se ha enviado un formulario (responder o cerrar ticket).
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        // Se obtiene el ID del ticket del formulario. Se usa el operador de fusión de null para evitar errores si no existe.
         $id_ticket = $_POST['id_ticket'] ?? null;
+        // Se valida que el ID del ticket sea un número válido.
         if (!$id_ticket || !is_numeric($id_ticket)) {
             throw new Exception("ID de ticket no válido.");
         }
 
+        // --- Lógica para Responder un Ticket ---
         if (isset($_POST['responder_ticket'])) {
+            // Se obtiene y limpia el mensaje del administrador. trim() elimina espacios en blanco al inicio y final.
             $mensaje_admin = trim($_POST['mensaje_admin']);
 
+            // Se valida que el mensaje de respuesta no esté vacío.
             if (empty($mensaje_admin)) {
                 $mensaje_error = "El mensaje de respuesta es obligatorio.";
             } else {
+                // Iniciar una transacción para asegurar la integridad de los datos.
+                // O se ejecutan todas las consultas correctamente, o no se ejecuta ninguna.
                 $pdo->beginTransaction();
 
+                // 1. Actualizar el estado del ticket a 'Respondido' y la fecha de última actualización.
                 $update_ticket = $pdo->prepare("UPDATE tickets_soporte SET estado_ticket = 'Respondido', ultima_actualizacion = CURRENT_TIMESTAMP WHERE id_ticket = :id_ticket");
                 $update_ticket->bindParam(':id_ticket', $id_ticket, PDO::PARAM_INT);
                 $update_ticket->execute();
 
+                // 2. Insertar la respuesta del administrador en la tabla de respuestas.
                 $insert_response = $pdo->prepare("INSERT INTO respuestas_soporte (id_ticket, id_admin, mensaje_admin) VALUES (:id_ticket, :id_admin, :mensaje)");
                 $insert_response->bindParam(':id_ticket', $id_ticket, PDO::PARAM_INT);
-                $insert_response->bindParam(':id_admin', $_SESSION['id_usuario'], PDO::PARAM_STR);
+                $insert_response->bindParam(':id_admin', $_SESSION['id_usuario'], PDO::PARAM_INT); // Se usa el ID del admin logueado.
                 $insert_response->bindParam(':mensaje', $mensaje_admin, PDO::PARAM_STR);
                 $insert_response->execute();
 
+                // Confirmar la transacción si todo ha ido bien.
                 $pdo->commit();
                 $mensaje_success = "Respuesta enviada con éxito al ticket ID: " . htmlspecialchars($id_ticket);
             }
+        // --- Lógica para Cerrar un Ticket ---
         } elseif (isset($_POST['cerrar_ticket'])) {
+            // Actualizar el estado del ticket a 'Cerrado' y la fecha de última actualización.
             $update_ticket = $pdo->prepare("UPDATE tickets_soporte SET estado_ticket = 'Cerrado', ultima_actualizacion = CURRENT_TIMESTAMP WHERE id_ticket = :id_ticket");
             $update_ticket->bindParam(':id_ticket', $id_ticket, PDO::PARAM_INT);
             $update_ticket->execute();
             $mensaje_success = "Ticket ID: " . htmlspecialchars($id_ticket) . " cerrado con éxito.";
         }
     } catch (PDOException $e) {
+        // Si ocurre un error de base de datos, revertir la transacción si estaba activa.
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
         $mensaje_error = "Error en la operación de base de datos: " . $e->getMessage();
     } catch (Exception $e) {
+        // Capturar cualquier otra excepción general.
         $mensaje_error = "Error en la operación: " . $e->getMessage();
     }
 }
 
-// Obtener todos los tickets
+// --- Obtención de Datos (Peticiones GET o carga inicial de la página) ---
+// Se obtienen todos los tickets de la base de datos para mostrarlos.
 try {
+    // Consulta SQL para obtener los tickets con información del usuario y las respuestas concatenadas.
     $sql = "SELECT 
                 t.id_ticket, t.asunto, t.mensaje_usuario, 
-                DATE_FORMAT(t.fecha_creacion, '%d/%m/%Y %H:%i') as fecha_creacion_f,
+                DATE_FORMAT(t.fecha_creacion, '%d/%m/%Y %H:%i') as fecha_creacion_f, -- Formatea la fecha para mejor legibilidad
                 t.estado_ticket, t.ultima_actualizacion,
                 u.nombre AS nombre_usuario, u.email AS email_usuario,
+                -- Concatena todas las respuestas de un ticket en una sola cadena, formateada con HTML.
                 GROUP_CONCAT(DISTINCT CONCAT(DATE_FORMAT(r.fecha_respuesta, '%d/%m/%Y %H:%i'), ' (Admin: ', ua.nombre, '):<br>', r.mensaje_admin) ORDER BY r.fecha_respuesta ASC SEPARATOR '<hr style=\"margin:5px 0; border-color: #eee;\">') as respuestas_concatenadas
             FROM tickets_soporte t
-            JOIN usuarios u ON t.id_usuario = u.id_usuario
-            LEFT JOIN respuestas_soporte r ON t.id_ticket = r.id_ticket
-            LEFT JOIN usuarios ua ON r.id_admin = ua.id_usuario
+            JOIN usuarios u ON t.id_usuario = u.id_usuario -- Une con la tabla de usuarios para obtener el nombre del creador del ticket.
+            LEFT JOIN respuestas_soporte r ON t.id_ticket = r.id_ticket -- Une con las respuestas (LEFT JOIN para incluir tickets sin respuesta).
+            LEFT JOIN usuarios ua ON r.id_admin = ua.id_usuario -- Une de nuevo con usuarios para obtener el nombre del admin que respondió.
             GROUP BY t.id_ticket, t.asunto, t.mensaje_usuario, t.fecha_creacion, t.estado_ticket, t.ultima_actualizacion, u.nombre, u.email
+            -- Ordena los tickets: primero los 'Abiertos', luego 'Respondidos', y finalmente 'Cerrados'.
+            -- Dentro de cada estado, se ordenan por la fecha de última actualización descendente.
             ORDER BY FIELD(t.estado_ticket, 'Abierto', 'Respondido', 'Cerrado'), t.ultima_actualizacion DESC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
-    $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC); // Obtiene todos los resultados en un array asociativo.
 } catch (PDOException $e) {
     $mensaje_error = "Error al obtener los tickets: " . $e->getMessage();
+    $tickets = []; // Asegurarse de que $tickets es un array vacío en caso de error.
 }
 ?>
 <!DOCTYPE html>
@@ -92,6 +128,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionar Tickets de Soporte - Admin GAG</title>
+    <!-- Estilos CSS integrados en la página -->
     <style>
         body{font-family:Arial,sans-serif;margin:0;padding:0;background-color:#f9f9f9;font-size:16px}
         .header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background-color:#e0e0e0;border-bottom:2px solid #ccc;position:relative}
@@ -169,6 +206,7 @@ try {
         .error-message { color:#d8000c; background-color:#ffdddd; border:1px solid #ffcccc; }
         .success-message { color:#270; background-color:#DFF2BF; border:1px solid #4F8A10; }
 
+        /* Estilos para responsividad (menu hamburguesa en móvil) */
         @media (max-width:991.98px){
             .menu-toggle{display:block}
             .menu{display:none;flex-direction:column;align-items:stretch;position:absolute;top:100%;left:0;width:100%;background-color:#e9e9e9;padding:0;box-shadow:0 4px 8px rgba(0,0,0,.1);z-index:1000;border-top:1px solid #ccc}
@@ -198,32 +236,35 @@ try {
     </style>
 </head>
 <body>
+    <!-- Encabezado de la página con logo y menú de navegación -->
     <div class="header">
         <div class="logo">
-            <!-- Ajusta la ruta a tu logo -->
             <img src="../../img/logo.png" alt="logo GAG" />
         </div>
         <button class="menu-toggle" id="menuToggleBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
         <nav class="menu" id="mainMenu">
-            <!-- Ajusta las rutas del menú -->
+            <!-- Enlaces del menú de navegación del administrador -->
             <a href="admin_dashboard.php">Inicio Admin</a> 
             <a href="view_users.php">Ver Usuarios</a>
             <a href="view_all_crops.php">Ver Cultivos</a>
             <a href="admin_manage_trat_pred.php">Tratamientos Pred.</a>
             <a href="view_all_animals.php">Ver Animales</a> 
-            <a href="manage_tickets.php" class="active">Gestionar Tickets</a>
+            <a href="manage_tickets.php" class="active">Gestionar Tickets</a> <!-- Enlace activo para la página actual -->
             <a href="../cerrar_sesion.php" class="exit">Cerrar Sesión</a>
         </nav>
     </div>
 
+    <!-- Contenedor principal de la página -->
     <div class="page-container">
+        <!-- Cabecera de la sección de contenido -->
         <div class="page-header">
             <h2 class="page-title">Gestionar Tickets de Soporte</h2>
-            <?php if (!empty($tickets)): ?>
+            <?php if (!empty($tickets)): // Muestra el botón de generar reporte solo si hay tickets ?>
                 <a href="admin_generar_reporte_tickets.php" class="btn-reporte" target="_blank">Generar Reporte de Tickets</a>
             <?php endif; ?>
         </div>
 
+        <?php // Muestra mensajes de error o éxito si existen ?>
         <?php if (!empty($mensaje_error)): ?>
             <p class="error-message"><?php echo htmlspecialchars($mensaje_error); ?></p>
         <?php endif; ?>
@@ -231,39 +272,48 @@ try {
             <p class="success-message"><?php echo htmlspecialchars($mensaje_success); ?></p>
         <?php endif; ?>
 
+        <!-- Contenedor de la lista de tickets -->
         <div class="tickets-wrapper">
+            <?php // Si no hay tickets y no hay mensajes de error, muestra un mensaje informativo. ?>
             <?php if (empty($tickets) && empty($mensaje_error)): ?>
                 <div class="no-datos">
                     <p>No hay tickets para gestionar en este momento.</p>
                 </div>
             <?php else: ?>
+                <?php // Itera sobre el array de tickets y muestra cada uno en una "tarjeta". ?>
                 <?php foreach ($tickets as $ticket): ?>
-                    <div class="ticket-card estado-<?php echo strtolower(htmlspecialchars($ticket['estado_ticket'])); ?>">
+                    <div class="ticket-card estado-<?php echo strtolower(htmlspecialchars($ticket['estado_ticket'])); // Clase CSS dinámica según el estado ?>">
                         <h3><?php echo htmlspecialchars($ticket['asunto']); ?></h3>
                         <div class="ticket-meta">
                             <span>De: <?php echo htmlspecialchars($ticket['nombre_usuario']); ?> (<?php echo htmlspecialchars($ticket['email_usuario']); ?>)</span>
                             <span>Fecha: <?php echo htmlspecialchars($ticket['fecha_creacion_f']); ?></span>
-                            <span class="status-badge estado-<?php echo strtolower(htmlspecialchars($ticket['estado_ticket'])); ?>">
+                            <span class="status-badge estado-<?php echo strtolower(htmlspecialchars($ticket['estado_ticket'])); // Clase CSS dinámica para la "badge" de estado ?>">
                                 <?php echo htmlspecialchars($ticket['estado_ticket']); ?>
                             </span>
                         </div>
                         <div class="ticket-content">
                             <strong>Mensaje del Usuario:</strong>
-                            <p><?php echo nl2br(htmlspecialchars($ticket['mensaje_usuario'])); ?></p>
+                            <p><?php echo nl2br(htmlspecialchars($ticket['mensaje_usuario'])); // nl2br convierte saltos de línea en <br> ?></p>
                         </div>
 
+                        <?php // Si existen respuestas, las muestra en una sección de historial. ?>
                         <?php if ($ticket['respuestas_concatenadas']): ?>
                             <div class="ticket-responses">
                                 <h4>Historial de Respuestas:</h4>
                                 <div class="response-item">
-                                    <?php echo $ticket['respuestas_concatenadas']; // Ya viene con formato HTML, no escapar ?>
+                                    <?php 
+                                        // Se imprime directamente porque la consulta SQL ya formateó el contenido con HTML (<br>, <hr>).
+                                        // Los datos individuales (nombre, mensaje) ya fueron escapados o son seguros.
+                                        echo $ticket['respuestas_concatenadas']; 
+                                    ?>
                                 </div>
                             </div>
                         <?php endif; ?>
 
+                        <?php // Muestra el formulario de respuesta solo si el ticket está 'Abierto' o 'Respondido'. ?>
                         <?php if ($ticket['estado_ticket'] === 'Abierto' || $ticket['estado_ticket'] === 'Respondido'): ?>
-                            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                                <input type="hidden" name="id_ticket" value="<?php echo $ticket['id_ticket']; ?>">
+                            <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); // Envía el formulario a la misma página ?>">
+                                <input type="hidden" name="id_ticket" value="<?php echo $ticket['id_ticket']; // Campo oculto con el ID del ticket ?>">
                                 <div class="form-group">
                                     <label for="mensaje_admin_<?php echo $ticket['id_ticket']; ?>">Tu Respuesta:</label>
                                     <textarea name="mensaje_admin" id="mensaje_admin_<?php echo $ticket['id_ticket']; ?>" placeholder="Escribe tu respuesta aquí..." required rows="4"></textarea>
@@ -279,13 +329,17 @@ try {
             <?php endif; ?>
         </div>
     </div>
+    <!-- Script JavaScript para la funcionalidad del menú móvil -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggleBtn = document.getElementById('menuToggleBtn');
             const mainMenu = document.getElementById('mainMenu');
             if (menuToggleBtn && mainMenu) {
+                // Añade un evento de click al botón del menú hamburguesa
                 menuToggleBtn.addEventListener('click', () => {
+                    // Alterna la clase 'active' en el menú para mostrarlo u ocultarlo
                     mainMenu.classList.toggle('active');
+                    // Actualiza el atributo aria-expanded para accesibilidad
                     const isExpanded = mainMenu.classList.contains('active');
                     menuToggleBtn.setAttribute('aria-expanded', isExpanded);
                 });

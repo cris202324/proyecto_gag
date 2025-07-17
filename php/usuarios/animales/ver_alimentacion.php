@@ -103,6 +103,10 @@ try {
         .btn-add-pauta:hover { background-color: #4cae4c; }
         .btn-reporte { background-color: #17a2b8; }
         .btn-reporte:hover { background-color: #138496; }
+        .btn-back:{display:inline-block; padding:12px; color:white !important; text-decoration: none; font-weight:bold; border-radius:5px; transition:background-colo 0.3s ease; text-align: center;}
+        .btn-back:hover{
+            background- color #4cae4c;
+        }
 
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.95em; }
@@ -116,8 +120,8 @@ try {
         .mensaje-pagina.exito { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
         .mensaje-pagina.error { background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
         
-        .back-link-container { text-align: center; margin-top: 25px; }
-        .back-link { color: #337ab7; text-decoration: none; font-size: 0.9em; }
+        .back-link-container { text-align: center; margin-top: 25px; background-color: #5cb85c; padding: 12px 0px; border:none; color:white !important ; border-radius: 4px; cursor:pointer; font-size:16px;}
+        .back-link {color:white; text-decoration: none; font-size: 0.9em; }
 
         @media (max-width: 991.98px) { .menu-toggle { display: block; } .menu { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 100%; left: 0; width: 100%; background-color: #e9e9e9; padding: 0; box-shadow: 0 4px 8px rgba(0,0,0,.1); z-index: 1000; border-top: 1px solid #ccc; } .menu.active { display: flex; } .menu a { margin:0; padding:15px 20px; width:100%; text-align:left; border:none; border-bottom:1px solid #d0d0d0; border-radius:0; color:#333; } .menu a:last-child { border-bottom: none; } .menu a.active, .menu a:hover { background-color: #88c057; color: white !important; } }
         @media (max-width: 768px) { .btn-action { flex-grow: 1; } }
@@ -163,7 +167,7 @@ try {
         <?php endif; ?>
 
         <!-- Barra de acciones principales: añadir nueva pauta y generar reporte. -->
-        <div class="action-bar">
+        <div class="action-bar">    
             <a href="registrar_alimentacion.php?id_animal=<?php echo $id_animal_seleccionado; ?>" class="btn-action btn-add-pauta">Añadir Nueva Pauta</a>
             <!-- El botón de reporte solo se muestra si hay registros en el historial. -->
             <?php if (!empty($historial_alimentacion)): ?>

@@ -10,7 +10,7 @@ if (!isset($_SESSION['id_usuario'])) {
     // La ruta de redirección debe ser correcta desde la ubicación de este archivo.
     header("Location: ../../pages/auth/login.html");
     exit(); // Detiene la ejecución para proteger la página.
-}
+}       
 
 // --- INCLUSIÓN DE ARCHIVOS Y DECLARACIÓN DE VARIABLES ---
 // Incluye el archivo que establece la conexión a la base de datos y define la variable $pdo.
@@ -22,6 +22,16 @@ $id_usuario_actual = $_SESSION['id_usuario'];
 $mensaje = ''; // Para mostrar mensajes de éxito o error al usuario.
 $animal_seleccionado_info = null; // Almacenará los datos del animal si se pasa por URL.
 $id_animal_get = null; // Almacenará el ID del animal pasado por la URL.
+
+//listado de animales a seleccionar
+$lista_de_tipo_de_alimento= [
+    "Concentrado Para Crecimiento", "Maiz Molido", "Pasto Fresco ", "Leguminosas", "Heno", "Avena", "alfalfa","Legumbres especiales"
+];
+
+$lista_de_tipo_frecuencia= [
+    "2 veces al dia", "Ad libitium","Mañana","Tarde","Mañana Y Tarde"
+];
+
 
 // --- LÓGICA PARA PRESELECCIONAR UN ANIMAL DESDE LA URL ---
 // Comprueba si se ha pasado un parámetro 'id_animal' en la URL (ej. ...?id_animal=123) y si es un número.
@@ -41,7 +51,7 @@ if (isset($_GET['id_animal']) && is_numeric($_GET['id_animal'])) {
         // Se anulan las variables para que el formulario muestre el selector general en lugar de un animal preseleccionado.
         $id_animal_get = null; 
         $animal_seleccionado_info = null;
-        $mensaje = "Error: El animal especificado no es válido o no te pertenece.";
+        $mensaje = "Error: El animal no te pertenece o no esta validado";
     }
 }
 
@@ -49,7 +59,7 @@ if (isset($_GET['id_animal']) && is_numeric($_GET['id_animal'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Se recogen los datos del formulario. `filter_input` es una forma segura de obtener datos. `trim()` elimina espacios en blanco.
     $id_animal_post = filter_input(INPUT_POST, 'id_animal', FILTER_VALIDATE_INT);
-    $tipo_alimento = trim($_POST['tipo_alimento']);
+    $tipo_alimento_seleccionado = trim($_POST['tipo_alimento']);
     $cantidad_diaria = filter_input(INPUT_POST, 'cantidad_diaria', FILTER_VALIDATE_FLOAT);
     $unidad_cantidad = trim($_POST['unidad_cantidad']);
     $frecuencia_alimentacion = trim($_POST['frecuencia_alimentacion']);
@@ -124,6 +134,7 @@ if (!$id_animal_get) {
     $stmt_animales->execute();
     $lista_animales_usuario = $stmt_animales->fetchAll(PDO::FETCH_ASSOC);
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -142,13 +153,13 @@ if (!$id_animal_get) {
         .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: bold; }
         .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
         .form-group textarea { min-height: 80px; resize: vertical; }
-        .form-group input[type="submit"] { background-color: #5cb85c; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s ease; width: 100%; }
+        .form-group input[type="submit"] { background-color: #5cb85c; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; transition: background-color 0.3s ease; width: 100%; }
         .form-group input[type="submit"]:hover { background-color: #4cae4c; }
         .mensaje { padding: 12px; margin-bottom: 20px; border-radius: 4px; text-align: center; font-size: 0.95em; }
         .mensaje.exito { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
         .mensaje.error { background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
-        .back-link-container { text-align: center; margin-top: 25px; }
-        .back-link { color: #337ab7; text-decoration: none; font-size: 0.9em; margin: 0 10px; }
+        .back-link-container { text-align: center; margin-top: 25px; background-color: #5cb85c; color:white; padding:12px 0px ; border:none ; border-radius: 4px; cursor:pointer; font-size: 20px; transition: background-color 0.3s ease;width: 100% }
+        .back-link { color: white ; text-decoration: none; font-size: 0.9em; margin: 25px; }
         .back-link:hover { text-decoration: underline; }
         .animal-info { background-color: #e9f5e9; padding: 15px; border-radius: 5px; margin-bottom:20px; border-left: 4px solid #4CAF50;}
         .animal-info p { margin: 5px 0; color: #333; }
@@ -207,7 +218,15 @@ if (!$id_animal_get) {
             <!-- Campos del formulario para registrar la pauta de alimentación. -->
             <div class="form-group">
                 <label for="tipo_alimento">Tipo de Alimento (Ej: Concentrado Crecimiento, Pasto Fresco, Maíz Molido):</label>
-                <input type="text" name="tipo_alimento" id="tipo_alimento" maxlength="100" required>
+                <select name="tipo_alimento" id="tipo_alimento" required>
+                    elecc<option value="">---Seleccione una opcion---</option>
+                    <?php 
+                        foreach ($lista_de_tipo_de_alimento as $tipo_alimento){
+                            $selected = (trim($_POST['tipo_alimento'] && $_POST['tipo_alimento'])?'selected':'');
+                            echo "<option value='" . htmlspecialchars($tipo_alimento) ."'$selected>" . htmlspecialchars($tipo_alimento)."</option>";                      
+                        }                      
+                    ?>
+                </select>
             </div>
 
             <div class="form-group">
@@ -222,7 +241,14 @@ if (!$id_animal_get) {
 
             <div class="form-group">
                 <label for="frecuencia_alimentacion">Frecuencia (Ej: 2 veces al día, Ad libitum, Mañana y Tarde):</label>
-                <input type="text" name="frecuencia_alimentacion" id="frecuencia_alimentacion" maxlength="70" required>
+                <select for ="frecuencia_alimentacion" id= "frecuencia_alimentacion" required>
+                    elecc<option value="">---Seleccion una opcion---</option>
+                    <?php
+                        foreach($lista_de_tipo_frecuencia as $frecuencia_alimentacion){
+                            $selected= (trim($_POST['frecuencia_alimentacion'] && $_POST['frecuencia_alimentacion'])?'selected':'');
+                            echo "<option value='" . htmlspecialchars($frecuencia_alimentacion) . "'$selected>" .htmlspecialchars($frecuencia_alimentacion) ."</option>";
+                        }
+                    ?>
             </div>
             
             <div class="form-group">
@@ -245,8 +271,10 @@ if (!$id_animal_get) {
             <?php if ($id_animal_get): ?>
                 <a href="ver_alimentacion.php?id_animal=<?php echo $id_animal_get; ?>" class="back-link">Ver Historial de Alimentación</a>
             <?php endif; ?>
-            <a href="mis_animales.php" class="back-link">Volver a Mis Animales</a>
         </div>
+        <div class ="back-link-container">
+          <a href="mis_animales.php" class="back-link">Volver a Mis Animales</a>
+        </div>    
     </div>
 </body>
 </html>

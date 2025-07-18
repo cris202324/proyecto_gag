@@ -152,7 +152,7 @@ if (!$id_animal_get) {
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: bold; }
         .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group textarea { min-height: 70px; resize: vertical; }
         .form-group input[type="submit"] { background-color: #5cb85c; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; transition: background-color 0.3s ease; width: 100%; }
         .form-group input[type="submit"]:hover { background-color: #4cae4c; }
         .mensaje { padding: 12px; margin-bottom: 20px; border-radius: 4px; text-align: center; font-size: 0.95em; }

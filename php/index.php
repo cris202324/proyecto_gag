@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             })
             .catch(error => {
-                console.error('Error al cargar datos del clima:', error);
+                console.error('Error al cargar los datos del clima:', error);
                 if(climaCiudadEl) climaCiudadEl.textContent = ciudadParaClima.split(',')[0];
                 if(climaDescripcionEl) climaDescripcionEl.textContent = error.message.includes("API Clima:") || error.message.includes("Error HTTP:") ? error.message : "No se pudo cargar el clima.";
                 if(climaIconoEl) climaIconoEl.innerHTML = '';

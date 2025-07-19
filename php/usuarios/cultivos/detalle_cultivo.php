@@ -153,7 +153,7 @@ if (!isset($pdo)) {
             background-color:#218838;
         }
 
-        .detail-section{background-color:#fff;padding:20px 25px;margin-bottom:25px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,0.08);border-left:5px solid #88c057;}
+        .detail-section{background-color:#fff;border-left:10px solid #88c057;padding:20px 25px;margin-bottom:25px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,0.08);border-left:5px solid #88c057;}
         .detail-section h3{color:#0056b3;font-size:1.3em;margin-top:0;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid #f0f0f0;}
         .detail-section p, .detail-section li {font-size:0.95em;line-height:1.7;color:#444;margin-bottom:10px;}
         .detail-section strong{color:#111;margin-right:5px;display:inline-block;min-width:150px;}

@@ -176,7 +176,7 @@ if (!isset($pdo)) {
         .view-toggle-link a:hover, .report-page-button:hover {background-color: #e8f5e9; color: #388e3c;}
 
         .cultivos-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:25px} 
-        .cultivo-card{background-color:#ffffff;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);padding:20px;display:flex;flex-direction:column;transition:transform .3s ease,box-shadow .3s ease}
+        .cultivo-card{background-color:#ffffff;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);border-left:10px solid #88c057;padding:20px;display:flex;flex-direction:column;transition:transform .3s ease,box-shadow .3s ease}
         .cultivo-card:hover{transform:translateY(-5px);box-shadow:0 6px 16px rgba(0,0,0,0.15)}
         .cultivo-card h3{margin-top:0;margin-bottom:12px;color:#0056b3;font-size:1.3em;border-bottom:1px solid #f0f0f0;padding-bottom:10px}
         .cultivo-card .info-section p{font-size:.95em;color:#444;margin-bottom:8px;line-height:1.6}

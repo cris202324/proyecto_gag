@@ -96,7 +96,7 @@ if (!isset($pdo)) {
         .page-container > h2.page-title { text-align: center; color: #4caf50; margin-bottom: 25px; font-size: 1.8em; }
         
         .animal-list-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .animal-card { background-color: #fff; border: 1px solid #ddd; border-left: 5px solid #88c057; border-radius: 8px; padding: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; }
+        .animal-card { background-color: #fff; border: 1px solid #ddd; border-left: 10px solid #88c057; border-radius: 8px; padding: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; }
         .animal-card:hover { transform: translateY(-4px); box-shadow: 0 5px 15px rgba(0,0,0,0.12); }
         .animal-card-content { flex-grow: 1; }
         .animal-card h3 { margin-top: 0; margin-bottom: 12px; color: #333; font-size: 1.3em; border-bottom: 1px solid #eee; padding-bottom: 8px; }

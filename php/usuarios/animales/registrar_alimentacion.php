@@ -31,6 +31,9 @@ $lista_de_tipo_de_alimento= [
 $lista_de_tipo_frecuencia= [
     "2 veces al dia", "Ad libitium","Mañana","Tarde","Mañana Y Tarde"
 ];
+$lista_de_medida_de_unidad=[
+    "Kg","g","Lb","Raciones","Litros","ml"
+];
 
 
 // --- LÓGICA PARA PRESELECCIONAR UN ANIMAL DESDE LA URL ---
@@ -152,7 +155,7 @@ if (!$id_animal_get) {
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: bold; }
         .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group textarea { min-height: 70px; resize: vertical; }
         .form-group input[type="submit"] { background-color: #5cb85c; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; transition: background-color 0.3s ease; width: 100%; }
         .form-group input[type="submit"]:hover { background-color: #4cae4c; }
         .mensaje { padding: 12px; margin-bottom: 20px; border-radius: 4px; text-align: center; font-size: 0.95em; }
@@ -236,13 +239,23 @@ if (!$id_animal_get) {
 
             <div class="form-group">
                 <label for="unidad_cantidad">Unidad (Ej: kg, g, lb, raciones, litros):</label>
-                <input type="text" name="unidad_cantidad" id="unidad_cantidad" value="kg" maxlength="20" required>
+                <select name="unidad_cantidad" id="unidad_cantidad" required>
+                    elecc<option value="">---Seleccione una opcion---</option>
+
+                    <?php
+                    foreach($lista_de_medida_de_unidad as $unidad_cantidad){
+                        $selected =(trim($_POST['unidad_cantidad'] && $_POST['unidad_cantidad'])?'selected':'');
+                        echo "<option value='" .htmlspecialchars($unidad_cantidad) . "'$selected>" .htmlspecialchars($unidad_cantidad)."</option>";
+                    }
+                    ?>
+                </select>
+                
             </div>
 
             <div class="form-group">
                 <label for="frecuencia_alimentacion">Frecuencia (Ej: 2 veces al día, Ad libitum, Mañana y Tarde):</label>
                 <select for ="frecuencia_alimentacion" id= "frecuencia_alimentacion" required>
-                    elecc<option value="">---Seleccion una opcion---</option>
+                    elecc<option value="">---Seleccione una opcion---</option>
                     <?php
                         foreach($lista_de_tipo_frecuencia as $frecuencia_alimentacion){
                             $selected= (trim($_POST['frecuencia_alimentacion'] && $_POST['frecuencia_alimentacion'])?'selected':'');
